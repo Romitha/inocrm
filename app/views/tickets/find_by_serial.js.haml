@@ -5,16 +5,43 @@
       %table.table
         %thead
           %tr
-            %th Option
+            %th{class: "text-right"} Brand:
+            %th= @product.brand_name
+          %tr
+            %th{class: "text-right"} Category:
+            %th= @product.category_full_name(" - ")
+          %tr
+            %th{class: "text-right"} Model No:
+            %th= @product.model_no
+          %tr
+            %th{class: "text-right"} Product No:
+            %th= @product.product_no
+      %table.table
+        %thead
+          %tr
+            %th Customer Name
+            %th Contract No
+            %th Created at
+            %th Start Date
+            %th Exp Date
+            %th Status
+            %th Hold
+            %th Active
             %th Action
         %tbody
-          - @product.ticket_contracts.each do |c|
+          - @product.ticket_contracts.select{|c| c.dynamic_active }.each do |c|
             %tr
+              %td= c.organization.name
               %td= c.contract_no
-              %td= link_to "Select", find_by_serial_tickets_path(serial_search: @product.serial_no, contract_id: c.id), method: :post, remote: true
+              %td= c.formated_created_at
+              %td= c.formated_contract_end_at
+              %td= c.status_name
+              %td= boolean_in_word c.hold, "Yes", "No"
+              %td= boolean_in_word c.dynamic_active, "Yes", "No"
+              %td= link_to "Select", find_by_serial_tickets_path(serial_search: @product.serial_no, contract_id: c.id, ticket_time_now: @ticket_time_now), method: :post, remote: true
           %tr
-            %td No Contract
-            %td= link_to "Select", find_by_serial_tickets_path(serial_search: @product.serial_no), method: :post, remote: true
+            %td.strong{colspan: 8} No Active Contract
+            %td= link_to "Select", find_by_serial_tickets_path(serial_search: @product.serial_no, ticket_time_now: @ticket_time_now), method: :post, remote: true
 
     $("#ticket_initiate_options_render").modal({backdrop: "static"});
     $("#ticket_initiate_options_render .modal-body").html("#{j content_for :content_for}");
