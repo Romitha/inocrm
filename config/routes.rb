@@ -68,6 +68,12 @@ Rails.application.routes.draw do
       get "summery"
       get "warranty_expire"
       get "contract_expire"
+      get "hold_ticket_report"
+      get "returned_manufacture" 
+      get "manufacture_colected"
+      get "cus_not_colected"
+      get "order_updated"
+
     end
   end
 

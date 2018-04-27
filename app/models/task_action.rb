@@ -10,6 +10,78 @@ end
 
 class UserTicketAction < ActiveRecord::Base
   self.table_name = "spt_ticket_action"
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+
+  mapping do
+    indexes :ticket, type: "nested", include_in_parent: true
+    indexes :ticket_spare_parts, type: "nested", include_in_parent: true
+  end
+
+  def self.search(params)  
+    tire.search(page: (params[:page] || 1), per_page: (params[:per_page] || 1000)) do
+      query do
+        boolean do
+          must { string params[:query] } if params[:query].present?
+          # must { range :published_at, lte: Time.zone.now }
+          # must { term :author_id, params[:author_id] } if params[:author_id].present?
+        end
+      end
+      sort { by :action_at, "desc" } if params[:query].blank?
+    end
+  end
+
+  def to_indexed_json
+    Ticket
+    TicketSparePart
+    to_json(
+      only: [:id, :ticket_id, :action_id, :action_at, :action_by, :re_open_index, :created_at, :action_engineer_id],
+      methods: [:action_by_name, :feedback_reopen, :inhouse_type_select],
+      include: {
+        ticket:{
+          only: [:id, :ticket_no,:sla_time, :job_finished,:job_finished_at],
+          methods:[:support_ticket_no, :customer_name, :sla_description],
+          include: {
+            ticket_spare_parts: {
+              only: [:id, :spare_part_no, :spare_part_description, :request_from],
+              methods:[:spare_part_event_no],
+            },
+            owner_engineer: {
+              methods: [:sbu_name, :full_name],
+            },
+          },
+        },
+        request_spare_part:{
+          only: [:id],
+          include: {
+            ticket_spare_part: {
+              only: [:id, :spare_part_no, :spare_part_description, :request_from],
+              methods:[:spare_part_event_no],
+              include: {
+                ticket_spare_part_manufacture: {
+                  only: [:id, :collect_pending_manufacture],
+                },
+              }
+            },
+          },
+        },
+      },
+    )
+
+  end
+  def feedback_not_reopen
+    Invoice
+    customer_feedback.try(:re_opened) ? true : false
+    
+  end
+  def formatted_action_date
+    action_at.strftime(INOCRM_CONFIG["short_date_format"])
+  end
+
+  def action_by_name
+    user_id.try(:full_name)
+  end
+  belongs_to :user_id, class_name: "User", foreign_key: :action_by
 
   has_many :q_and_answers, foreign_key: :ticket_action_id
 
@@ -219,6 +291,9 @@ class ActHold < ActiveRecord::Base
 
   validates :reason_id, presence: true
 
+  def act_hold_reason
+    reason.try(:reason)
+  end
 end
 
 class ActFsr < ActiveRecord::Base

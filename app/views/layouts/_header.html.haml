@@ -84,6 +84,11 @@
             %li.dropdown-header Expire Reminder Reports
             %li{role: "presentation", class: "#{can?(:warranty_expire_report, Warranty) ? '' : 'disabled'}"}= link_to "Warranty Expire Report", warranty_expire_reports_path, class: "#{can?(:warranty_expire_report, Warranty) ? '' : 'disabled'}"
             %li{role: "presentation", class: "#{can?(:contract_expire, TicketContract) ? '' : 'disabled'}"}= link_to "Contract Expire Report", contract_expire_reports_path, class: "#{can?(:contract_expire, TicketContract) ? '' : 'disabled'}"
+            %li= link_to "Hold Ticket Report", hold_ticket_report_reports_path
+            %li= link_to "Parts To Be Returned To Manufacturer", returned_manufacture_reports_path
+            %li= link_to "To be collected from Manufacturer", manufacture_colected_reports_path
+            %li= link_to "Items not collected by customer", cus_not_colected_reports_path
+            %li= link_to "Order updated report", order_updated_reports_path
         - if user_signed_in?
           %li.dropdown.profile_image_dropdown
             = link_to image_tag((current_user.avatar.thumb.url || "no_image.jpg"), class: "img-responsive padding-top1 padding-bottom1"), "#", "data-toggle" => "dropdown", data: {placement: "bottom", toggle: "dropdown"}, title: "Hi! #{current_user.current_user_role_name} #{current_user.full_name || current_user.email}", rel: "tooltip", class: "padding0"

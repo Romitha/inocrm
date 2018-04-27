@@ -812,6 +812,65 @@ class ReportsController < ApplicationController
     end
   end
 
+  def hold_ticket_report
+    Ticket
+    User
+    Product
+    @tickets = Ticket.where("last_hold_action_id IS NOT NULL AND status_hold")
+
+    render "reports/hold_ticket_report"
+  end
+
+  def returned_manufacture
+    Ticket
+    User
+    Product
+    TaskAction
+    @user_ticket_actions = UserTicketAction.where(action_id: '37').order("action_at desc").to_a.uniq{|t| t.ticket_id }
+
+    render "reports/returned_manufacture"
+  end
+
+  def manufacture_colected
+    Ticket
+    User
+    Product
+    TaskAction
+    TicketSparePart
+    @ticket_manufactures = UserTicketAction.where(action_id: '31').order("action_at desc").to_a.uniq{|t| t.ticket_id }
+
+    render "reports/manufacture_colected"
+  end  
+  def cus_not_colected
+    Ticket
+    User
+    Product
+    TaskAction
+    TicketSparePart
+    @tickets = Ticket.search(query: "user_ticket_actions.feedback_not_reopen:false AND NOT user_ticket_actions.action_id:58")
+    # @ticket_manufactures = UserTicketAction.where.not(action_id: '58').order("action_at desc").to_a.uniq{|t| t.ticket_id }
+
+    # Ticket.search(query: "NOT user_ticket_actions.action_id:58")
+    # @ticket_manufactures = UserTicketAction.where(action_id: '58').order("action_at desc").to_a.uniq{|t| t.ticket_id }
+
+    render "reports/cus_not_colected"
+  end  
+
+  def order_updated
+    Ticket
+    User
+    Product
+    TaskAction
+    TicketSparePart
+    @ticket_manufactures = TicketSparePartManufacture.where(order_pending: true)
+    # @ticket_manufactures = UserTicketAction.where.not(action_id: '58').order("action_at desc").to_a.uniq{|t| t.ticket_id }
+
+    # Ticket.search(query: "NOT user_ticket_actions.action_id:58")
+    # @ticket_manufactures = UserTicketAction.where(action_id: '58').order("action_at desc").to_a.uniq{|t| t.ticket_id }
+
+    render "reports/order_updated"
+  end
+
   def excel_output
     Ticket
     User

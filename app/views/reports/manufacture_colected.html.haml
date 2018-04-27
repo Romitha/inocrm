@@ -1,0 +1,45 @@
+- ticket_manufactures = @ticket_manufactures
+%h3 To be collected Report
+.row
+  .col-md-1
+    %strong No
+  .col-md-1
+    %strong Part order date
+  .col-md-1
+    %strong Ticket No
+  .col-md-2
+    %strong Customer Name
+  .col-md-1
+    %strong SLA
+  .col-md-2
+    %strong Part Description
+  .col-md-1
+    %strong Spare Part No
+  .col-md-1
+    %strong Event No
+  .col-md-1
+    %strong Eng. Name
+  .col-md-1
+    %strong No. Of Days
+
+%hr
+- ticket_manufactures.each_with_index do |ticket_manufacture, index|
+  -if ticket_manufacture.request_spare_part.ticket_spare_part.ticket_spare_part_manufacture.collect_pending_manufacture
+    .row
+      .col-md-1
+        - if params[:page]
+          = (index+1)+ 10*(params[:page].to_i-1)
+        - else
+          = (index+1)
+      .col-md-1= ticket_manufacture.action_at.strftime(INOCRM_CONFIG["short_date_format"])
+      .col-md-1= ticket_manufacture.ticket.support_ticket_no
+      .col-md-2= ticket_manufacture.ticket.customer_name
+      .col-md-1= ticket_manufacture.ticket.sla_description
+      .col-md-2= ticket_manufacture.request_spare_part.ticket_spare_part.spare_part_description
+      .col-md-1= ticket_manufacture.request_spare_part.ticket_spare_part.spare_part_no
+      .col-md-1= ticket_manufacture.request_spare_part.ticket_spare_part.spare_part_event_no
+      .col-md-1= ticket_manufacture.action_by_name
+      - date_sent = Date.parse(ticket_manufacture.action_at.strftime(INOCRM_CONFIG["short_date_format"]))
+      - date_now = Date.today
+      .col-md-1= (date_now - date_sent).to_i
+    %hr

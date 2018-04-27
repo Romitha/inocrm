@@ -16,6 +16,8 @@ class Ticket < ActiveRecord::Base
     indexes :ticket_contract, type: "nested", include_in_parent: true
     indexes :ticket_currency, type: "nested", include_in_parent: true
     indexes :customer_quotations, type: "nested", include_in_parent: true
+    indexes :last_hold_action, type: "nested", include_in_parent: true
+    indexes :user_ticket_actions, type: "nested", include_in_parent: true
   end
 
   def self.search(params)
@@ -66,9 +68,10 @@ class Ticket < ActiveRecord::Base
     TaskAction
     User
     Invoice
+    UserTicketAction
     to_json(
-      only: [:created_at, :cus_chargeable, :id, :ticket_no, :logged_at, :slatime, :job_started_at, :job_started_action_id, :problem_description, :job_type_id, :job_finished_at, :status_hold, :re_open_count, :final_invoice_id, :resolution_summary, :updated_at],
-      methods: [:customer_name, :ticket_product_brand_name,:ticket_product_brand_id, :ticket_product_serial_no, :ticket_product_cat_id, :ticket_product_cat1_id, :ticket_product_cat2_id, :ticket_support_engineer_cost,:ticket_additional_cost,:ticket_external_cost, :ticket_engineer_cost, :ticket_part_cost, :ticket_contract_contract_end_at, :ticket_contract_contract_start_at, :job_type_get, :owner_engineer_name, :ticket_status_name, :warranty_type_name, :support_ticket_no, :ticket_type_name, :ticket_contract_product_amount, :ticket_contract_location],
+      only: [:created_at, :cus_chargeable, :id, :ticket_no, :logged_at, :slatime, :job_started_at, :job_started_action_id, :problem_description, :job_type_id, :job_finished_at, :job_finished, :status_hold, :re_open_count, :final_invoice_id, :resolution_summary, :updated_at],
+      methods: [:customer_name, :inhouse_type_select,:sla_description, :is_hold_and_have_last_hold_action?, :ticket_product_brand_name,:ticket_product_brand_id, :ticket_product_serial_no, :ticket_product_cat_id, :ticket_product_cat1_id, :ticket_product_cat2_id, :ticket_support_engineer_cost,:ticket_additional_cost,:ticket_external_cost, :ticket_engineer_cost, :ticket_part_cost, :ticket_contract_contract_end_at, :ticket_contract_contract_start_at, :job_type_get, :owner_engineer_name, :ticket_status_name, :warranty_type_name, :support_ticket_no, :ticket_type_name, :ticket_contract_product_amount, :ticket_contract_location],
       include: {
         ticket_contract: {
           only: [ :id, :customer_id, :products, :contract_no,:amount, :contract_start_at,:contract_end_at, :season, :accepted_at, :updated_at],
@@ -112,6 +115,10 @@ class Ticket < ActiveRecord::Base
         products: {
           only: [:id, :serial_no, :model_no, :product_no, :created_at, :name, :updated_at],
           methods: [:category_full_name_index, :category_cat_id, :brand_id, :brand_name ,:brand_id],
+        },
+        last_hold_action: {
+          only: [:id],
+          methods: [:formatted_action_date, :action_by_name],
         },
         customer: {
           only: [:id, :name, :address1, :address2, :address3, :address4],
@@ -176,11 +183,24 @@ class Ticket < ActiveRecord::Base
         customer_quotations: {
           only: [:id, :customer_quotation_no],
         },
+        user_ticket_actions: {
+          only: [:id, :action_id],
+          methods: [:formatted_action_date, :action_by_name, :feedback_not_reopen],
+        },
       }
     )
 
   end
-
+  def inhouse_type_select
+    ticket_repair_type.code
+  end
+  def sla_description
+    sla_time.description
+    
+  end
+  def is_hold_and_have_last_hold_action?
+    last_hold_action.present?
+  end
   def ticket_contract_contract_end_at
     ticket_contract.try(:contract_end_at)
   end
@@ -542,6 +562,8 @@ class Ticket < ActiveRecord::Base
   has_many :hp_cases, through: :user_ticket_actions
 
   has_one :ticket_total_cost
+
+  has_one :last_hold_action, class_name: "UserTicketAction"
 
   validates_presence_of [:ticket_no, :priority, :status_id, :problem_description, :informed_method_id, :job_type_id, :ticket_type_id, :warranty_type_id, :base_currency_id, :problem_category_id]
 

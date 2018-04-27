@@ -1,0 +1,24 @@
+- ticket_manufactures = @ticket_manufactures
+%h3 Items Not Collected By Customer Report
+.row
+  .col-md-1
+    %strong No
+  .col-md-4
+    %strong Order updated date
+  .col-md-3
+    %strong Ticket No
+  .col-md-4
+    %strong Hold Reason
+%hr
+- ticket_manufactures.each_with_index do |ticket_manufacture, index|
+  .row
+    .col-md-1
+      - if params[:page]
+        = (index+1)+ 10*(params[:page].to_i-1)
+      - else
+        = (index+1)
+    .col-md-4= ticket_manufacture.updated_at.to_date.try :strftime, INOCRM_CONFIG["short_date_format"]
+    .col-md-3= ticket_manufacture.ticket_spare_part.ticket.support_ticket_no
+    .col-md-4= ticket_manufacture.ticket_spare_part.ticket.reason.try(:reason)
+
+  %hr

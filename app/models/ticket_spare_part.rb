@@ -57,6 +57,10 @@ class TicketSparePart < ActiveRecord::Base
     ticket.products.first.try(:brand_name)
   end
 
+  def spare_part_event_no
+    ticket_spare_part_manufacture.try(:event_no)
+  end
+
   def flush_cache
     Rails.cache.delete([self.ticket.id, :ticket_spare_parts])
   end
@@ -300,6 +304,57 @@ end
 
 class TicketSparePartManufacture < ActiveRecord::Base
   self.table_name = "spt_ticket_spare_part_manufacture"
+
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+
+  mapping do
+    indexes :ticket_spare_part, type: "nested", include_in_parent: true
+    indexes :ticket, type: "nested", include_in_parent: true
+  end
+
+  def self.search(params)  
+    tire.search(page: (params[:page] || 1), per_page: (params[:per_page] || 1000)) do
+      query do
+        boolean do
+          must { string params[:query] } if params[:query].present?
+          # must { range :published_at, lte: Time.zone.now }
+          # must { term :author_id, params[:author_id] } if params[:author_id].present?
+        end
+      end
+      sort { by :action_at, "desc" } if params[:query].blank?
+    end
+  end
+
+  def to_indexed_json
+    Ticket
+    TicketSparePart
+    TaskAction
+    to_json(
+      only: [:id, :spare_part_id, :event_no, :order_no, :collect_pending_manufacture, :order_pending, :updated_at],
+      include: {
+        ticket_spare_part:{
+          only: [:id, :spare_part_no, :spare_part_description, :request_from],
+          include: {
+            ticket: {
+              only: [:id],
+              methods:[:support_ticket_no],
+              include: {
+                user_ticket_actions: {
+                  only: [:id, :action_id],
+                  methods: [:formatted_action_date, :action_by_name],
+                },
+                reason: {
+                  only: [:id, :reason],
+                },
+              },
+            },
+          },
+        },
+      },
+    )
+
+  end
 
   belongs_to :ticket_spare_part, foreign_key: :spare_part_id
   belongs_to :return_parts_bundle
