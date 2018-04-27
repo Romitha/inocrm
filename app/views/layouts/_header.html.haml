@@ -56,7 +56,24 @@
             %li.dropdown-header Create Customer
             %li{role: "presentation", class: "#{can?(:new, Organization) ? '' : 'disabled'}"}= link_to "New Organization Customer", new_organization_path(category: Organization::TYPES[1]), class: "#{can?(:new, Organization) ? '' : 'disabled'}"
             %li{role: "presentation", class: "#{can?(:new, Organization) ? '' : 'disabled'}"}= link_to "New Individual Customer", new_organization_path(category: Organization::TYPES[3]), class: "#{can?(:new, Organization) ? '' : 'disabled'}"
-
+        %li.dropdown.small_scale_margin-right10{role: "presentation"}
+          = link_to "Reports", "#", class: "dropdown-toggle reports text-hide nav-icon", id: "report_dropdown", data: {toggle: "dropdown", placement: "bottom"}, title: "Reports", rel: "tooltip"
+          %ul.dropdown-menu{"aria-labelledby" => "ticket_dropdown"}
+            %li{role: "presentation", class: "#{can?(:excel_output, Ticket) ? '' : 'disabled'}"}= link_to "ERP Report", excel_output_reports_path, class: "#{can?(:excel_output, Ticket) ? '' : 'disabled'}"
+            %li{role: "presentation", class: "#{can?(:contract_report, TicketContract) ? '' : 'disabled'}"}= link_to "Contract Report", contract_report_reports_path, class: "#{can?(:contract_report, TicketContract) ? '' : 'disabled'}"
+            %li{role: "presentation", class: "#{can?(:contract_cost_analys_report, ContractProduct) ? '' : 'disabled'}"}= link_to "Contract Cost Analysis Report", contract_cost_analys_report_reports_path, class: "#{can?(:contract_cost_analys_report, ContractProduct) ? '' : 'disabled'}"
+            %li{role: "presentation", class: "#{can?(:contract_ticket_report, Ticket) ? '' : 'disabled'}"}= link_to "Contract - Ticket Report", contract_ticket_report_reports_path, class: "#{can?(:contract_ticket_report, Ticket) ? '' : 'disabled'}"
+            %li{role: "presentation", class: "#{can?(:non_contract_ticket_report, Ticket) ? '' : 'disabled'}"}= link_to "Non Contract - Ticket Report", non_contract_ticket_report_reports_path, class: "#{can?(:non_contract_ticket_report, Ticket) ? '' : 'disabled'}"
+            %li{role: "presentation", class: "#{can?(:customer_product_report, Ticket) ? '' : 'disabled'}"}= link_to "Customer Product Report", customer_product_report_reports_path, class: "#{can?(:customer_product_report, Ticket) ? '' : 'disabled'}"
+            %li{role: "presentation", class: "#{can?(:summery, TicketContract) ? '' : 'disabled'}"}= link_to "Summary Report", summery_reports_path, class: "#{can?(:summery, TicketContract) ? '' : 'disabled'}"
+            / %li.dropdown-header Expire Reminder Reports
+            %li{role: "presentation", class: "#{can?(:warranty_expire_report, Warranty) ? '' : 'disabled'}"}= link_to "Warranty Expire Report", warranty_expire_reports_path, class: "#{can?(:warranty_expire_report, Warranty) ? '' : 'disabled'}"
+            %li{role: "presentation", class: "#{can?(:contract_expire, TicketContract) ? '' : 'disabled'}"}= link_to "Contract Expire Report", contract_expire_reports_path, class: "#{can?(:contract_expire, TicketContract) ? '' : 'disabled'}"
+            %li= link_to "Hold Ticket Report", hold_ticket_report_reports_path
+            %li= link_to "Parts To Be Returned To Manufacturer", returned_manufacture_reports_path
+            %li= link_to "To be collected from Manufacturer", manufacture_colected_reports_path
+            %li= link_to "Items not collected by customer", cus_not_colected_reports_path
+            %li= link_to "Order updated report", order_updated_reports_path
         %li.dropdown.small_scale_margin-right10{role: "presentation"}
           = link_to "Supports", "#", class: "dropdown-toggle tickets text-hide nav-icon", id: "ticket_dropdown", data: {toggle: "dropdown", placement: "bottom"}, title: "Support tickets", rel: "tooltip"
           %ul.dropdown-menu{"aria-labelledby" => "ticket_dropdown"}
@@ -71,24 +88,6 @@
             %li{role: "presentation", class: "#{can?(:create_po, SoPo) ? '' : 'disabled'}"}= link_to "Create PO", hp_po_tickets_path, class: "#{can?(:create_po, SoPo) ? '' : 'disabled'}"
             %li{role: "presentation", class: "#{can?(:view_po, SoPo) ? '' : 'disabled'}"}= link_to "View PO", view_po_tickets_path, class: "#{can?(:view_po, SoPo) ? '' : 'disabled'}"
             %li{role: "presentation", class: "#{can?(:create_invoice_for_hp, SoPo) ? '' : 'disabled'}"}= link_to "Create Invoice for HP", create_invoice_for_hp_tickets_path, class: "#{can?(:create_invoice_for_hp, SoPo) ? '' : 'disabled'}"
-
-            %li.divider
-            %li.dropdown-header Reports
-            %li{role: "presentation", class: "#{can?(:excel_output, Ticket) ? '' : 'disabled'}"}= link_to "ERP Report", excel_output_reports_path, class: "#{can?(:excel_output, Ticket) ? '' : 'disabled'}"
-            %li{role: "presentation", class: "#{can?(:contract_report, TicketContract) ? '' : 'disabled'}"}= link_to "Contract Report", contract_report_reports_path, class: "#{can?(:contract_report, TicketContract) ? '' : 'disabled'}"
-            %li{role: "presentation", class: "#{can?(:contract_cost_analys_report, ContractProduct) ? '' : 'disabled'}"}= link_to "Contract Cost Analysis Report", contract_cost_analys_report_reports_path, class: "#{can?(:contract_cost_analys_report, ContractProduct) ? '' : 'disabled'}"
-            %li{role: "presentation", class: "#{can?(:contract_ticket_report, Ticket) ? '' : 'disabled'}"}= link_to "Contract - Ticket Report", contract_ticket_report_reports_path, class: "#{can?(:contract_ticket_report, Ticket) ? '' : 'disabled'}"
-            %li{role: "presentation", class: "#{can?(:non_contract_ticket_report, Ticket) ? '' : 'disabled'}"}= link_to "Non Contract - Ticket Report", non_contract_ticket_report_reports_path, class: "#{can?(:non_contract_ticket_report, Ticket) ? '' : 'disabled'}"
-            %li{role: "presentation", class: "#{can?(:customer_product_report, Ticket) ? '' : 'disabled'}"}= link_to "Customer Product Report", customer_product_report_reports_path, class: "#{can?(:customer_product_report, Ticket) ? '' : 'disabled'}"
-            %li{role: "presentation", class: "#{can?(:summery, TicketContract) ? '' : 'disabled'}"}= link_to "Summary Report", summery_reports_path, class: "#{can?(:summery, TicketContract) ? '' : 'disabled'}"
-            %li.dropdown-header Expire Reminder Reports
-            %li{role: "presentation", class: "#{can?(:warranty_expire_report, Warranty) ? '' : 'disabled'}"}= link_to "Warranty Expire Report", warranty_expire_reports_path, class: "#{can?(:warranty_expire_report, Warranty) ? '' : 'disabled'}"
-            %li{role: "presentation", class: "#{can?(:contract_expire, TicketContract) ? '' : 'disabled'}"}= link_to "Contract Expire Report", contract_expire_reports_path, class: "#{can?(:contract_expire, TicketContract) ? '' : 'disabled'}"
-            %li= link_to "Hold Ticket Report", hold_ticket_report_reports_path
-            %li= link_to "Parts To Be Returned To Manufacturer", returned_manufacture_reports_path
-            %li= link_to "To be collected from Manufacturer", manufacture_colected_reports_path
-            %li= link_to "Items not collected by customer", cus_not_colected_reports_path
-            %li= link_to "Order updated report", order_updated_reports_path
         - if user_signed_in?
           %li.dropdown.profile_image_dropdown
             = link_to image_tag((current_user.avatar.thumb.url || "no_image.jpg"), class: "img-responsive padding-top1 padding-bottom1"), "#", "data-toggle" => "dropdown", data: {placement: "bottom", toggle: "dropdown"}, title: "Hi! #{current_user.current_user_role_name} #{current_user.full_name || current_user.email}", rel: "tooltip", class: "padding0"
