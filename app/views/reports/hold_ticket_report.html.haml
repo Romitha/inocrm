@@ -26,9 +26,9 @@
         = (index+1)
 
     .col-md-1= ticket.support_ticket_no
-    .col-md-2= ticket.logged_at and ticket.logged_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
-    .col-md-2= ticket.logged_at and ticket.last_hold_action.try(:formatted_action_date)
-    .col-md-2= ticket.logged_at and ticket.owner_engineer.try(:full_name)
-    .col-md-2= ticket.logged_at and ticket.last_hold_action.try(:action_by_name)
-    .col-md-2= ticket.logged_at and ticket.reason.try(:reason)
+    .col-md-2=ticket.logged_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+    .col-md-2=ticket.last_hold_action.try(:formatted_action_date)
+    .col-md-2=ticket.last_hold_action.try(:action_engineer_by_name)
+    .col-md-2=ticket.last_hold_action.try(:action_by_name)
+    .col-md-2=ticket.reason.try(:reason)
   %hr

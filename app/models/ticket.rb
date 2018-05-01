@@ -118,7 +118,7 @@ class Ticket < ActiveRecord::Base
         },
         last_hold_action: {
           only: [:id],
-          methods: [:formatted_action_date, :action_by_name],
+          methods: [:formatted_action_date, :action_by_name, :action_engineer_by_name],
         },
         customer: {
           only: [:id, :name, :address1, :address2, :address3, :address4],
@@ -185,7 +185,7 @@ class Ticket < ActiveRecord::Base
         },
         user_ticket_actions: {
           only: [:id, :action_id],
-          methods: [:formatted_action_date, :action_by_name, :feedback_not_reopen],
+          methods: [:formatted_action_date, :action_by_name, :action_engineer_by_name, :feedback_not_reopen],
         },
       }
     )
@@ -563,7 +563,7 @@ class Ticket < ActiveRecord::Base
 
   has_one :ticket_total_cost
 
-  has_one :last_hold_action, class_name: "UserTicketAction"
+  belongs_to :last_hold_action, class_name: "UserTicketAction"
 
   validates_presence_of [:ticket_no, :priority, :status_id, :problem_description, :informed_method_id, :job_type_id, :ticket_type_id, :warranty_type_id, :base_currency_id, :problem_category_id]
 

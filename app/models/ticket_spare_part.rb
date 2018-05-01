@@ -342,7 +342,7 @@ class TicketSparePartManufacture < ActiveRecord::Base
               include: {
                 user_ticket_actions: {
                   only: [:id, :action_id],
-                  methods: [:formatted_action_date, :action_by_name],
+                  methods: [:formatted_action_date, :action_by_name, :action_engineer_by_name],
                 },
                 reason: {
                   only: [:id, :reason],

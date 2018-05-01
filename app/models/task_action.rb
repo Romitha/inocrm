@@ -36,7 +36,7 @@ class UserTicketAction < ActiveRecord::Base
     TicketSparePart
     to_json(
       only: [:id, :ticket_id, :action_id, :action_at, :action_by, :re_open_index, :created_at, :action_engineer_id],
-      methods: [:action_by_name, :feedback_reopen, :inhouse_type_select],
+      methods: [:action_by_name,:action_engineer_by_name, :feedback_reopen, :inhouse_type_select],
       include: {
         ticket:{
           only: [:id, :ticket_no,:sla_time, :job_finished,:job_finished_at],
@@ -81,6 +81,11 @@ class UserTicketAction < ActiveRecord::Base
   def action_by_name
     user_id.try(:full_name)
   end
+  def action_engineer_by_name
+    action_engineer.try(:full_name)
+  end
+  belongs_to :action_engineer, class_name: "TicketEngineer", foreign_key: :action_engineer_id
+
   belongs_to :user_id, class_name: "User", foreign_key: :action_by
 
   has_many :q_and_answers, foreign_key: :ticket_action_id
