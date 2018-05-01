@@ -205,11 +205,11 @@ class InventoriesController < ApplicationController
     process_name = ""
     
     if params[:terminate]
-      if (manufacture_warranty and (mpr or rqt) or (manufacture_chargeable and (rqt or ecm or cea)) or (store_warranty and (str or aps)) or (store_chargeable and (rqt or ecm or cea or aps)) or (non_stock_warranty and rqt) or (non_stock_chargeable and (rqt or ecm or cea)) 
+      if (manufacture_warranty and (mpr or rqt)) or (manufacture_chargeable and (rqt or ecm or cea)) or (store_warranty and (str or aps)) or (store_chargeable and (rqt or ecm or cea or aps)) or (non_stock_warranty and rqt) or (non_stock_chargeable and (rqt or ecm or cea)) 
 
         save_ticket_spare_part["CLS", 19] #Terminate Spare Part
 
-        if (ticket_spare_part.ticket_spare_part_manufacture)
+        if ticket_spare_part.ticket_spare_part_manufacture
           ticket_spare_part.ticket_spare_part_manufacture.update po_required: false
         end
 
