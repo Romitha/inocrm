@@ -915,8 +915,7 @@ class TicketsController < ApplicationController
         if e.is_a?(ActiveRecord::RecordNotUnique)
           render js: "alert('Ticket token already taken. Please try again saving. It will save with fresh ticket token');"
         else
-          puts e.inspect
-          render js: "alert('Some error occured. Please try again');"
+          render js: "alert('Some error occured. Please try again'); "
         end
       end
       
@@ -3074,6 +3073,11 @@ class TicketsController < ApplicationController
     if @ticket
       @product = @ticket.products.first
       @warranties = @product.warranties
+
+      if @product.tickets.any?{|t| t.id != @ticket.id }
+        @new_product = Product.new
+      end
+
       session[:product_id] = @product.id
       Rails.cache.delete([:histories, session[:product_id]])
       Rails.cache.delete([:join, @ticket.id])
@@ -3087,11 +3091,30 @@ class TicketsController < ApplicationController
   def update_edit_serial
     Ticket
     @product = Product.find params[:product_id]
-    @ticket = @product.tickets.first
+    # @ticket = @product.tickets.first
+    @ticket = Ticket.find params[:ticket_id]
+    continue_bpm = false
 
     @continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
     if @continue
-      if @product.update product_params
+
+      if params[:new_product].present?
+        @product = Product.new product_params
+        if @product.save
+          @ticket.ticket_product_serials.update_all(product_id: @product.id)
+          @ticket.update_index
+          continue_bpm = true
+        end
+      elsif params[:selected_product].present?
+        @product = Product.find params[:selected_product_id]
+        @ticket.ticket_product_serials.update_all(product_id: @product.id)
+        @ticket.update_index
+        continue_bpm = true
+      elsif @product.update product_params
+        continue_bpm = true
+      end
+
+      if continue_bpm
 
         # Set Action (35) "Edit Serial No".
         user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(35).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
@@ -3110,7 +3133,7 @@ class TicketsController < ApplicationController
             @flash_message = {notice: "Successfully updated"}
           end
         end
-        WebsocketRails[:posts].trigger 'new', {task_name: "Serial no for", task_id: @ticket.id, task_verb: "updated.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
+        # WebsocketRails[:posts].trigger 'new', {task_name: "Serial no for", task_id: @ticket.id, task_verb: "updated.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
 
         @flash_message = {notice: "Successfully updated"}
       else
@@ -3588,6 +3611,8 @@ class TicketsController < ApplicationController
     Inventory
     Srn
 
+    srn_so_number = params[:srn_so_number]
+
     grn_serial_item_id = params[:grn_serial_item_id]
     grn_batch_id = params[:grn_batch_id]
     grn_item_id = params[:grn_item_id]
@@ -3622,11 +3647,20 @@ class TicketsController < ApplicationController
 
     if @continue
 
+      if @srn_item.present? and srn_so_number.present?
+        @srn_item.srn.update so_no: srn_so_number
+      end
+
       if @terminated or !@srn_item.present?
 
         if @srn_item.present?
 
-          @srn_item.update issue_terminated: true, issue_terminated_at: DateTime.now, issue_terminated_by: current_user.id
+          @srn_item.update issue_terminated: true, issue_terminated_at: DateTime.now, issue_terminated_by: current_user.id, closed: true
+
+          if @srn_item.srn.srn_items.all? { |p| p.closed }
+            @srn_item.srn.update closed: true, remarks: "Closed"
+            sleep 3
+          end
 
           bpm_variables = view_context.initialize_bpm_variables
           @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
