@@ -206,6 +206,7 @@ class TicketSparePartStore < ActiveRecord::Base
     update inv_srn_id: srn.id, inv_srn_item_id: srn_item.id
 
   end
+
   def dynamic_inventry_product
     if ticket_spare_part.request_approved
       approved_inventory_product.try(:category1_name)

@@ -1,9 +1,3 @@
-/ - if params[:product] and params[:product][:pop_doc_url]
-/   $("#preview_of_pop_doc_url").html("#{@new_product.pop_doc_url.file.filename if @new_product.pop_doc_url.present?}");
-/   $(".pop_doc_url_wrapper").empty();
-
-
-
 - if params[:search_contract_details].present?
   $("#search_contract").html("#{j render 'contracts/contracts_searched_list.html'}");
   $("#search_contract").removeClass("hide");
@@ -32,6 +26,7 @@
   $("a[href='#contracts_ticket_form_collapse_search_customers_link']").trigger("click");
 
 - elsif params[:select_product].present?
+  alert('hi');
   $("#contractlist").removeClass("hide");
   $("#contractlist").html("#{j render 'contracts/cus_products'}");
   $("a[href='#contracts_ticket_form_collapse_search_customers_link']").trigger("click");

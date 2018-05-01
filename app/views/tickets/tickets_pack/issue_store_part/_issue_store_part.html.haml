@@ -7,9 +7,11 @@
       %strong ON-LOAN Part Request
       %br/
       %strong SRN No:
-      #{request_part.srn.srn_no}
+      #{link_to request_part.srn.formatted_srn_no, srns_admins_inventories_path(srn_id: request_part.srn.id), target: "_blank"}
 - else
   - request_part = spare_part.ticket_spare_part_store
+
+- part_terminated = (request_part.status_action_id == SparePartStatusAction.find_by_code("CLS").id)
 
 - srn_item = request_part.srn_item
 
@@ -20,7 +22,7 @@
       #{spare_part.spare_part_no}
       %br
       %strong SRN No:
-      #{srn_item.srn.srn_no}
+      #{link_to srn_item.srn.formatted_srn_no, srns_admins_inventories_path(srn_id: srn_item.srn.id), target: "_blank"}
     .col-md-3
       %strong Part Description:
       #{spare_part.spare_part_description}
@@ -36,7 +38,7 @@
       #{User.cached_find_by_id(spare_part.requested_by).try(:full_name)}
     .col-md-3
       - if spare_part.cus_chargeable_part
-        %strong Customer chargeable
+        %strong.red Customer chargeable
       - else
         %strong Not customer chargeable
       %br/
@@ -189,7 +191,7 @@
             = request_part.approved_main_inventory_product.inventories.where(store_id: request_part.approved_store_id).sum(:available_quantity)
 
 %fieldset
-  %legend Issue store part
+  %legend Issue store part (GIN) #{part_terminated ? '- Terminated' : '' }
   = simple_nested_form_for (@onloan_request ? (spare_part || ticket) : spare_part), url: update_issue_store_parts_tickets_path, method: :post, html: {id: "new_ticket_spare_part"} do |f| # update_issue_store_parts_inventories_path
 
     = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]
@@ -206,244 +208,248 @@
       = sto.input :approved_inv_product_id, as: :hidden, input_html: {id: "inv_product_id"}
       = sto.input :approved_main_inv_product_id, as: :hidden, input_html: {id: "mst_inv_product_id"}
 
-      = tab_panel do
-        = tab_nav_tab({id: "issue_part_main_product"}, {seperate_product_tab: {active_class: "active", content: "Seperate product"}, main_product_part_tab: {content: "Part of main product"}})
-        .tab-content
-          / For Seperate grn Serial Product / Grn Batch / Grn Item
-          = tab_content tabpointer: :seperate_product_tab, active_class: "active" do
-            - if sto.object.approved_inventory_product.inventory_product_info.need_serial
-              = paginate @paginated_fifo_grn_serial_items, remote: false, method: :get
-              / For Seperate Grn Serial Product
-              %h4 Serial Product
-              %table.table.table-hover.table-condensed
-                %thead
-                  %tr
-                    %th No
-                    %th GRN No
-                    %th GRN date
-                    %th GRN received qty
-                    %th GRN remaining qty
-                    %th Batch no
-                    %th Lot No
-                    %th Serial No
-                    %th Status
-                    %th Condition
-                    %th Part not completed
-                    %th Scavenge
-                    %th Damage
-                    %th Used
-                    %th Repaired
-                    %th Reserved
-                    %th CT No
-                    %th Date of manufacture
-                    %th Date of expire
-                    %th Remarks
-                    %th Issue
-                %tbody
-                  - @paginated_fifo_grn_serial_items.each_with_index do |grn_serial_item, index|
+      - unless part_terminated
+        = tab_panel do
+          = tab_nav_tab({id: "issue_part_main_product"}, {seperate_product_tab: {active_class: "active", content: "Seperate product"}, main_product_part_tab: {content: "Part of main product"}})
+          .tab-content
+            / For Seperate grn Serial Product / Grn Batch / Grn Item
+            = tab_content tabpointer: :seperate_product_tab, active_class: "active" do
+              - if sto.object.approved_inventory_product.inventory_product_info.need_serial
+                = paginate @paginated_fifo_grn_serial_items, remote: false, method: :get
+                / For Seperate Grn Serial Product
+                %h4 Serial Product
+                %table.table.table-hover.table-condensed
+                  %thead
                     %tr
-                      %td
-                        - if params[:page]
-                          = (index+1)+ 10**(params[:page].to_i-1)
-                        - else
-                          = (index+1)
-                      %td= grn_serial_item.grn_item.grn.grn_no
-                      %td= grn_serial_item.grn_item.grn.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
-                      %td= grn_serial_item.grn_item.recieved_quantity
-                      %td= grn_serial_item.grn_item.remaining_quantity
-                      %td= grn_serial_item.inventory_serial_item.inventory_batch.try(:batch_no)
-                      %td= grn_serial_item.inventory_serial_item.inventory_batch.try(:lot_no)
-                      %td= grn_serial_item.inventory_serial_item.serial_no
-                      %td= grn_serial_item.inventory_serial_item.inventory_serial_item_status.name
-                      %td= grn_serial_item.inventory_serial_item.product_condition.try(:condition)
-                      %td= grn_serial_item.inventory_serial_item.parts_not_completed ? "Not completed" : ""
-                      %td= grn_serial_item.inventory_serial_item.scavenge ? "Scavenge" : ""
-                      %td= grn_serial_item.inventory_serial_item.damage ? "Damaged" : ""
-                      %td= grn_serial_item.inventory_serial_item.used ? "Used" : ""
-                      %td= grn_serial_item.inventory_serial_item.repaired ? "Repaired" : ""
-                      %td= grn_serial_item.inventory_serial_item.reserved ? "Reserved" : ""
-                      %td= grn_serial_item.inventory_serial_item.ct_no
-                      %td= grn_serial_item.inventory_serial_item.manufatured_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
-                      %td= grn_serial_item.inventory_serial_item.expiry_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
-                      %td= simple_format grn_serial_item.inventory_serial_item.remarks
-                      %td= radio_button_tag "grn_serial_item_id", grn_serial_item.id, false,{class: "seperate_product_ckeckbox"} if srn_item.quantity == 1
+                      %th No
+                      %th GRN No
+                      %th GRN date
+                      %th GRN received qty
+                      %th GRN remaining qty
+                      %th Batch no
+                      %th Lot No
+                      %th Serial No
+                      %th Status
+                      %th Condition
+                      %th Part not completed
+                      %th Scavenge
+                      %th Damage
+                      %th Used
+                      %th Repaired
+                      %th Reserved
+                      %th CT No
+                      %th Date of manufacture
+                      %th Date of expire
+                      %th Remarks
+                      %th Issue
+                  %tbody
+                    - @paginated_fifo_grn_serial_items.each_with_index do |grn_serial_item, index|
+                      %tr
+                        %td
+                          - if params[:page]
+                            = (index+1)+ 10**(params[:page].to_i-1)
+                          - else
+                            = (index+1)
+                        %td= grn_serial_item.grn_item.grn.grn_no
+                        %td= grn_serial_item.grn_item.grn.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+                        %td= grn_serial_item.grn_item.recieved_quantity
+                        %td= grn_serial_item.grn_item.remaining_quantity
+                        %td= grn_serial_item.inventory_serial_item.inventory_batch.try(:batch_no)
+                        %td= grn_serial_item.inventory_serial_item.inventory_batch.try(:lot_no)
+                        %td= grn_serial_item.inventory_serial_item.serial_no
+                        %td= grn_serial_item.inventory_serial_item.inventory_serial_item_status.name
+                        %td= grn_serial_item.inventory_serial_item.product_condition.try(:condition)
+                        %td= grn_serial_item.inventory_serial_item.parts_not_completed ? "Not completed" : ""
+                        %td= grn_serial_item.inventory_serial_item.scavenge ? "Scavenge" : ""
+                        %td= grn_serial_item.inventory_serial_item.damage ? "Damaged" : ""
+                        %td= grn_serial_item.inventory_serial_item.used ? "Used" : ""
+                        %td= grn_serial_item.inventory_serial_item.repaired ? "Repaired" : ""
+                        %td= grn_serial_item.inventory_serial_item.reserved ? "Reserved" : ""
+                        %td= grn_serial_item.inventory_serial_item.ct_no
+                        %td= grn_serial_item.inventory_serial_item.manufatured_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
+                        %td= grn_serial_item.inventory_serial_item.expiry_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
+                        %td= simple_format grn_serial_item.inventory_serial_item.remarks
+                        %td= radio_button_tag "grn_serial_item_id", grn_serial_item.id, false,{class: "seperate_product_ckeckbox"} if srn_item.quantity == 1
 
-              = paginate @paginated_fifo_grn_serial_items, remote: false, method: :get
+                = paginate @paginated_fifo_grn_serial_items, remote: false, method: :get
 
-            - elsif sto.object.approved_inventory_product.inventory_product_info.need_batch
-              = paginate @grn_batches, remote: false, method: :get
-              / For Seperate Grn Batch Product
-              %h4 Batch Product
-              = label_tag "Product condition"
-              = select_tag "product_condition_id", options_from_collection_for_select(ProductCondition.where(active: true), "id", "condition")
-              %table.table.table-hover.table-condensed
-                %thead
-                  %tr
-                    %th No
-                    %th GRN No
-                    %th GRN date 
-                    %th GRN received qty
-                    %th GRN remaining qty
-                    %th Batch no
-                    %th Lot No
-                    %th Available quantity
-                    %th Remarks
-                    %th Issue
-                %tbody
-                  - @grn_batches.where(grn_item_id: sto.object.approved_inventory_product.grn_item_ids).each_with_index do |grn_batch, index|
+              - elsif sto.object.approved_inventory_product.inventory_product_info.need_batch
+                = paginate @grn_batches, remote: false, method: :get
+                / For Seperate Grn Batch Product
+                %h4 Batch Product
+                = label_tag "Product condition"
+                = select_tag "product_condition_id", options_from_collection_for_select(ProductCondition.where(active: true), "id", "condition")
+                %table.table.table-hover.table-condensed
+                  %thead
                     %tr
-                      %td
-                        - if params[:page]
-                          = (index+1)+ 10**(params[:page].to_i-1)
-                        - else
-                          = (index+1)
-                      %td= grn_batch.grn_item.grn.grn_no
-                      %td= grn_batch.grn_item.grn.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
-                      %td= grn_batch.grn_item.recieved_quantity
-                      %td= grn_batch.grn_item.remaining_quantity
-                      %td
-                        = grn_batch.inventory_batch.batch_no
-                      %td
-                        = grn_batch.inventory_batch.lot_no
-                      %td
-                        = sto.object.approved_inventory_product.inventory_product_info.issue_fractional_allowed ? (grn_batch.grn_item.remaining_quantity.to_f - grn_batch.grn_item.reserved_quantity.to_f) : (grn_batch.grn_item.remaining_quantity.to_d - grn_batch.grn_item.reserved_quantity.to_d)
-                      %td= simple_format grn_batch.grn_item.remarks
-                      %td
-                        = radio_button_tag "grn_batch_id", grn_batch.id, false if srn_item.quantity.to_f <= grn_batch.grn_item.remaining_quantity.to_f
+                      %th No
+                      %th GRN No
+                      %th GRN date 
+                      %th GRN received qty
+                      %th GRN remaining qty
+                      %th Batch no
+                      %th Lot No
+                      %th Available quantity
+                      %th Remarks
+                      %th Issue
+                  %tbody
+                    - @grn_batches.where(grn_item_id: sto.object.approved_inventory_product.grn_item_ids).each_with_index do |grn_batch, index|
+                      %tr
+                        %td
+                          - if params[:page]
+                            = (index+1)+ 10**(params[:page].to_i-1)
+                          - else
+                            = (index+1)
+                        %td= grn_batch.grn_item.grn.grn_no
+                        %td= grn_batch.grn_item.grn.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+                        %td= grn_batch.grn_item.recieved_quantity
+                        %td= grn_batch.grn_item.remaining_quantity
+                        %td
+                          = grn_batch.inventory_batch.batch_no
+                        %td
+                          = grn_batch.inventory_batch.lot_no
+                        %td
+                          = sto.object.approved_inventory_product.inventory_product_info.issue_fractional_allowed ? (grn_batch.grn_item.remaining_quantity.to_f - grn_batch.grn_item.reserved_quantity.to_f) : (grn_batch.grn_item.remaining_quantity.to_d - grn_batch.grn_item.reserved_quantity.to_d)
+                        %td= simple_format grn_batch.grn_item.remarks
+                        %td
+                          = radio_button_tag "grn_batch_id", grn_batch.id, false if srn_item.quantity.to_f <= grn_batch.grn_item.remaining_quantity.to_f
 
-              = paginate @grn_batches, remote: false, method: :get
-            - else
-              = paginate @grns, remote: false, method: :get
-              / For Seperate Grn item Product
-              %h4 Non Batch and Non Serial Product
-              %table.table.table-hover.table-condensed
-                %thead
-                  %tr
-                    %th No 
-                    %th Grn No
-                    %th Grn date 
-                    %th Grn received qty
-                    %th Grn remaining qty
-                    %th Available quantity
-                    %th remarks
-                    %th issue
-                %tbody
-                  - @grns.each_with_index do |grn_item, index|
+                = paginate @grn_batches, remote: false, method: :get
+              - else
+                = paginate @grns, remote: false, method: :get
+                / For Seperate Grn item Product
+                %h4 Non Batch and Non Serial Product
+                %table.table.table-hover.table-condensed
+                  %thead
                     %tr
-                      %td
-                        - if params[:page]
-                          = (index+1)+ 10**(params[:page].to_i-1)
-                        - else
-                          = (index+1)
-                      %td= grn_item.grn.grn_no
-                      %td= grn_item.grn.created_at.to_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
-                      %td= grn_item.recieved_quantity
-                      %td= grn_item.remaining_quantity
-                      %td
-                        = sto.object.approved_inventory_product.inventory_product_info.issue_fractional_allowed ? (grn_item.remaining_quantity.to_f - grn_item.reserved_quantity.to_f) : (grn_item.remaining_quantity.to_d - grn_item.reserved_quantity.to_d)
-                      %td
-                        = simple_format grn_item.grn.remarks
-                      %td
-                        = radio_button_tag "grn_item_id", grn_item.id, false if srn_item.quantity.to_f <= grn_item.remaining_quantity.to_f
+                      %th No 
+                      %th Grn No
+                      %th Grn date 
+                      %th Grn received qty
+                      %th Grn remaining qty
+                      %th Available quantity
+                      %th remarks
+                      %th issue
+                  %tbody
+                    - @grns.each_with_index do |grn_item, index|
+                      %tr
+                        %td
+                          - if params[:page]
+                            = (index+1)+ 10**(params[:page].to_i-1)
+                          - else
+                            = (index+1)
+                        %td= grn_item.grn.grn_no
+                        %td= grn_item.grn.created_at.to_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
+                        %td= grn_item.recieved_quantity
+                        %td= grn_item.remaining_quantity
+                        %td
+                          = sto.object.approved_inventory_product.inventory_product_info.issue_fractional_allowed ? (grn_item.remaining_quantity.to_f - grn_item.reserved_quantity.to_f) : (grn_item.remaining_quantity.to_d - grn_item.reserved_quantity.to_d)
+                        %td
+                          = simple_format grn_item.grn.remarks
+                        %td
+                          = radio_button_tag "grn_item_id", grn_item.id, false if srn_item.quantity.to_f <= grn_item.remaining_quantity.to_f
 
 
-              = paginate @grns, remote: false, method: :get
+                = paginate @grns, remote: false, method: :get
 
-              = label_tag "Product condition"
-              = select_tag "product_condition_id", options_from_collection_for_select(ProductCondition.where(active: true), "id", "condition")
-          / For Part Of Main Serial Product
-          = tab_content tabpointer: :main_product_part_tab do
-            .row
-              .col-md-6.main_product_with_linker
-                = link_to "Change main product", inventory_in_modal_inventories_path(select_frame: "main_product", issue_part: true), id: "part_of_main_product_select", remote: true
-                .main_product
-                  - if sto.object.approved_main_inventory_product
-                    %dl.dl-horizontal
-                      %dt Store
-                      %dd
-                        = sto.object.store.name
-                      %dt Item Code
-                      %dd
-                        = sto.object.approved_main_inventory_product.try(:serial_no)
-                      %dt Item Description
-                      %dd
-                        = sto.object.approved_main_inventory_product.try(:description)
-                      %dt Model No
-                      %dd
-                        = sto.object.approved_main_inventory_product.try(:model_no)
-                      %dt Product No
-                      %dd
-                        = sto.object.approved_main_inventory_product.try(:product_no)
-                      %dt Available Qnty
-                      %dd
-                        = sto.object.approved_main_inventory_product.inventories.where(store_id: sto.object.approved_store_id).try :sum, :available_quantity
-            %hr
-            #main_part_serial
-              %table.table.table-hover.table-condensed
-                %thead
-                  %tr
-                    %th No
-                    %th Grn No
-                    %th Grn date
-                    %th Grn received qty
-                    %th Grn remaining qty
-                    %th Batch no
-                    %th Lot No
-                    %th Serial No
-                    %th Status
-                    %th Condition
-                    %th Part not completed
-                    %th Scavenge
-                    %th Damage
-                    %th Used
-                    %th Repaired
-                    %th Reserved
-                    %th CT No
-                    %th Date of manufacture
-                    %th Date of expire
-                    %th Remarks
-                    %th Issue
-                %tbody
-                  - @main_part_serial.each_with_index do |grn_serial_item, index|
+                = label_tag "Product condition"
+                = select_tag "product_condition_id", options_from_collection_for_select(ProductCondition.where(active: true), "id", "condition")
+            / For Part Of Main Serial Product
+            = tab_content tabpointer: :main_product_part_tab do
+              .row
+                .col-md-6.main_product_with_linker
+                  = link_to "Change main product", inventory_in_modal_inventories_path(select_frame: "main_product", issue_part: true), id: "part_of_main_product_select", remote: true
+                  .main_product
+                    - if sto.object.approved_main_inventory_product
+                      %dl.dl-horizontal
+                        %dt Store
+                        %dd
+                          = sto.object.store.name
+                        %dt Item Code
+                        %dd
+                          = sto.object.approved_main_inventory_product.try(:serial_no)
+                        %dt Item Description
+                        %dd
+                          = sto.object.approved_main_inventory_product.try(:description)
+                        %dt Model No
+                        %dd
+                          = sto.object.approved_main_inventory_product.try(:model_no)
+                        %dt Product No
+                        %dd
+                          = sto.object.approved_main_inventory_product.try(:product_no)
+                        %dt Available Qnty
+                        %dd
+                          = sto.object.approved_main_inventory_product.inventories.where(store_id: sto.object.approved_store_id).try :sum, :available_quantity
+              %hr
+              #main_part_serial
+                %table.table.table-hover.table-condensed
+                  %thead
                     %tr
-                      %td
-                        - if params[:page]
-                          = (index+1)+ 10**(params[:page].to_i-1)
-                        - else
-                          = (index+1)
-                      %td= grn_serial_item.grn_item.grn.grn_no
-                      %td= grn_serial_item.grn_item.grn.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
-                      %td= grn_serial_item.grn_item.recieved_quantity
-                      %td= grn_serial_item.grn_item.remaining_quantity
-                      %td= grn_serial_item.inventory_serial_item.inventory_batch.try(:batch_no)
-                      %td= grn_serial_item.inventory_serial_item.inventory_batch.try(:lot_no)
-                      %td= grn_serial_item.inventory_serial_item.serial_no
-                      %td= grn_serial_item.inventory_serial_item.inventory_serial_item_status.name
-                      %td= grn_serial_item.inventory_serial_item.product_condition.try(:condition)
-                      %td= grn_serial_item.inventory_serial_item.parts_not_completed ? "Not completed" : ""
-                      %td= grn_serial_item.inventory_serial_item.scavenge ? "Scavenge" : ""
-                      %td= grn_serial_item.inventory_serial_item.damage ? "Damaged" : ""
-                      %td= grn_serial_item.inventory_serial_item.used ? "Used" : ""
-                      %td= grn_serial_item.inventory_serial_item.repaired ? "Repaired" : ""
-                      %td= grn_serial_item.inventory_serial_item.reserved ? "Reserved" : ""
-                      %td= grn_serial_item.inventory_serial_item.ct_no
-                      %td= grn_serial_item.inventory_serial_item.manufatured_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
-                      %td= grn_serial_item.inventory_serial_item.expiry_date
-                      %td= simple_format grn_serial_item.inventory_serial_item.remarks
-                      %td= link_to "select", "#", onclick: "Inventories.load_serial_and_part(this, #{grn_serial_item.inventory_serial_item.id}, 'serial_item', '#{request_part.approved_inv_product_id}'); return false;"
+                      %th No
+                      %th Grn No
+                      %th Grn date
+                      %th Grn received qty
+                      %th Grn remaining qty
+                      %th Batch no
+                      %th Lot No
+                      %th Serial No
+                      %th Status
+                      %th Condition
+                      %th Part not completed
+                      %th Scavenge
+                      %th Damage
+                      %th Used
+                      %th Repaired
+                      %th Reserved
+                      %th CT No
+                      %th Date of manufacture
+                      %th Date of expire
+                      %th Remarks
+                      %th Issue
+                  %tbody
+                    - @main_part_serial.each_with_index do |grn_serial_item, index|
+                      %tr
+                        %td
+                          - if params[:page]
+                            = (index+1)+ 10**(params[:page].to_i-1)
+                          - else
+                            = (index+1)
+                        %td= grn_serial_item.grn_item.grn.grn_no
+                        %td= grn_serial_item.grn_item.grn.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+                        %td= grn_serial_item.grn_item.recieved_quantity
+                        %td= grn_serial_item.grn_item.remaining_quantity
+                        %td= grn_serial_item.inventory_serial_item.inventory_batch.try(:batch_no)
+                        %td= grn_serial_item.inventory_serial_item.inventory_batch.try(:lot_no)
+                        %td= grn_serial_item.inventory_serial_item.serial_no
+                        %td= grn_serial_item.inventory_serial_item.inventory_serial_item_status.name
+                        %td= grn_serial_item.inventory_serial_item.product_condition.try(:condition)
+                        %td= grn_serial_item.inventory_serial_item.parts_not_completed ? "Not completed" : ""
+                        %td= grn_serial_item.inventory_serial_item.scavenge ? "Scavenge" : ""
+                        %td= grn_serial_item.inventory_serial_item.damage ? "Damaged" : ""
+                        %td= grn_serial_item.inventory_serial_item.used ? "Used" : ""
+                        %td= grn_serial_item.inventory_serial_item.repaired ? "Repaired" : ""
+                        %td= grn_serial_item.inventory_serial_item.reserved ? "Reserved" : ""
+                        %td= grn_serial_item.inventory_serial_item.ct_no
+                        %td= grn_serial_item.inventory_serial_item.manufatured_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
+                        %td= grn_serial_item.inventory_serial_item.expiry_date
+                        %td= simple_format grn_serial_item.inventory_serial_item.remarks
+                        %td= link_to "select", "#", onclick: "Inventories.load_serial_and_part(this, #{grn_serial_item.inventory_serial_item.id}, 'serial_item', '#{request_part.approved_inv_product_id}'); return false;"
 
-            #main_part_part
+              #main_part_part
 
       .row
         .col-md-12
+          = label_tag "SRN SO Number"
+          = text_field_tag :srn_so_number, nil, class: "form-control"
+        .col-md-12
           - if spare_part
-            = f.input :note, input_html: { value: nil}
+            = f.input :note, label: "Spare part Note", input_html: { value: nil}
             = simple_format f.object.note
           - elsif @onloan_request
-            = sto.input :note, input_html: { value: nil}
+            = sto.input :note, label: "On-loan spare part Note", input_html: { value: nil}
             = simple_format sto.object.note
         .col-md-12
-          = f.submit "Save", class: "btn btn-success btn-sm", id: "approve_store_part", data: {disable_with: "Please wait..."}
+          = f.submit "#{part_terminated ? 'Terminated' : 'Save'}", class: "btn btn-success btn-sm", id: "approve_store_part", data: {disable_with: "Please wait..."}
 
 
 #inventory_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "inventory_modal", "aria-hidden" => true}

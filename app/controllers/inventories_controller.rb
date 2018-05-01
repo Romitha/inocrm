@@ -188,6 +188,7 @@ class InventoriesController < ApplicationController
     str = ticket_spare_part.spare_part_status_action.code == "STR" # Request from Store
     ecm = ticket_spare_part.spare_part_status_action.code == "ECM" # Estimation Completed
     cea = ticket_spare_part.spare_part_status_action.code == "CEA" # Cus. Estimation Approved
+    aps = ticket_spare_part.spare_part_status_action.code == "APS" # Approved Store Request
     iss = ticket_spare_part.spare_part_status_action.code == "ISS" # Issued
     mpr = ticket_spare_part.spare_part_status_action.code == "MPR" #Manufacture Part Requested
 
@@ -204,7 +205,7 @@ class InventoriesController < ApplicationController
     process_name = ""
     
     if params[:terminate]
-      if (manufacture_warranty and mpr) or (manufacture_chargeable and (rqt or ecm or cea)) or (store_warranty and str) or (store_chargeable and (rqt or ecm or cea)) or (non_stock_warranty and rqt) or (non_stock_chargeable and (rqt or ecm or cea)) 
+      if (manufacture_warranty and (mpr or rqt) or (manufacture_chargeable and (rqt or ecm or cea)) or (store_warranty and (str or aps)) or (store_chargeable and (rqt or ecm or cea or aps)) or (non_stock_warranty and rqt) or (non_stock_chargeable and (rqt or ecm or cea)) 
 
         save_ticket_spare_part["CLS", 19] #Terminate Spare Part
 
@@ -571,6 +572,8 @@ class InventoriesController < ApplicationController
 
     request_spare_part = params[:request_spare_part].present?
 
+    spare_part_note = params[:spare_part_note]
+
     @estimation = TicketEstimation.find estimation_params[:id]
     updatable_estimation_params = estimation_params
     @estimation.attributes = updatable_estimation_params
@@ -626,6 +629,11 @@ class InventoriesController < ApplicationController
         ticket_estimation_part.ticket_spare_part.ticket_spare_part_manufacture.update po_required: po_required if ticket_estimation_part.ticket_spare_part.ticket_spare_part_manufacture.present?
 
         ticket_estimation_part.ticket_spare_part.ticket_spare_part_status_actions.create(status_id: status_action_id, done_by: current_user.id, done_at: DateTime.now)
+
+        if spare_part_note.present?
+          ticket_estimation_part.ticket_spare_part.current_user_id = current_user.id
+          ticket_estimation_part.ticket_spare_part.update note: spare_part_note
+        end
 
       end
 
@@ -700,8 +708,6 @@ class InventoriesController < ApplicationController
               if d44_store_part_need_approval == "N"
                 #Create SRN
                 ticket_estimation_part.ticket_spare_part.ticket_spare_part_store.create_support_srn(current_user.id, ticket_estimation_part.ticket_spare_part.ticket_spare_part_store.store_id, ticket_estimation_part.ticket_spare_part.ticket_spare_part_store.inv_product_id, ticket_estimation_part.ticket_spare_part.ticket_spare_part_store.requested_quantity, ticket_estimation_part.ticket_spare_part.ticket_spare_part_store.mst_inv_product_id )
-
-   
               end            
 
               bpm_variables.merge!(d17_request_store_part: "Y")

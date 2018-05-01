@@ -247,9 +247,15 @@
         = f.input :cust_approved, as: :radio_buttons, collection: {Approved: true, Rejected: false}, wrapper: :append, label: false, input_html: {class: "approve_radio_button"}, required: true
         = f.input :note, input_html: {value: nil}, label: "Estimation Note"
         = simple_format estimation.note
+        .col-md-12
+          = label_tag "Spare part Note"
+          = text_field_tag :spare_part_note, nil, class: "form-control"
 
         - if estimation.ticket_estimation_parts.present? and not estimation.ticket_estimation_parts.first.ticket_spare_part.ticket_spare_part_non_stock.present?
           .request_part_check
             = label_tag "Request part"
             = check_box_tag :request_spare_part, true, (estimation.advance_payment_amount.to_f == 0)
         = f.submit "Save", class: "btn btn-success btn-sm"
+
+
+/ show spare_part_note text field

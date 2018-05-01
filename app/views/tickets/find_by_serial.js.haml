@@ -34,13 +34,14 @@
               %td= c.organization.name
               %td= c.contract_no
               %td= c.formated_created_at
+              %td= c.formated_contract_start_at
               %td= c.formated_contract_end_at
               %td= c.status_name
               %td= boolean_in_word c.hold, "Yes", "No"
               %td= boolean_in_word c.dynamic_active, "Yes", "No"
               %td= link_to "Select", find_by_serial_tickets_path(serial_search: @product.serial_no, contract_id: c.id, ticket_time_now: @ticket_time_now), method: :post, remote: true
           %tr
-            %td.strong{colspan: 8} No Active Contract
+            %td.strong{colspan: 8} Without Active Contract
             %td= link_to "Select", find_by_serial_tickets_path(serial_search: @product.serial_no, ticket_time_now: @ticket_time_now), method: :post, remote: true
 
     $("#ticket_initiate_options_render").modal({backdrop: "static"});

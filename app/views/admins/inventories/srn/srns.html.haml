@@ -8,6 +8,8 @@
           %span.label.label-danger Closed
         SRN Info
       %dl.dl-horizontal
+        %dt Store
+        %dd= srn.store.name
         %dt SRN No
         %dd= srn.formatted_srn_no
         %dt Sales Order No
@@ -24,6 +26,9 @@
         %dd= srn.created_by_user.full_name
         %dt SO Customer
         %dd= srn.so_customer_name
+        - if srn.requested_module.code == "SPT"
+          %dt Tickets
+          %dd= (srn.ticket_spare_part_stores.map{|s| s.ticket_spare_part.ticket } + srn.ticket_on_loan_spare_parts.map{|s| s.ticket }).map{|t| (link_to t.support_ticket_no, t, target: "_blank") }.join(", ")
 
       %h4.small_scale_padding-top1 SRN Items
       %table.table.table-bordered
@@ -71,9 +76,11 @@
               %td= srn_item.remarks
 
 - unless srn.closed
-  - if can? :create_gin, Organization
+  - if can?(:create_gin, Organization) and srn.requested_module.code != "SPT"
     = link_to "Issue", gin_admins_inventories_path(gin_callback: "select_srn", srn_id: srn.id, from: "srn_page"), remote: true, class: "btn btn-sm btn-primary"
-  - if can? :close_srn, Organization
+  - if can?(:create_gin, Organization)
+    = link_to "Create PRN", prn_admins_inventories_path, target: "_blank", class: "btn btn-sm btn-primary"
+  - if can? :close_srn, Organization and srn.requested_module.code != "SPT"
     = link_to "Terminate", close_srn_admins_inventories_path(srn_id: srn.id, close_srn: true), remote: "true"
 
 #gin_wrapper

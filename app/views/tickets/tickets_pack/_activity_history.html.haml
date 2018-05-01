@@ -1,4 +1,4 @@
-.row
+.row#activity_history_template
   .col-md-12.padding0.fancy_scroll_bar{style: "max-height: 466px; overflow: auto;"}
     - @user_ticket_actions.each do |action|
       - if action.persisted?
