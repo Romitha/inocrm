@@ -937,6 +937,8 @@ class ReportsController < ApplicationController
     quotation_no = po.quotation_no
     delivery_mode = po.delivery_mode
     required_date = po.delivery_date_text
+    currency_type = po.currency_type
+
 
     po_item_tax_total = po.inventory_po_items.to_a.sum{|e| e.inventory_po_item_taxes.sum(:amount)}
 
@@ -982,7 +984,7 @@ class ReportsController < ApplicationController
       deliveryMode: delivery_mode,
 
       poItems: poItems,
-
+      currencyType: currency_type,
       subTotal: sub_total,
       discount: po.discount_amount,
       total: ( sub_total + po_item_tax_total - po.discount_amount ),

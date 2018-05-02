@@ -6,27 +6,39 @@
   .row
     .col-xs-2
       = wicked_pdf_image_tag (print_object.owner.logo || "organization_image.png"), class: "img-responsive"
-    .col-xs-7.text-center
-      %span12
-        %strong=print_object.owner.name
+    .col-xs-7.text-left
+      %span12.margin-bottom-12
+        %font{:color => "red", :size =>"6px"}
+          %b
+            =print_object.owner.name
       %br/
-      %span12
-        %strong=print_object.owner.address
+      .col-12
+        %u
+          Reg. Office
+        #{}:
+        =print_object.owner.address
+      .col-12
+        %u
+          Warehouse
+        #{}:
+        No.49/1, Fife Road, Colombo 05 (Next to Hotel Janaki)
+      .col-12
+        - print_object.owner.contactDetails.each do |contact_detail|
+          
+          =contact_detail[:category]
+          #{}:
+          =contact_detail[:value]
+          #{}|
+        
+        URL :
+        =print_object.owner.website
+    .col-2.text-center
       %br/
-      %span12
-        %strong=print_object.owner.website
-      %br/
-      %span12
-        %table.col-xs-4.col-xs-offset-4
-          %tbody
-            - print_object.owner.contactDetails.each do |contact_detail|
-              %tr
-                %th.text-right
-                  .col-xs-offset-1
-                    = contact_detail[:category]
-                %td
-                  .col-xs-offset-1
-                    = contact_detail[:value]
+      %font{:size =>"3px"}
+        Reg. No : PV66809
+
+
+
 
   %p{style: "border: 1px solid black"}
 
@@ -37,52 +49,62 @@
         %strong=print_object.customer.name
         %p=print_object.customer.address
       .col-xs-4.col-xs-offset-2
-        .col-xs-11
-          .container
-            %h3{style: "border: 1px solid black; border-radius: 8px; background: #E0E0E0;"} PURCHASE ORDER
+        .container{style: "border: 1px solid black; border-radius: 8px; background: #E0E0E0;"} 
+          %h3 PURCHASE ORDER
+        %br
         %table.table-condensed.rounded
           %tr
-            %th.text-right Number:
+            %th.text-left Number:
             %td
               = print_object.poNo
           %tr
-            %th.text-right Date:
+            %th.text-left Date:
             %td
               =print_object.createdDate
   %br/
   .row
     .col-xs-11
-      %span.d-block.bg-success
+      %span.d-block.bg-info
       %table.table.table-default{style: "border: 1px solid black"}
         %thead
-          %tr.success
+          %tr.info
+            %th
             %th Our Ref.
-            %th Quotation
+            %th
+            %th Your Ref.
+            %th
+            %th
             %th Date Required
+            %th
             %th Payment Term
-            %th Delivery Mode
+            / %th Delivery Mode
         %tbody
           %tr
+            %td
             %td=print_object.ourRef
+            %td
             %td=print_object.quotation
+            %td
+            %td
             %td
               =print_object.dateRequired
               %br
               #delivery_date{style: "color: #787878"}
                 =print_object.deliveryDate
+            %td
             %td=print_object.paymentTerm
-            %td=print_object.deliveryMode
+            / %td=print_object.deliveryMode
 
   .row
     .col-xs-11
       %table.table.table-stripped{style: "border: 1px solid black"}
         %thead
-          %tr.success
+          %tr.info
             %th Item Code
             %th Article number/ Description
             %th Quantity
             %th Unit Price
-            %th Total
+            %th.text-right Total - #{print_object.currencyType}
         %tbody
           - print_object.poItems.each do |po_item|
             %tr
@@ -93,7 +115,7 @@
                 =po_item[:remarks]
               %td=po_item[:quantity]
               %td= number_with_precision po_item[:unitPrice], precision: 2
-              %td.text-right= number_with_precision po_item[:total], precision: 2
+              %td.text-right= standard_currency_format(po_item[:total])
 
       %br/
 
@@ -103,36 +125,57 @@
             %th
             %td{colspan: 3}
             %th.text-right Sub Total:
-            %td.text-right{colspan: 2}= number_with_precision print_object.subTotal, precision: 2
+            %td.text-right{colspan: 2}= standard_currency_format(print_object.subTotal)
 
           %tr
             %th
             %td{colspan: 3}
             %th.text-right Discount:
-            %td.text-right{colspan: 2}= number_with_precision print_object.discount, precision: 2
+            %td.text-right{colspan: 2}= standard_currency_format(print_object.discount)
 
           - print_object.poTaxes.each do |poTax|
             %tr
               %th
               %td{colspan: 3}
               %th.text-right=poTax[:tax_type]
-              %td.text-right{colspan: 2}= number_with_precision poTax[:amount], precision: 2
+              %td.text-right{colspan: 2}= standard_currency_format(poTax[:amount])
 
           %tr
             %th
             %td{colspan: 3}
-            %th.text-right Total Amount:
-            %td.text-right{colspan:2}= number_with_precision print_object.total, precision: 2
+            %th.text-right Total Amount (#{print_object.currencyType}) :
+            %td.text-right{colspan:2}= standard_currency_format(print_object.total)
+            / = number_with_precision print_object.total, precision: 2
 
   %br/
-  .row
-    .col-xs-11
-      .col-xs-7
-      .col-xs-4
-        %strong V S Information Systems (pvt) Ltd
-        %br/
-        %br/
-        %br/
-        %br/
-        %strong ....................................................
-        %h5.col-xs-offset-1 Authorized Signature
+  .col-12
+    %strong &nbsp;&nbsp;&nbsp;&nbsp; PO Terms & Conditions
+
+    %br/
+    %br/
+    %ul.list-group
+      %li.list
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1. Our PO No, Warranty Period and product Serial Numbers should be printed in the final invoice
+      %li.list
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        2. A 'Tax Invoice' should be issued for taxable items. Our VAT number is 114669095-7000
+      %li.list
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        3. VSIS reserve the right to cancel the PO prior to delivery
+      %li.list
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        4. 1% of penalty will be charged on daily basis for late deliveries
+      %li.list
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        5. Please make the delivery to our warehouse address as given above
+      %br/
+    .col-12.text-left
+      %span12
+        %b
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;
+        ****This is computer generated, no signature is required****

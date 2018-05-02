@@ -10,8 +10,6 @@
   .col-md-2
     %strong Date of hold
   .col-md-2
-    %strong Engineer
-  .col-md-2
     %strong Hold By
   .col-md-2
     %strong Hold Reason
@@ -28,7 +26,6 @@
     .col-md-1= ticket.support_ticket_no
     .col-md-2=ticket.logged_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
     .col-md-2=ticket.last_hold_action.try(:formatted_action_date)
-    .col-md-2=ticket.last_hold_action.try(:action_engineer_by_name)
     .col-md-2=ticket.last_hold_action.try(:action_by_name)
     .col-md-2=ticket.reason.try(:reason)
   %hr

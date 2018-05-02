@@ -1111,7 +1111,9 @@ class InventoryPo < ActiveRecord::Base
   def assign_po_no
     self.po_no = CompanyConfig.first.next_inv_last_po_no
   end
-
+  def currency_type
+    currency.try(:code)
+  end
   before_create :assign_po_no
 
   before_save do |po|
