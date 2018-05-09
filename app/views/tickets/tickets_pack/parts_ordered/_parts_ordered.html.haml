@@ -39,7 +39,7 @@
       - @rbn = ticket_spare_part.spare_part_status_action.code == "RBN" #Ready to Bundle
       - @mpr = ticket_spare_part.spare_part_status_action.code == "MPR" #Manufacture Part Requested
 
-      = collapse collapse_type: "info", header_content: "Ticket spare part (#{ticket_spare_part.ticket_spare_part_store ? 'Store' : (ticket_spare_part.ticket_spare_part_manufacture ? 'Manufacture' : 'Non Stock')}): #{ticket_spare_part.spare_part_no} - #{ticket_spare_part.spare_part_description} - (#{ticket_spare_part.spare_part_status_action.name})", collapse_link: "ticket_spare_part_link_#{params[:action]}_#{ticket_spare_part.id}", collapse_id: "ticket_spare_part_id_#{params[:action]}", labelledby: "ticket_spare_part_lby_#{params[:action]}_#{ticket_spare_part.id}" do
+      = collapse collapse_type: "info", header_content: "Ticket spare part (#{ticket_spare_part.ticket_spare_part_store ? 'Store' : (ticket_spare_part.ticket_spare_part_manufacture ? 'Manufacture' : 'Non Stock')}): #{ticket_spare_part.spare_part_no} - #{ticket_spare_part.spare_part_description} - (#{ticket_spare_part.spare_part_status_action.name}#{ticket_spare_part.part_terminated ? ' - Terminated' : ''})", collapse_link: "ticket_spare_part_link_#{params[:action]}_#{ticket_spare_part.id}", collapse_id: "ticket_spare_part_id_#{params[:action]}", labelledby: "ticket_spare_part_lby_#{params[:action]}_#{ticket_spare_part.id}" do
 
         .row
           .col-md-2
@@ -113,6 +113,11 @@
                 = ticket_spare_part.cus_chargeable_part ? "Chargeable" : "Non-chargeable"
               %dt Note
               %dd= simple_format ticket_spare_part.note
+              - if ticket_spare_part.part_terminated
+                %dt Part Terminated
+                %dd Yes
+                %dt Terminate Reason
+                %dd= ticket_spare_part.part_terminated_reason.try(:reason)
         %hr
         .row
           .col-md-2
@@ -164,9 +169,6 @@
               - unless ticket_spare_part.request_from == "NS"
                 %dt Close approved
                 %dd= ticket_spare_part.close_approved ? "Approved" : "Not approved"
-              - if ticket_spare_part.part_terminated
-                %dt Terminate Reason
-                %dd= ticket_spare_part.part_terminated_reason.try(:reason)
 
         %hr
         - if ticket_spare_part.ticket_fsr

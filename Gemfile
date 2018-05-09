@@ -76,7 +76,7 @@ gem 'momentjs-rails', '>= 2.8.1'
 gem 'bootstrap3-datetimepicker-rails', '>= 3.1.3'
 gem 'bootstrap-wysihtml5-rails'
 
-gem 'dalli' # sudo apt-get install memcached
+gem 'dalli' # sudo apt-get install memcached, yum install memcached
 
 # upgraded version
 gem 'web-console', group: :development

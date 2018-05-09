@@ -38,7 +38,7 @@
         .col-md-4
           %h4 Manufacture Parts Return Required: #{CompanyConfig.first.sup_mf_parts_return_required ? 'Yes' : 'No'}
           %strong No of Return pending parts:
-          = f.object.ticket_spare_parts.where(part_returned: false, engineer_id: job_engineers.ids).count
+          = f.object.ticket_spare_parts.where(part_terminated: false, part_returned: false, engineer_id: job_engineers.ids).count
 
         .col-md-4
           %strong No of un-closed events:
@@ -66,7 +66,7 @@
               %th Note
               %th Approved
           %tbody
-            - f.object.ticket_spare_parts.where(engineer_id: job_engineers.ids).each_with_index do |tsp, i|
+            - f.object.ticket_spare_parts.where(part_terminated: false, engineer_id: job_engineers.ids).each_with_index do |tsp, i|
               %tr
                 %th= i+1
                 %td #{tsp.spare_part_no}
@@ -99,7 +99,7 @@
               %th Return Part S/N
               %th Approved
           %tbody
-            - f.object.ticket_on_loan_spare_parts.where(engineer_id: job_engineers.ids).each_with_index do |tsp, i|
+            - f.object.ticket_on_loan_spare_parts.where(part_terminated: false, engineer_id: job_engineers.ids).each_with_index do |tsp, i|
               %tr
                 %th= i+1
                 %td= simple_format tsp.approved_inventory_product.try(:description)
