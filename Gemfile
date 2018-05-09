@@ -91,7 +91,7 @@ gem 'responders'
 
 # Use Capistrano for deployment
 group :development do
-  gem 'capistrano'#, git: "https://github.com/capistrano/capistrano.git"
+  gem 'capistrano', '3.5.0'#, git: "https://github.com/capistrano/capistrano.git"
   gem 'capistrano-rails'
   gem 'capistrano-bundler'
   gem 'capistrano-rvm'
