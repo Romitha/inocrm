@@ -254,7 +254,7 @@ GEM
     multi_json (1.11.0)
     multi_test (0.1.2)
     mustache (1.0.1)
-    mysql2 (0.5.1)
+    mysql2 (0.3.20)
     nested_form (0.3.2)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
@@ -463,7 +463,7 @@ DEPENDENCIES
   mini_magick
   momentjs-rails (>= 2.8.1)
   mustache
-  mysql2 (= 0.5.1)
+  mysql2 (= 0.3.20)
   nested_form
   rack-mini-profiler
   rails (= 4.2.1)
