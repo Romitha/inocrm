@@ -8,10 +8,11 @@
       %br/
       %strong SRN No:
       #{link_to request_part.srn.formatted_srn_no, srns_admins_inventories_path(srn_id: request_part.srn.id), target: "_blank"}
+  - part_terminated = (request_part.status_action_id == SparePartStatusAction.find_by_code("CLS").id)
 - else
   - request_part = spare_part.ticket_spare_part_store
+  - part_terminated = (spare_part.status_action_id == SparePartStatusAction.find_by_code("CLS").id)
 
-- part_terminated = (request_part.status_action_id == SparePartStatusAction.find_by_code("CLS").id)
 
 - srn_item = request_part.srn_item
 

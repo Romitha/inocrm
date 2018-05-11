@@ -25,7 +25,7 @@
               - ticket_contract.products.each do |product|
                 .row
                   .col-md-2= product.serial_no
-                  .col-md-2= product.category_full_name
+                  .col-md-2= product.category_full_name("|")
                   .col-md-1= product.model_no
                   .col-md-1= product.product_no
                   .col-md-4= product.description
@@ -45,7 +45,7 @@
     - product.owner_customer.products.each do |product|
       .row
         .col-md-2= product.serial_no
-        .col-md-2= product.category_full_name
+        .col-md-2= product.category_full_name("|")
         .col-md-1= product.model_no
         .col-md-1= product.product_no
         .col-md-4= product.description
