@@ -826,7 +826,7 @@ class ReportsController < ApplicationController
     User
     Product
     TaskAction
-    @user_ticket_actions = UserTicketAction.where(action_id: '37').order("action_at desc").to_a.uniq{|t| t.ticket_id }
+    @user_ticket_actions = UserTicketAction.where(action_id: '37').order("action_at desc")
 
     render "reports/returned_manufacture"
   end
@@ -837,7 +837,7 @@ class ReportsController < ApplicationController
     Product
     TaskAction
     TicketSparePart
-    @ticket_manufactures = UserTicketAction.where(action_id: '31').order("action_at desc").to_a.uniq{|t| t.ticket_id }
+    @ticket_manufactures = UserTicketAction.where(action_id: '31').order("action_at desc")
 
     render "reports/manufacture_colected"
   end  
