@@ -53,9 +53,10 @@ module Admins
     end
 
     def self.reindex_all_models_async
-      [['Grn'], ['GrnItem', 'Grn'], ['GrnBatch', 'Grn'], ['InventoryProduct', 'Inventory'], ['InventorySerialItem', 'Inventory'], ['InventoryBatch', 'Inventory'], ['Product'], ['Ticket', 'ContactNumber'], ['InventoryPrn', 'Inventory'], ['InventoryPo', 'Inventory'], ["Gin"], ['Organization'], ['SoPo', 'TicketSparePart'], [ "Srr", "Srr" ], [ "Srn", "Srn" ], [ "SrnItem", "Srn" ], ["ContactPerson1", "User"], ["ContactPerson2", "User"], ["ReportPerson", "User"], ["Customer", "User"]].each do |models|
-        system "rake environment tire:deep_import CLASS=#{models.first} PCLASS=#{models.last} FORCE=true"
-      end
+      # [['Grn'], ['GrnItem', 'Grn'], ['GrnBatch', 'Grn'], ['InventoryProduct', 'Inventory'], ['InventorySerialItem', 'Inventory'], ['InventoryBatch', 'Inventory'], ['Product'], ['Ticket', 'ContactNumber'], ['InventoryPrn', 'Inventory'], ['InventoryPo', 'Inventory'], ["Gin"], ['Organization'], ['SoPo', 'TicketSparePart'], [ "Srr", "Srr" ], [ "Srn", "Srn" ], [ "SrnItem", "Srn" ], ["ContactPerson1", "User"], ["ContactPerson2", "User"], ["ReportPerson", "User"], ["Customer", "User"]].each do |models|
+      #   system "rake environment tire:deep_import CLASS=#{models.first} PCLASS=#{models.last} FORCE=true"
+      # end
+      system "rake environment tire:index_all_model RAILS_ENV=#{Rails.env}"
     end
 
     # private :reindex_all_models_async
