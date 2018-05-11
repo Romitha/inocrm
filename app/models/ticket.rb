@@ -18,6 +18,7 @@ class Ticket < ActiveRecord::Base
     indexes :customer_quotations, type: "nested", include_in_parent: true
     indexes :last_hold_action, type: "nested", include_in_parent: true
     indexes :user_ticket_actions, type: "nested", include_in_parent: true
+    indexes :ticket_engineers, type: "nested", include_in_parent: true
   end
 
   def self.search(params)
@@ -70,7 +71,7 @@ class Ticket < ActiveRecord::Base
     Invoice
     UserTicketAction
     to_json(
-      only: [:created_at, :cus_chargeable, :id, :ticket_no, :logged_at, :slatime, :job_started_at, :job_started_action_id, :problem_description, :job_type_id, :job_finished_at, :job_finished, :status_hold, :re_open_count, :final_invoice_id, :resolution_summary, :updated_at],
+      only: [:created_at, :cus_chargeable, :id, :ticket_no, :logged_at, :slatime, :job_started_at, :job_started_action_id, :problem_description, :job_type_id, :job_finished_at, :job_finished, :status_hold, :re_open_count,:owner_engineer_id, :final_invoice_id, :resolution_summary, :updated_at],
       methods: [:customer_name, :inhouse_type_select,:sla_description, :is_hold_and_have_last_hold_action?, :ticket_product_brand_name,:ticket_product_brand_id, :ticket_product_serial_no, :ticket_product_cat_id, :ticket_product_cat1_id, :ticket_product_cat2_id, :ticket_support_engineer_cost,:ticket_additional_cost,:ticket_external_cost, :ticket_engineer_cost, :ticket_part_cost, :ticket_contract_contract_end_at, :ticket_contract_contract_start_at, :job_type_get, :owner_engineer_name, :ticket_status_name, :warranty_type_name, :support_ticket_no, :ticket_type_name, :ticket_contract_product_amount, :ticket_contract_location],
       include: {
         ticket_contract: {
@@ -120,6 +121,14 @@ class Ticket < ActiveRecord::Base
           only: [:id],
           methods: [:formatted_action_date, :action_by_name, :action_engineer_by_name],
         },
+        ticket_engineers: {
+          only: [:id],
+          include: {
+            ticket_support_engineers: {
+              only: [:id, :user_id],
+            },
+          }
+        },
         customer: {
           only: [:id, :name, :address1, :address2, :address3, :address4],
           include: {
@@ -162,6 +171,9 @@ class Ticket < ActiveRecord::Base
           only: [:id, :created_at, :created_action_id, :user_id, :job_completed_at, :updated_at],
           methods: [:sbu_name, :full_name],
           include: {
+            ticket_support_engineers: {
+              only: [:id, :user_id],
+              },
             user: {
               only: [:id, :last_name],
               methods: [:full_name]

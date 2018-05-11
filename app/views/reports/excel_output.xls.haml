@@ -22,7 +22,7 @@
       %th Start Action
       %th Problem Description
       %th Support Group (SBU)
-      %th Engineer Name (Last)
+      %th Engineer Name
 
       - spare_part_count.times.each do |i|
         %th #{i+1} Part NumberIn Use
@@ -128,7 +128,7 @@
           = ticket.try(:owner_engineer).try(:sbu_name)
         %td
           // Engineer Name (Last)
-          = ticket.try(:owner_engineer).try(:user).try(:full_name)
+          = ticket.try(:owner_engineer).try(:full_name)
 
         - spare_part_count.times.each do |e|
           - sp = ticket.ticket_spare_parts.to_a[e]
