@@ -4,8 +4,8 @@
 # when "staging" then "192.168.100.212"
 # else "127.0.0.1"
 # end
-user = 'dev'
-password = 'dev123'
+user = 'root'
+password = 'centos'
 stfp_server = "192.168.1.146"
 
 case Rails.env
