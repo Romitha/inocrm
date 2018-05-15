@@ -79,6 +79,9 @@
       %dt Brand:
       %dd= contract.product_brand.try(:name)
       %hr
+      %dt SLA Time:
+      %dd= contract.sla_time.try(:time_with_description)
+      %hr
       %dt Additional Charges:
       %dd
         - if contract.additional_charges == 1

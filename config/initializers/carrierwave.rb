@@ -12,6 +12,7 @@ case Rails.env
 when "production"
   stfp_server = "192.168.1.146"
   # sftp_folder = "/home/dev/inovacrm/#{Rails.env}"
+  # If alias is set in nginx conf file, inovacrm-assets folder must be parallel to inocrm project folder
   sftp_folder = "/root/inovacrm-assets/#{Rails.env}"
 when "bobbin"
   stfp_server = "192.168.1.126"

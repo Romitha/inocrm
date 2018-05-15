@@ -20,7 +20,7 @@
           %th Description
           %th Order No
           %th Event No
-          %th Note
+          //%th Note
           %th Ticket No
           %th Part Terminated
           %th Collected
@@ -34,7 +34,7 @@
             %td= manufacture_part.ticket_spare_part.spare_part_description
             %td.order_no= manufacture_part.order_no
             %td.event_no= manufacture_part.event_no
-            %td= simple_format manufacture_part.ticket_spare_part.note
+            //%td= simple_format manufacture_part.ticket_spare_part.note
             %td.ticket_no= manufacture_part.ticket_spare_part.ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
             %td= boolean_in_word manufacture_part.ticket_spare_part.part_terminated, "Yes", ""
             %td= check_box_tag("manufacture_part[]", manufacture_part.id, manufacture_part.ticket_spare_part.part_terminated, id: "manufacture_part_#{manufacture_part.id}", onclick: "$('#search').val(''); console.log(collectParts.search());")

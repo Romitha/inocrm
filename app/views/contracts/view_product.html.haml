@@ -28,11 +28,13 @@
       - if !params[:serial_product]
         %hr
         %dt Sla Time:
-        %dd= product.sla_time.try(:description)
+        %dd= product.sla_time.try(:time_with_description)
       - if !params[:view_serial_product] && !params[:serial_product]
         %hr
         %dt Installed Location:
-        %dd= contract_product.installed_location.try(:full_address)
+        %dd= contract_product.installed_location.try(:name)
+        %dt Installed Address:
+        %dd= contract_product.location_address.try(:full_address)
         %hr
         %dt Amount:
         %dd= contract_product.try(:amount)
