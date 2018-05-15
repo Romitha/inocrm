@@ -129,7 +129,7 @@ class Product < ActiveRecord::Base
   validates_presence_of [:serial_no, :product_brand_id, :product_category_id, :name]
   validates_uniqueness_of :serial_no, message: "This serial no has already been taken"
 
-  after_save :strip_serial_no
+  # after_save :strip_serial_no
 
   def append_pop_status
     self.pop_note = "#{self.pop_note} <span class='pop_note_e_time'>(edited on #{Time.now.strftime('%d %b, %Y at %H:%M:%S')})</span><br/>#{pop_note_was}"
