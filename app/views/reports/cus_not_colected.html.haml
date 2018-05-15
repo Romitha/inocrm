@@ -1,10 +1,10 @@
-- tickets = @tickets
+- combined_tickets = @combined_tickets
 %h3 Items Not Collected By Customer Report
 .row
   .col-md-1
     %strong No
   .col-md-3
-    %strong Part order date
+    %strong Job Finished Date
   .col-md-2
     %strong Ticket No
   .col-md-3
@@ -13,9 +13,7 @@
     %strong Model No
 - num = 0
 %hr
-- tickets.each_with_index do |ticket, index|
-  - conditions = ticket.job_finished && ticket.inhouse_type_select == "IN"
-  -if conditions
+  - combined_tickets.each_with_index do |ticket, index|
     .row
       .col-md-1
         - if params[:page]
@@ -23,7 +21,7 @@
         - else
           - num= num+1
           = (num)
-      .col-md-3= ticket.job_finished_at.to_date.try :strftime, INOCRM_CONFIG["short_date_format"]
+      .col-md-3= ticket.try(:job_finished_at).try(:to_date).try :strftime, INOCRM_CONFIG["short_date_format"]
       .col-md-2= ticket.support_ticket_no
       .col-md-3= ticket.customer_name
       .col-md-3= ticket.products.first.model_no

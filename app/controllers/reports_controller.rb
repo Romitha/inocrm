@@ -847,7 +847,10 @@ class ReportsController < ApplicationController
     Product
     TaskAction
     TicketSparePart
-    @tickets = Ticket.search(query: "user_ticket_actions.feedback_not_reopen:false AND NOT user_ticket_actions.action_id:58")
+    @tickets = Ticket.search(query: "ticket_type_name:'In house' AND job_finished:true AND NOT user_ticket_actions.action_id:58")
+    @tickets_58 = Ticket.search(query: "user_ticket_actions.action_id:58 AND user_ticket_actions.feedback_reopen:true")
+
+    @combined_tickets = (@tickets.to_a + @tickets_58.to_a)
     # @ticket_manufactures = UserTicketAction.where.not(action_id: '58').order("action_at desc").to_a.uniq{|t| t.ticket_id }
 
     # Ticket.search(query: "NOT user_ticket_actions.action_id:58")
