@@ -73,6 +73,10 @@ Rails.application.routes.draw do
       get "manufacture_colected"
       get "cus_not_colected"
       get "order_updated"
+      get "delivered_items"
+      get "parts_pending"
+      get "parts_available"
+      get "parts_order_history"
 
     end
   end

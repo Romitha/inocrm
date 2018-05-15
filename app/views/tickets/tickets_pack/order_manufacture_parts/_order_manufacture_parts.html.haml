@@ -43,7 +43,10 @@
   .col-md-3
     %strong Requested at:
     = spare_part.requested_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
-
+.row
+  .col-md-3
+    = link_to parts_order_history_reports_path(serial_no: spare_part.ticket_serial_no), target: "_blank" do
+      %button.btn.btn-info{:type => "button" } Parts Order History
 .row
   .col-md-12.small_scale_margin-top2
     .form-group

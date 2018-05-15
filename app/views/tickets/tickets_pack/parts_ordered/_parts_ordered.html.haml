@@ -2,6 +2,10 @@
 - Inventory
 - TicketEstimation
 
+= link_to parts_order_history_reports_path(serial_no: ticket.ticket_product_serial_no), target: "_blank" do
+  %button.btn.btn-info{:type => "button" } Parts Order History
+%br
+%br
 = collapse_wrapper collapse_id: "ticket_spare_part_id_#{params[:action]}" do
   - ticket_workfows = ticket.ticket_workflow_processes.where process_id: params["process_id"]
   - ticket_engineers = ticket.ticket_engineers.where(workflow_process_id: ticket_workfows.first.try(:id))
@@ -38,7 +42,6 @@
       - @rjs = ticket_spare_part.spare_part_status_action.code == "RJS" #Reject Store Request
       - @rbn = ticket_spare_part.spare_part_status_action.code == "RBN" #Ready to Bundle
       - @mpr = ticket_spare_part.spare_part_status_action.code == "MPR" #Manufacture Part Requested
-
       = collapse collapse_type: "info", header_content: "Ticket spare part (#{ticket_spare_part.ticket_spare_part_store ? 'Store' : (ticket_spare_part.ticket_spare_part_manufacture ? 'Manufacture' : 'Non Stock')}): #{ticket_spare_part.spare_part_no} - #{ticket_spare_part.spare_part_description} - (#{ticket_spare_part.spare_part_status_action.name}#{ticket_spare_part.part_terminated ? ' - Terminated' : ''})", collapse_link: "ticket_spare_part_link_#{params[:action]}_#{ticket_spare_part.id}", collapse_id: "ticket_spare_part_id_#{params[:action]}", labelledby: "ticket_spare_part_lby_#{params[:action]}_#{ticket_spare_part.id}" do
 
         .row

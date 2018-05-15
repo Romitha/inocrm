@@ -1,0 +1,45 @@
+- pending_parts = @pending_parts
+%h3 Parts available at store
+%br
+%br
+.row
+  .col-md-1
+    %strong No
+  .col-md-1
+    %strong Requested date
+  .col-md-1
+    %strong Requested By
+  .col-md-1
+    %strong Ticket No
+  .col-md-2
+    %strong Customer
+  .col-md-2
+    %strong Item/description
+  .col-md-1
+    %strong Spare Part No
+  .col-md-2
+    %strong No of days since requested date
+  .col-md-1
+    %strong Ticket Status
+%hr
+- pending_parts.each_with_index do |pending_part, index|
+  .row
+    .col-md-1
+      - if params[:page]
+        = (index+1)+ 10*(params[:page].to_i-1)
+      - else
+        = (index+1)
+    .col-md-1= pending_part.store_requested_at.strftime(INOCRM_CONFIG["short_date_format"])
+    .col-md-1= pending_part.store_requested_engineer.full_name
+    .col-md-1= pending_part.ticket_no
+    .col-md-2= pending_part.customer_name
+    .col-md-2= pending_part.ticket_spare_part.spare_part_description
+    .col-md-1= pending_part.ticket_spare_part.spare_part_no
+    - date_sent = Date.parse(pending_part.store_requested_at.strftime(INOCRM_CONFIG["short_date_format"]))
+    - date_now = Date.today
+    .col-md-2= (date_now - date_sent).to_i
+    .col-md-1= pending_part.ticket_status
+
+    / .col-md-2= pending_part.
+
+  %hr
