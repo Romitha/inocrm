@@ -69,7 +69,7 @@ class UserTicketAction < ActiveRecord::Base
     )
 
   end
-  def feedback_not_reopen
+  def feedback_reopen
     Invoice
     customer_feedback.try(:re_opened) ? true : false
     

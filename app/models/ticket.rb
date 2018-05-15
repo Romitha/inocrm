@@ -71,7 +71,7 @@ class Ticket < ActiveRecord::Base
     Invoice
     UserTicketAction
     to_json(
-      only: [:created_at, :cus_chargeable, :id, :ticket_no, :logged_at, :slatime, :job_started_at, :job_started_action_id, :problem_description, :job_type_id, :job_finished_at, :job_finished, :status_hold, :re_open_count,:owner_engineer_id, :final_invoice_id, :resolution_summary, :updated_at],
+      only: [:created_at, :cus_chargeable, :id, :ticket_no, :logged_at, :slatime, :job_started_at, :job_started_action_id, :problem_description, :job_type_id, :job_finished_at, :job_finished, :status_hold, :re_open_count,:owner_engineer_id, :final_invoice_id, :resolution_summary, :ticket_type, :updated_at],
       methods: [:customer_name, :inhouse_type_select,:sla_description, :is_hold_and_have_last_hold_action?, :ticket_product_brand_name,:ticket_product_brand_id, :ticket_product_serial_no, :ticket_product_cat_id, :ticket_product_cat1_id, :ticket_product_cat2_id, :ticket_support_engineer_cost,:ticket_additional_cost,:ticket_external_cost, :ticket_engineer_cost, :ticket_part_cost, :ticket_contract_contract_end_at, :ticket_contract_contract_start_at, :job_type_get, :owner_engineer_name, :ticket_status_name, :warranty_type_name, :support_ticket_no, :ticket_type_name, :ticket_contract_product_amount, :ticket_contract_location],
       include: {
         ticket_contract: {
@@ -197,14 +197,14 @@ class Ticket < ActiveRecord::Base
         },
         user_ticket_actions: {
           only: [:id, :action_id],
-          methods: [:formatted_action_date, :action_by_name, :action_engineer_by_name, :feedback_not_reopen],
+          methods: [:formatted_action_date, :action_by_name, :action_engineer_by_name, :feedback_reopen],
         },
       }
     )
 
   end
   def inhouse_type_select
-    ticket_repair_type.code
+    ticket_type.code
   end
   def sla_description
     sla_time.description
