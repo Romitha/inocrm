@@ -1,0 +1,37 @@
+- part_histories = @part_histories
+- serial_no = @serial_no
+%h3 Parts available at store
+%br
+%br
+.row
+  .col-md-1
+    %strong No
+  .col-md-1
+    %strong Ticket No  
+  .col-md-2
+    %strong Ticket Log Date  
+  .col-md-2
+    %strong Spare Part Description  
+  .col-md-2
+    %strong Spare Part No
+  .col-md-2
+    %strong Event No
+  .col-md-2
+    %strong Ticket Status
+%hr
+- part_histories.each_with_index do |part_history, index|
+  - if serial_no == part_history.ticket.ticket_product_serial_no
+    .row
+      .col-md-1
+        - if params[:page]
+          = (index+1)+ 10*(params[:page].to_i-1)
+        - else
+          = (index+1)
+      .col-md-1= part_history.ticket.support_ticket_no
+      .col-md-2= part_history.ticket.logged_at.strftime(INOCRM_CONFIG["short_date_format"])
+      .col-md-2= part_history.spare_part_description
+      .col-md-2= part_history.spare_part_no
+      .col-md-2= part_history.ticket_spare_part_manufacture.event_no
+      .col-md-2= part_history.ticket_status
+
+    %hr

@@ -873,6 +873,29 @@ class ReportsController < ApplicationController
 
     render "reports/order_updated"
   end
+  
+  def delivered_items
+    TicketSparePart
+    @delivered_items = TicketDeliverUnit.where(delivered_to_sup: true, collected: false)
+    render "reports/delivered_items"
+  end
+  def parts_pending
+    TicketSparePart
+    @pending_parts = TicketSparePartStore.where(store_requested: true, issued: false)
+    render "reports/parts_pending"
+  end
+  def parts_available
+    TicketSparePart
+    @available_parts = TicketSparePartStore.joins(:ticket_spare_part).where("spt_ticket_spare_part.received_eng_by is NULL AND issued")#where("recived_eng_at IS NULL AND issued")
+    render "reports/parts_available"
+  end  
+
+  def parts_order_history
+    TicketSparePart
+    @serial_no = params[:serial_no]
+    @part_histories = TicketSparePart.where("created_at >= :start_date AND created_at <= :end_date", {start_date: (Date.today - 1.year), end_date: Date.today})
+    render "reports/parts_order_history"
+  end
 
   def excel_output
     Ticket

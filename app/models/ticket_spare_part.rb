@@ -72,6 +72,13 @@ class TicketSparePart < ActiveRecord::Base
   def inventory_product_generated_serial_item
     inventory_product.try(:generated_item_code)
   end
+
+  def ticket_status
+    ticket.ticket_status.name
+  end
+  def ticket_serial_no
+    ticket.ticket_product_serial_no
+  end
   has_many :dyna_columns, as: :resourceable, autosave: true
 
   # has_many :invoices, foreign_key: "customer_id"
@@ -196,7 +203,20 @@ class TicketSparePartStore < ActiveRecord::Base
 
   belongs_to :srr, foreign_key: :inv_srr_id
   belongs_to :srr_item, foreign_key: :inv_srr_item_id
+  belongs_to :store_requested_engineer, class_name: "User", foreign_key: :store_requested_by
 
+  def ticket_no
+    ticket_spare_part.ticket.support_ticket_no
+  end
+  def customer_name
+    ticket_spare_part.ticket.customer_name
+  end
+  def ticket_status
+    ticket_spare_part.ticket.ticket_status.name
+  end
+  def recived_eng_at
+    ticket_spare_part.received_eng_by
+  end  
   def create_support_srn(current_user_id, store_id, inventory_product_id, quantity, main_inventory_product_id=nil)
 
     srn = Srn.create(store_id: store_id, created_by: current_user_id, created_at: DateTime.now, requested_module_id: BpmModule.find_by_code("SPT").id, srn_no: CompanyConfig.first.increase_inv_last_srn_no)#inv_srn
@@ -271,6 +291,8 @@ class TicketDeliverUnit < ActiveRecord::Base
   accepts_nested_attributes_for :deliver_units, allow_destroy: true
 
   has_many :dyna_columns, as: :resourceable, autosave: true
+
+  belongs_to :user, foreign_key: :created_by
 
   before_save do |ticket_deliver_unit|
     if ticket_deliver_unit.persisted? and ticket_deliver_unit.note_changed? and ticket_deliver_unit.note.present?

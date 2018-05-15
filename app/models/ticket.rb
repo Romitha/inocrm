@@ -302,6 +302,7 @@ class Ticket < ActiveRecord::Base
   end
 
   def warranty_type_name
+    Warranty
     warranty_type.name
   end
 
