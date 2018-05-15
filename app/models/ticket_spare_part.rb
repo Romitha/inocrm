@@ -227,6 +227,7 @@ class TicketSparePartStore < ActiveRecord::Base
     srn_item = srn.srn_items.create(product_id: inventory_product_id, quantity: quantity, returnable: false, spare_part: true, main_product_id: main_inventory_product_id)#inv_srn_item
 
     update inv_srn_id: srn.id, inv_srn_item_id: srn_item.id
+    CompanyConfig.first.increase_inv_last_srn_no
 
   end
 

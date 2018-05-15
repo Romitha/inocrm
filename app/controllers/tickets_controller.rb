@@ -2076,7 +2076,7 @@ class TicketsController < ApplicationController
 
         TicketSparePartManufacture.where(id: params[:manufacture_part]).each do |ticket_spare_part_manufacture|
 
-          if ticket_spare_part_manufacture.part_terminated
+          if ticket_spare_part_manufacture.ticket_spare_part.part_terminated
             ticket_spare_part_manufacture.update(collected_manufacture: false, collect_pending_manufacture: false)
           else
 
