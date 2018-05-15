@@ -22,18 +22,18 @@ module ApplicationHelper
     # "EMAIL=#{ticket.customer.contact_type_values.select{|c| c.contact_type.email}.first.try(:value)}",
 
     # "FAX=#{ticket.customer.contact_type_values.select{|c| c.contact_type.code == "FX"}.first.try(:value)}",
-
+    contact_person = ticket.inform_cp == 2 ? ticket.contact_person2 : ticket.contact_person1
     [
       "DUPLICATE=#{ticket.ticket_print_count > 0 ? 'D' : ''}",
       "DATETIME=#{ticket.created_at.strftime(INOCRM_CONFIG['long_date_format']+' '+INOCRM_CONFIG['time_format'])}",
       "TICKET_REF=#{ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG['ticket_no_format'])}",
       "COMPANY_NAME=#{ticket.customer.full_name}",
-      "CONTACT_PERSON=#{ticket.contact_person1.full_name}",
+      "CONTACT_PERSON=#{contact_person.full_name}",
       "ADDRESS=#{ticket.customer.address1} #{ticket.customer.address2} #{ticket.customer.address3} #{ticket.customer.address4}",
 
-      "TELPHONE=#{ticket.contact_person1.contact_person_contact_types.find_by_contact_type_id(ContactType.find_by_fixedline(true).id).try(:value)}",
-      "MOBILE=#{ticket.contact_person1.contact_person_contact_types.find_by_contact_type_id(ContactType.find_by_mobile(true).id).try(:value)}",
-      "EMAIL=#{ticket.contact_person1.contact_person_contact_types.find_by_contact_type_id(ContactType.find_by_email(true).id).try(:value)}",
+      "TELPHONE=#{contact_person.contact_person_contact_types.find_by_contact_type_id(ContactType.find_by_fixedline(true).id).try(:value)}",
+      "MOBILE=#{contact_person.contact_person_contact_types.find_by_contact_type_id(ContactType.find_by_mobile(true).id).try(:value)}",
+      "EMAIL=#{contact_person.contact_person_contact_types.find_by_contact_type_id(ContactType.find_by_email(true).id).try(:value)}",
 
       "PRODUCT_BRAND=#{ticket.products.first.product_brand.name}",
       "PRODUCT_CATEGORY=#{ticket.products.first.category_full_name_index}",
@@ -66,6 +66,7 @@ module ApplicationHelper
   end
 
   def print_fsr_tag_value fsr #REQUEST_TYPE=PRINT_SPPT_FSR
+    contact_person = fsr.ticket.inform_cp == 2 ? fsr.ticket.contact_person2 : fsr.ticket.contact_person1
     [
       "DUPLICATE=#{fsr.print_count > 0 ? 'D' : ''}",
       "FSR_NO=#{fsr.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG['fsr_no_format'])}",
@@ -73,7 +74,7 @@ module ApplicationHelper
       "ADDRESS=#{fsr.ticket.customer.address1} #{fsr.ticket.customer.address2} #{fsr.ticket.customer.address3} #{fsr.ticket.customer.address4}",
       "TELPHONE=#{fsr.ticket.customer.contact_type_values.select{|c| c.contact_type.name == "Telephone"}.first.try(:value)}",
       "MOBILE=#{fsr.ticket.customer.contact_type_values.select{|c| c.contact_type.mobile}.first.try(:value)}",
-      "CONTACT_PERSON=#{fsr.ticket.contact_person1.full_name} (#{fsr.ticket.contact_person1.contact_person_contact_types.select{|c| c.contact_type.mobile }.map { |c| c.contact_info }.join(', ')})",
+      "CONTACT_PERSON=#{contact_person.full_name} (#{contact_person.contact_person_contact_types.select{|c| c.contact_type.mobile }.map { |c| c.contact_info }.join(', ')})",
       "TICKET_REF=#{fsr.ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG['ticket_no_format'])}",
       "ENGINEER=#{fsr.ticket_engineer and fsr.ticket_engineer.user.full_name}",
       "SERIAL_NO=#{fsr.ticket.products.first.serial_no}",
@@ -221,6 +222,7 @@ module ApplicationHelper
   end
 
   def print_customer_quotation_tag_value quotation #REQUEST_TYPE=PRINT_SPPT_QUOTATION
+
     Invoice
     ContactNumber
 
@@ -229,7 +231,8 @@ module ApplicationHelper
     ticket_time = ticket.created_at.strftime(INOCRM_CONFIG['time_format'])
     ticket_ref = ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG['ticket_no_format'])
     company_name = ticket.customer.full_name
-    contact_person = "#{ticket.contact_person1.full_name}"
+    contact_person = ticket.inform_cp == 2 ? ticket.contact_person2.full_name : ticket.contact_person1.full_name
+    #contact_person = "#{ticket.contact_person1.full_name}"
     address1 = ticket.customer.address1
     address2 = ticket.customer.address2
     address3 = ticket.customer.address3

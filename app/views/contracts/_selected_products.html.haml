@@ -17,8 +17,8 @@
             %th Start Date
             %th End Date
             %th B2B Contract
-            %th Installed Address
             %th Installed Location
+            %th Installed Address
             %th Remarks
 
           %th Action
@@ -57,7 +57,7 @@
               %td= check_box_tag "contract_product_additional_params[#{p.id}][contract_b2b]",nil, class: "form-control", required: true
               %td= label_tag "#{p.owner_customer_name}"
               %td.hide= hidden_field_tag "contract_product_additional_params[#{p.id}][installed_location_id]", p.owner_customer_id
-              %td= label_tag "#{p.location_address.try(:full_address)}"           
+              %td= label_tag "#{p.location_address.try(:full_address)}"
               %td.hide= hidden_field_tag "contract_product_additional_params[#{p.id}][location_address_id]",p.location_address_id
               / = select_tag "contract_product_additional_params[#{p.id}][installed_location_id]", options_from_collection_for_select(@organization_for_location.anchestors.map{|m| m[:member]}.uniq{|m| m.id}, :id, :name, :nil), class: "form-control chosen-select", include_blank: true
               %td= text_area_tag "contract_product_additional_params[#{p.id}][remarks]", nil, class: "form-control"

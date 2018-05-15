@@ -26,7 +26,6 @@
   $("a[href='#contracts_ticket_form_collapse_search_customers_link']").trigger("click");
 
 - elsif params[:select_product].present?
-  alert('hi');
   $("#contractlist").removeClass("hide");
   $("#contractlist").html("#{j render 'contracts/cus_products'}");
   $("a[href='#contracts_ticket_form_collapse_search_customers_link']").trigger("click");

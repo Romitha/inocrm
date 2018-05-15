@@ -49,7 +49,7 @@
         .col-md-1= product.model_no
         .col-md-1= product.product_no
         .col-md-4= product.description
-        .col-md-2= link_to update_edit_serial_tickets_path(selected_product: true, selected_product_id: product.id), method: :post
+        .col-md-2= link_to "Select", update_edit_serial_tickets_path(selected_product: true, selected_product_id: product.id), method: :post
       %hr
 
   - elsif product.tickets.any?{|t| t.id != ticket.id }

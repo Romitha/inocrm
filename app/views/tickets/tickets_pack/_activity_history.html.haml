@@ -461,6 +461,10 @@
                     Deliver To Supplier By: #{action.deliver_unit.ticket_deliver_unit.delivered_to_sup_by}
                   .col-md-4
                     Receive Note: #{action.deliver_unit.try(:receive_note)}
+                .row
+                  .col-md-12
+                    Deliver Note: #{action.deliver_unit.deliver_note}
+
 
             -if action.action_id == 30
               .panel-body 
@@ -474,6 +478,10 @@
                     Deliver To Supplier By: #{action.deliver_unit.ticket_deliver_unit.collected_by}
                   .col-md-4
                     Receive Note: #{action.deliver_unit.try(:receive_note)}
+                .row
+                  .col-md-12
+                    Deliver Note: #{action.deliver_unit.deliver_note}
+
 
             -if action.action_id == 31 and action.request_spare_part
               .panel-body 
@@ -1056,34 +1064,57 @@
             -if action.action_id == 58
               .panel-body
                 .row
-                  .col-md-4
+                  .col-md-3
                     - if action.customer_feedback.re_opened == true
                       Re-open: yes
-                    - else
-                      Re-open: no
-                  .col-md-4
-                    - if action.customer_feedback.payment_completed == true
-                      Payment completed: yes
-                    - else
-                      Payment completed: no
-                  .col-md-4
-                    Feedback: #{action.customer_feedback.try(:feedback_description)}
+                      %br/
+                      Re-open reason: #{action.customer_feedback.try(:re_open_reason)}
 
-            -if action.action_id == 60 and action.customer_feedback.present?
-              .panel-body
-                .row
-                  .col-md-4
-                    - if action.customer_feedback.re_opened
-                      Re-open: yes
                     - else
                       Re-open: no
-                  .col-md-4
+
+                  .col-md-3
                     - if action.customer_feedback.payment_completed
                       Payment completed: yes
                     - else
                       Payment completed: no
-                  .col-md-4
-                    Feedback: #{action.customer_feedback.try(:feedback_description)}
+
+                  .col-md-3
+                    Feedback: #{action.customer_feedback.try(:feedback).try(:feedback)}                      
+                  .col-md-3
+                    Feedback Description: #{action.customer_feedback.try(:feedback_description)}
+
+                .row
+                  .col-md-3
+                    Unit return custumer: #{bolean_in_word action.customer_feedback.try(:unit_return_customer), "Yes", "No"}
+                  .col-md-3
+                    Dispatch method: #{action.customer_feedback.try(:dispatch_method).try(:name)}
+
+            -if action.action_id == 60 and action.customer_feedback.present?
+              .panel-body
+                .row
+                  .col-md-3
+                    - if action.customer_feedback.re_opened
+                      Re-open: yes
+                    - else
+                      Re-open: no
+                  .col-md-3
+                    - if action.customer_feedback.payment_completed
+                      Payment completed: yes
+                    - else
+                      Payment completed: no
+
+                  .col-md-3
+                    Feedback: #{action.customer_feedback.try(:feedback).try(:feedback)}                      
+                  .col-md-3
+                    Feedback Description: #{action.customer_feedback.try(:feedback_description)}
+
+                .row
+                  .col-md-3
+                    Unit return custumer: #{bolean_in_word action.customer_feedback.try(:unit_return_customer), "Yes", "No"}
+                  .col-md-3
+                    Dispatch method: #{action.customer_feedback.try(:dispatch_method).try(:name)}
+
 
             -if action.action_id == 61 and action.inform_customer
               .panel-body

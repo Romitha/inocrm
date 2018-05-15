@@ -28,7 +28,10 @@
         %dd= srn.so_customer_name
         - if srn.requested_module.code == "SPT"
           %dt Tickets
-          %dd= (srn.ticket_spare_part_stores.map{|s| s.ticket_spare_part.ticket } + srn.ticket_on_loan_spare_parts.map{|s| s.ticket }).map{|t| (link_to t.support_ticket_no, t, target: "_blank") }.join(", ")
+          %dd
+            - (srn.ticket_spare_part_stores.map{|s| s.ticket_spare_part.ticket } + srn.ticket_on_loan_spare_parts.map{|s| s.ticket }).each do |t|
+              = link_to t.support_ticket_no, t, target: "_blank"
+              %br/
 
       %h4.small_scale_padding-top1 SRN Items
       %table.table.table-bordered
