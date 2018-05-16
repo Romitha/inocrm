@@ -4838,14 +4838,16 @@ class TicketsController < ApplicationController
 
         close_approval_requested = false if not engineer_close_approval_required
 
-        #ticket_engineer.status 0: Pending; 1: Job Started/Job Assigned; 2: Job Completed; 3: Job Closed
+        # ticket_engineer.status 0: Pending; 1: Job Started/Job Assigned; 2: Job Completed; 3: Job Closed
         @ticket_engineer.update status: (engineer_close_approval_required ? 2 : 3) , job_completed_at: DateTime.now, job_close_approval_required: engineer_close_approval_required, job_close_approval_requested: close_approval_requested, job_closed_at: (engineer_close_approval_required ? nil : DateTime.now)
 
-        @ticket.ticket_close_approval_required = (@ticket.ticket_fsrs.any? or @ticket.ticket_spare_parts.any? or @ticket.ticket_on_loan_spare_parts.any?)
+        final_resolution =  @ticket.ticket_engineers.reload.none?{ |eng| eng.status.to_i < 2 }
+
+        @ticket.ticket_close_approval_required = [@ticket.ticket_fsrs.any?, @ticket.ticket_spare_parts.any?, @ticket.ticket_on_loan_spare_parts.any?].include?(true)
+
         @ticket.ticket_close_approval_requested = true
         @ticket.ticket_close_approved = true
 
-        final_resolution =  @ticket.ticket_engineers.none?{|eng| eng.status.to_i < 2 }
         if final_resolution
           @ticket.ticket_status_resolve = TicketStatusResolve.find_by_code("RSV")
           @ticket.job_finished = true
@@ -4855,6 +4857,7 @@ class TicketsController < ApplicationController
             @ticket.job_closed = true
             @ticket.job_closed_at = DateTime.now
           end
+
         end
 
         if @ticket.ticket_close_approval_required
