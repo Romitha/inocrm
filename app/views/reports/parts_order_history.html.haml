@@ -1,7 +1,7 @@
 - part_histories = @part_histories
 - serial_no = @serial_no
 - date_before_year = (Date.today - 1.year)
-%h3 Parts available at store 
+%h3 Parts Order History Store Report 
 %strong from #{date_before_year} to #{Date.today}
 %br
 %br
@@ -23,7 +23,7 @@
 - num = 0
 %hr
 - part_histories.each_with_index do |part_history, index|
-  - if serial_no == part_history.ticket.ticket_product_serial_no
+  - if serial_no == part_history.ticket.ticket_product_serial_no.to_s
     .row
       .col-md-1
         - if params[:page]
