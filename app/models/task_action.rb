@@ -237,6 +237,19 @@ class HpCase < ActiveRecord::Base
   self.table_name = "spt_act_hp_case_action"
 
   belongs_to :user_ticket_action, foreign_key: :ticket_action_id
+
+  def ticket_no
+    user_ticket_action.ticket.ticket_no
+  end
+  def action_at
+    user_ticket_action.formatted_action_date
+  end
+  def action_by
+    user_ticket_action.action_by_name
+  end
+  def action_eng
+    user_ticket_action.action_engineer_by_name
+  end
 end
 
 class TicketActionTaken < ActiveRecord::Base

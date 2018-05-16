@@ -77,6 +77,7 @@ Rails.application.routes.draw do
       get "parts_pending"
       get "parts_available"
       get "parts_order_history"
+      get "case_list"
 
     end
   end

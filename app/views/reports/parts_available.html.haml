@@ -19,6 +19,7 @@
     %strong Item/description
   .col-md-1
     %strong Spare Part No
+- num = 0
 %hr
 - available_parts.each_with_index do |available_part, index|
   .row
@@ -26,7 +27,8 @@
       - if params[:page]
         = (index+1)+ 10*(params[:page].to_i-1)
       - else
-        = (index+1)
+        - num= num+1
+        = (num)
     .col-md-1= available_part.store_requested_at.strftime(INOCRM_CONFIG["short_date_format"])
     .col-md-2= available_part.issued_at.strftime(INOCRM_CONFIG["short_date_format"])
     .col-md-2= available_part.store_requested_engineer.full_name

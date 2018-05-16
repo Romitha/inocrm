@@ -21,6 +21,7 @@
     %strong No of days since requested date
   .col-md-1
     %strong Ticket Status
+- num = 0
 %hr
 - pending_parts.each_with_index do |pending_part, index|
   .row
@@ -28,7 +29,8 @@
       - if params[:page]
         = (index+1)+ 10*(params[:page].to_i-1)
       - else
-        = (index+1)
+        - num= num+1
+        = (num)
     .col-md-1= pending_part.store_requested_at.strftime(INOCRM_CONFIG["short_date_format"])
     .col-md-1= pending_part.store_requested_engineer.full_name
     .col-md-1= pending_part.ticket_no

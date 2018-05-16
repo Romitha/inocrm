@@ -13,6 +13,7 @@
     %strong Part Description
   .col-md-2
     %strong Hold Reason
+- num = 0
 %hr
 - ticket_manufactures.each_with_index do |ticket_manufacture, index|
   .row
@@ -20,7 +21,8 @@
       - if params[:page]
         = (index+1)+ 10*(params[:page].to_i-1)
       - else
-        = (index+1)
+        - num= num+1
+        = (num)
     .col-md-2= ticket_manufacture.updated_at.to_date.try :strftime, INOCRM_CONFIG["short_date_format"]
     .col-md-2= ticket_manufacture.ticket_spare_part.ticket.support_ticket_no
     .col-md-2= ticket_manufacture.ticket_spare_part.spare_part_no

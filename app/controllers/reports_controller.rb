@@ -896,7 +896,12 @@ class ReportsController < ApplicationController
     @part_histories = TicketSparePart.where("created_at >= :start_date AND created_at <= :end_date", {start_date: (Date.today - 1.year), end_date: Date.today})
     render "reports/parts_order_history"
   end
-
+  def case_list
+    TaskAction
+    @ticket_no = params[:ticket_no]
+    @case_lists = HpCase.all
+    render "reports/case_list"
+  end
   def excel_output
     Ticket
     User

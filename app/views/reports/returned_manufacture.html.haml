@@ -17,8 +17,8 @@
     %strong Engineer Name
   .col-md-2
     %strong No of days since receive date
+- num = 0
 %hr
-
 - user_ticket_actions.each_with_index do |user_ticket_action, index|
   / =user_ticket_action.is_hold_and_have_last_hold_action?
   .row
@@ -26,7 +26,8 @@
       - if params[:page]
         = (index+1)+ 10*(params[:page].to_i-1)
       - else
-        = (index+1)
+        - num= num+1
+        = (num)
 
     .col-md-2= user_ticket_action.action_at.strftime(INOCRM_CONFIG["short_date_format"])
     .col-md-1= user_ticket_action.ticket.support_ticket_no

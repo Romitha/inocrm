@@ -13,6 +13,7 @@
     %strong Hold By
   .col-md-2
     %strong Hold Reason
+- num = 0
 %hr
 - tickets.each_with_index do |ticket, index|
   / =ticket.is_hold_and_have_last_hold_action?
@@ -21,7 +22,8 @@
       - if params[:page]
         = (index+1)+ 10*(params[:page].to_i-1)
       - else
-        = (index+1)
+        - num= num+1
+        = (num)
 
     .col-md-1= ticket.support_ticket_no
     .col-md-2=ticket.logged_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
