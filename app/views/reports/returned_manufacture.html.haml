@@ -3,7 +3,7 @@
 .row
   .col-md-1
     %strong No
-  .col-md-2
+  .col-md-1
     %strong Part Receive at
   .col-md-1
     %strong Ticket No
@@ -16,6 +16,8 @@
   .col-md-2
     %strong Engineer Name
   .col-md-2
+    %strong Note
+  .col-md-1
     %strong No of days since receive date
 - num = 0
 %hr
@@ -29,14 +31,15 @@
         - num= num+1
         = (num)
 
-    .col-md-2= user_ticket_action.action_at.strftime(INOCRM_CONFIG["short_date_format"])
+    .col-md-1= user_ticket_action.action_at.strftime(INOCRM_CONFIG["short_date_format"])
     .col-md-1= user_ticket_action.ticket.support_ticket_no
     .col-md-2= user_ticket_action.request_spare_part.ticket_spare_part.spare_part_description
     .col-md-1= user_ticket_action.request_spare_part.ticket_spare_part.spare_part_no
     .col-md-1= user_ticket_action.request_spare_part.ticket_spare_part.spare_part_event_no
     .col-md-2= user_ticket_action.try(:action_engineer_by_name)
+    .col-md-2{ "class"=> "has-popover", "data-toggle"=> "popover", "title"=> "Note: #{user_ticket_action.request_spare_part.ticket_spare_part.note}", "data-content"=> yield(:customer_supplier_p_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "left" }= user_ticket_action.request_spare_part.ticket_spare_part.note.try(:truncate, 20)
     - date_sent = Date.parse(user_ticket_action.action_at.strftime(INOCRM_CONFIG["short_date_format"]))
     - date_now = Date.today
-    .col-md-2= (date_now - date_sent).to_i
+    .col-md-1= (date_now - date_sent).to_i
 
   %hr

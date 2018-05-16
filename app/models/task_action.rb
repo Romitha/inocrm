@@ -55,7 +55,7 @@ class UserTicketAction < ActiveRecord::Base
           only: [:id],
           include: {
             ticket_spare_part: {
-              only: [:id, :spare_part_no, :spare_part_description, :request_from],
+              only: [:id, :spare_part_no, :spare_part_description, :request_from, :note],
               methods:[:spare_part_event_no],
               include: {
                 ticket_spare_part_manufacture: {
