@@ -860,9 +860,6 @@ class ReportsController < ApplicationController
   end  
 
   def order_updated
-    Ticket
-    User
-    Product
     TaskAction
     TicketSparePart
     @ticket_manufactures = TicketSparePartManufacture.where(order_pending: true)

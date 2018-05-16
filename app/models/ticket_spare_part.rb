@@ -79,6 +79,9 @@ class TicketSparePart < ActiveRecord::Base
   def ticket_serial_no
     ticket.ticket_product_serial_no
   end
+  def engineer_name
+    engineer.full_name
+  end
   has_many :dyna_columns, as: :resourceable, autosave: true
 
   # has_many :invoices, foreign_key: "customer_id"
