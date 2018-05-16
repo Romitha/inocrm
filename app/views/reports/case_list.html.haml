@@ -1,0 +1,33 @@
+- case_lists = @case_lists
+- ticket_no = @ticket_no
+%h3 Parts available at store
+%br
+%br
+.row
+  .col-md-2
+    %strong No
+  .col-md-3
+    %strong Case Note
+  .col-md-2
+    %strong Action at
+  .col-md-2
+    %strong Action By
+  .col-md-3
+    %strong Engineer
+- num = 0
+%hr
+- case_lists.each_with_index do |case_list, index|
+  - if ticket_no == case_list.ticket_no.to_s
+    .row
+      .col-md-2
+        - if params[:page]
+          = (index+1)+ 10*(params[:page].to_i-1)
+        - else
+          - num= num+1
+          = (num)
+      .col-md-3= case_list.case_note
+      .col-md-2= case_list.action_at
+      .col-md-2= case_list.action_by
+      .col-md-3= case_list.action_eng
+
+    %hr

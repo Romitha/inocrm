@@ -19,6 +19,7 @@
     %strong Warranty type
   .col-md-2
     %strong Delivered Note
+- num = 0
 %hr
 - delivered_items.each_with_index do |delivered_item, index|
   .row
@@ -26,7 +27,8 @@
       - if params[:page]
         = (index+1)+ 10*(params[:page].to_i-1)
       - else
-        = (index+1)
+        - num= num+1
+        = (num)
     .col-md-2= delivered_item.organization.name
     .col-md-1= delivered_item.ticket.support_ticket_no
     .col-md-1= delivered_item.ticket.ticket_product_serial_no
