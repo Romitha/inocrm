@@ -40,7 +40,7 @@
       .col-md-2= ticket_manufacture.request_spare_part.ticket_spare_part.spare_part_description
       .col-md-1= ticket_manufacture.request_spare_part.ticket_spare_part.spare_part_no
       .col-md-1= ticket_manufacture.request_spare_part.ticket_spare_part.spare_part_event_no
-      .col-md-1= ticket_manufacture.try(:action_engineer_by_name)
+      .col-md-1= ticket_manufacture.request_spare_part.ticket_spare_part.engineer_name
       - date_sent = Date.parse(ticket_manufacture.action_at.strftime(INOCRM_CONFIG["short_date_format"]))
       - date_now = Date.today
       .col-md-1= (date_now - date_sent).to_i
