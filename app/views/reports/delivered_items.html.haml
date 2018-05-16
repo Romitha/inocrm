@@ -35,6 +35,7 @@
     .col-md-2= delivered_item.user.full_name
     .col-md-1= delivered_item.delivered_to_sup_at.strftime(INOCRM_CONFIG["short_date_format"])
     .col-md-2= delivered_item.ticket.warranty_type_name
-    .col-md-2= delivered_item.note
+
+    .col-md-2{ "class"=> "has-popover", "data-toggle"=> "popover", "title"=> "Note: #{delivered_item.note}", "data-content"=> yield(:customer_supplier_p_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "left" }= delivered_item.note.try(:truncate, 20)
 
   %hr
