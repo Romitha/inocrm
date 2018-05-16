@@ -71,12 +71,12 @@
             %li{role: "presentation", class: "#{can?(:contract_expire, TicketContract) ? '' : 'disabled'}"}= link_to "Contract Expire Report", contract_expire_reports_path, class: "#{can?(:contract_expire, TicketContract) ? '' : 'disabled'}"
             %li= link_to "Hold Ticket Report", hold_ticket_report_reports_path
             %li= link_to "Parts To Be Returned To Manufacturer", returned_manufacture_reports_path
-            %li= link_to "To be collected from Manufacturer", manufacture_colected_reports_path
-            %li= link_to "Items not collected by customer", cus_not_colected_reports_path
-            %li= link_to "Order updated report", order_updated_reports_path
-            %li= link_to "Delivered items not collected", delivered_items_reports_path
-            %li= link_to "Parts pending from store", parts_pending_reports_path
-            %li= link_to "Parts available at store", parts_available_reports_path
+            %li= link_to "To Be Collected From Manufacturer", manufacture_colected_reports_path
+            %li= link_to "Items Not Collected By Customer", cus_not_colected_reports_path
+            %li= link_to "Manufacture Parts Order Updated", order_updated_reports_path
+            %li= link_to "Delivered Items Not Collected", delivered_items_reports_path
+            %li= link_to "Parts Pending From Store", parts_pending_reports_path
+            %li= link_to "Parts Available At Store", parts_available_reports_path
         %li.dropdown.small_scale_margin-right10{role: "presentation"}
           = link_to "Supports", "#", class: "dropdown-toggle tickets text-hide nav-icon", id: "ticket_dropdown", data: {toggle: "dropdown", placement: "bottom"}, title: "Support tickets", rel: "tooltip"
           %ul.dropdown-menu{"aria-labelledby" => "ticket_dropdown"}

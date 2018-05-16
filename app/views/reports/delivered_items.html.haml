@@ -1,5 +1,5 @@
 - delivered_items = @delivered_items
-%h3 Delivered items not collected
+%h3 Delivered Items Not Collected Report
 %br
 %br
 .row
@@ -29,13 +29,13 @@
       - else
         - num= num+1
         = (num)
-    .col-md-2= delivered_item.organization.name
+    .col-md-2= delivered_item.try(:organization).name
     .col-md-1= delivered_item.ticket.support_ticket_no
     .col-md-1= delivered_item.ticket.ticket_product_serial_no
     .col-md-2= delivered_item.user.full_name
     .col-md-1= delivered_item.delivered_to_sup_at.strftime(INOCRM_CONFIG["short_date_format"])
     .col-md-2= delivered_item.ticket.warranty_type_name
 
-    .col-md-2{ "class"=> "has-popover", "data-toggle"=> "popover", "title"=> "Note: #{delivered_item.note}", "data-content"=> yield(:customer_supplier_p_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "left" }= delivered_item.note.try(:truncate, 20)
+    .col-md-2{ "class"=> "has-popover", "data-toggle"=> "popover", "title"=> "Note: #{delivered_item.note}", "data-content"=> yield(:customer_supplier_p_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "left" }= strip_tags(delivered_item.note).try(:truncate, 20)
 
   %hr

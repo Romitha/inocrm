@@ -890,7 +890,7 @@ class ReportsController < ApplicationController
   def parts_order_history
     TicketSparePart
     @serial_no = params[:serial_no]
-    @part_histories = TicketSparePart.where("created_at >= :start_date AND created_at <= :end_date", {start_date: (Date.today - 1.year), end_date: Date.today})
+    @part_histories = TicketSparePart.where("created_at >= :start_date AND created_at <= :end_date", {start_date: (Date.today - 1.year), end_date: (Date.today + 1.day)})
     render "reports/parts_order_history"
   end
   def case_list
