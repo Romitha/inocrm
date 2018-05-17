@@ -31,7 +31,7 @@
         = (num)
     .col-md-1= available_part.store_requested_at.strftime(INOCRM_CONFIG["short_date_format"])
     .col-md-2= available_part.issued_at.strftime(INOCRM_CONFIG["short_date_format"])
-    .col-md-2= available_part.store_requested_engineer.full_name
+    .col-md-2= available_part.ticket_spare_part.engineer_name
     .col-md-1= available_part.ticket_no
     .col-md-2= available_part.customer_name
     .col-md-2= available_part.ticket_spare_part.spare_part_description

@@ -7,18 +7,30 @@
         = f.input :sbu, label: "SBU", required: true
       .col-md-12
         %h4 Add Engineer(s)
-        = f.simple_fields_for :sbu_engineers do |engineer|
+        = f.simple_fields_for :sbu_engineers do |sbu_engineer|
           .row
             .col-md-1
-              - if engineer.object.persisted? and !engineer.object.is_used_anywhere?
-                %div{class: "#{'add_sign' unless engineer.object.persisted?}"}
-                  = engineer.link_to_remove do
+              - if sbu_engineer.object.persisted? and !sbu_engineer.object.is_used_anywhere?
+                %div{class: "#{'add_sign' unless sbu_engineer.object.persisted?}"}
+                  = sbu_engineer.link_to_remove do
                     %span.glyphicon.glyphicon-remove-sign
             .col-md-11
-              - if engineer.object.persisted?
-                = engineer.object.engineer.full_name
+              - if sbu_engineer.object.persisted?
+                = sbu_engineer.object.engineer.full_name
+                %strong Active Status :
+                / - if SbuEngineer.where("id=? and active=? and NOT sbu_id=?", sbu_engineer.object.id, true, @sbu.id ).present?
+                - if sbu_engineer.object.engineer.sbu_engineers.where("active=? and not id=?", true, sbu_engineer.object.id).none?
+                  = link_to "#", class: "inline_edit", data: {type: "select", resource: "sbu_engineer", source: {"1"=> "Active", "2"=> "Inactive"}, name: "active", url:  sbu_admins_employees_path(edit: true, engineer_id: sbu_engineer.object.id), "original-title" => "Update Active"} do
+                    = boolean_in_word sbu_engineer.object.active, "Active", "Inactive"
+                    / -if sbu_engineer.object.active
+                    /   Active
+                    / - else
+                    /   Inactive
+                - else
+                  Inactive (This Engineer Is Active In Another SBU)
               - else
-                = engineer.association :engineer, label_method: :full_name, input_html: {class: "chosen-select"}, collection: User.select{|u| u.roles.any?{|r| r.bpm_module_roles.any?{|b| b.code == "supp_engr"} } unless SbuEngineer.where(engineer_id: u.id).present?}
+                = sbu_engineer.association :engineer, label_method: :full_name, input_html: {class: "chosen-select"}, collection: User.select{|u| u.roles.any?{|r| r.bpm_module_roles.any?{|b| b.code == "supp_engr"} } unless SbuEngineer.where("engineer_id=? and active=?", u.id, true).present?}
+
         = f.link_to_add :sbu_engineers, onclick: "setTimeout(function(){Organizations.enable_chosen()}, 200); return false;" do
           %span.glyphicon.glyphicon-plus-sign
     .row
@@ -64,14 +76,14 @@
                 .col-md-1
                   %strong Active:
                 .col-md-4
-                  = link_to "#", class: "inline_edit", data: {type: "select", resource: "sbu_engineer", source: {"1"=> "Active", "2"=> "Inactive"}, name: "active", url:  sbu_admins_employees_path(edit: true, engineer_id: sbu_engineer.id), "original-title" => "Update Active"} do
-                    -if sbu_engineer.active
-                      Active
-                    - else
-                      Inactive
+                  / = link_to "#", class: "inline_edit", data: {type: "select", resource: "sbu_engineer", source: {"1"=> "Active", "2"=> "Inactive"}, name: "active", url:  sbu_admins_employees_path(edit: true, engineer_id: sbu_engineer.id), "original-title" => "Update Active"} do
+                  -if sbu_engineer.active
+                    Active
+                  - else
+                    Inactive
               .row.col-md-12
                 .col-md-1
                   %strong Engineer:
                 .col-md-9
-                  = link_to "#", class: "inline_edit", data: {type: "select", source: User.all.collect{|a| {value: a.id, text: a.email}}, resource: "sbu_engineer", name: "engineer_id", url: sbu_admins_employees_path(edit: true, engineer_id: sbu_engineer.id), "original-title" => "Update Admin SBU"} do
-                    = sbu_engineer.engineer.try(:full_name)
+                  / = link_to "#", class: "inline_edit", data: {type: "select", source: User.all.collect{|a| {value: a.id, text: a.email}}, resource: "sbu_engineer", name: "engineer_id", url: sbu_admins_employees_path(edit: true, engineer_id: sbu_engineer.id), "original-title" => "Update Admin SBU"} do
+                  = sbu_engineer.engineer.try(:full_name)
