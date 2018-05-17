@@ -4567,13 +4567,17 @@ class TicketsController < ApplicationController
           @flash_message = "ticket is updated. but Bpm error"
         end
 
-        redirect_to @ticket, notice: @flash_message
+        # redirect_to @ticket, notice: @flash_message
       else
-        redirect_to @ticket, alert: @flash_message
+        # redirect_to @ticket, alert: @flash_message
       end
     else
-      redirect_to @ticket, alert: @flash_message
+      # redirect_to @ticket, alert: @flash_message
     end
+
+    redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
+    redirect_to redirect_response[:url], {redirect_response[:message_type] => redirect_response[:flash_message]}
+
   end
 
   def update_hold
@@ -4734,13 +4738,15 @@ class TicketsController < ApplicationController
           @flash_message = "ticket is updated. but Bpm error"
         end
 
-        redirect_to @ticket, notice: @flash_message
+        # redirect_to @ticket, notice: @flash_message
       else
-        redirect_to @ticket, alert: "Unable to save ticket"
+        # redirect_to @ticket, alert: "Unable to save ticket"
       end
     else
-      redirect_to @ticket, alert: @flash_message
+      # redirect_to @ticket, alert: @flash_message
     end
+    redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
+    redirect_to redirect_response[:url], {redirect_response[:message_type] => redirect_response[:flash_message]}
   end
 
   def update_action_taken
@@ -5028,7 +5034,9 @@ class TicketsController < ApplicationController
     else
       @flash_message = @flash_message
     end
-    redirect_to @ticket, notice: @flash_message
+    # redirect_to @ticket, notice: @flash_message
+    redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
+    redirect_to redirect_response[:url], {redirect_response[:message_type] => "#{redirect_response[:flash_message]} - #{@flash_message}"}
   end
 
   def update_edit_serial_no_request
@@ -5061,7 +5069,9 @@ class TicketsController < ApplicationController
     else
       @flash_message = @flash_message
     end
-    redirect_to @ticket, notice: @flash_message
+    # redirect_to @ticket, notice: @flash_message
+    redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
+    redirect_to redirect_response[:url], {redirect_response[:message_type] => redirect_response[:flash_message]}
   end
 
   def update_deliver_unit
@@ -5180,7 +5190,9 @@ class TicketsController < ApplicationController
     else
       @flash_message = @flash_message
     end
-    redirect_to @ticket, @flash_message
+    # redirect_to @ticket, @flash_message
+    redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
+    redirect_to redirect_response[:url], {redirect_response[:message_type] => redirect_response[:flash_message]}
   end
 
   def update_request_spare_part
@@ -5327,7 +5339,9 @@ class TicketsController < ApplicationController
     else
       @flash_message = {alert: "Unable to continue with BPM. Please rectify BPM"}
     end
-    redirect_to todos_url, @flash_message
+    # redirect_to todos_url, @flash_message
+    redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
+    redirect_to redirect_response[:url], {redirect_response[:message_type] => "#{redirect_response[:flash_message]} - #{@flash_message}"}
   end
 
   def suggesstion_data

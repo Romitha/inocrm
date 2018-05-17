@@ -38,12 +38,12 @@
           / - unless params[:from_where1]
           - job_finished = (ticket_engineer.status > 1 or ticket.job_finished)
           - unless present_of_start_ticket_action
-            / redirect_url
+            / redirect_url - done
             %option{:value => "start_action", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Start Action
           - unless job_finished
             %option{:value => "re_assign", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Re Assign
           - if present_of_start_ticket_action and not job_finished
-            / redirect_url
+            / redirect_url - done
             %option{:value => "change_ticket_cus_warranty", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Change Ticket Warranty Type or Customer Chargeable
           - if present_of_start_ticket_action and not job_finished
             %option{:value => "change_ticket_repair_type", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Change Ticket Repair Type
@@ -55,26 +55,27 @@
             / redirect_url
             %option{:value => "edit_serial_no_request", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Edit Serial No Request
           - if present_of_start_ticket_action and ticket.ticket_type.code == 'OS'  and not job_finished
-            / redirect_url
+            / redirect_url - done (No BPM Involved)
             %option{:value => "create_fsr", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Create FSR
           - if present_of_start_ticket_action and ticket.ticket_fsrs.find_by_approved(:false).present?
-            / redirect_url
+            / redirect_url - done (No BPM Involved)
             %option{:value => "edit_fsr", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Edit FSR
           - if present_of_start_ticket_action and not job_finished
             / redirect_url
             %option{:value => "terminate_job", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Terminate Job
           - if present_of_start_ticket_action
+            / redirect_url - done
             %option{:value => "action_taken", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Action Taken
           - if present_of_start_ticket_action and not job_finished and  ticket.ticket_repair_type.code == "IN" and (ticket.ticket_type.code == 'OS' ? ticket.ticket_fsrs.any? : true)
-            / redirect_url
+            / redirect_url - done
             %option{:value => "request_spare_part", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Request Spare Part
           - if present_of_start_ticket_action and not job_finished and INOCRM_CONFIG['TicketSparePart']['control_visible_store_request_from_radio']
-            / redirect_url
+            / redirect_url - done
             %option{:value => "request_on_loan_spare_part", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Request On Loan Spare Part
           - if present_of_start_ticket_action
             %option{:value => "hp_case_id", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} HP Case Action
           - if present_of_start_ticket_action and not job_finished and (ticket.ticket_repair_type.code=="IN" or (ticket.ticket_repair_type.code=="EX" and ticket.ticket_deliver_units.any?{|d| (d.received)}))
-            / redirect_url
+            / redirect_url - done
             %option{:value => "resolved_job", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Resolve the Job
           - if present_of_start_ticket_action and job_finished and close_approval_required
             %option{:value => "request_close_approval", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Request close approval
@@ -85,7 +86,7 @@
             %option{:value => "deliver_unit", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Deliver Unit
 
           - if present_of_start_ticket_action and !ticket.ticket_estimations.any?{|ts| (ts.status_id == EstimationStatus.find_by_code("RQS").id) } and ticket.ticket_repair_type.code=="EX" and not job_finished
-            / redirect_url
+            / redirect_url - done
             %option{:value => "job_estimation_request", data: {task_id: params[:task_id], process_id: params[:process_id], engineer_id: params[:engineer_id]}} Job Estimate Request (External)
 
           - if present_of_start_ticket_action and ticket.ticket_repair_type.code=="EX" and ticket.ticket_deliver_units.any?{|d| (d.collected and !d.received)} and not job_finished
