@@ -164,14 +164,14 @@ module TodosHelper
         Rails.cache.fetch(session[:cache_key]){ {process_id: process_instance_id, task_id: task_id, owner: owner_id, bpm_input_variables: @bpm_input_variables.map{|e| [e[:variable_id], e[:value]]} } }
 
         @redirect_url = "#{url}?process_id=#{process_instance_id}&task_id=#{task_id}&owner=#{owner_id}&#{@bpm_input_variables.map{|e| e[:variable_id]+'='+e[:value]}.join('&')}"
-        {url: @redirect_url, flash_message: "Successfully redirected"}
+        {url: @redirect_url, flash_message: "Successfully updated and redirected", message_type: :notice}
       else
         Rails.cache.delete(session[:cache_key]) if session[:cache_key].present?
-        {url: "/todos", flash_message: "Task is not available"}
+        {url: "/todos", flash_message: "Task is not available", message_type: :alert}
       end
 
     else
-      {url: '/todos', flash_message: "Workflow is not found"}
+      {url: '/todos', flash_message: "Workflow is not found", message_type: :alert}
     end
   end
 
