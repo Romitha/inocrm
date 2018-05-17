@@ -847,8 +847,6 @@ class ReportsController < ApplicationController
     Product
     TaskAction
     TicketSparePart
-    Ticket.index.import Ticket.all
-    Ticket.index.import Ticket.all
     # @tickets = Ticket.search(query: "ticket_type_name:'In house' AND job_finished:true AND NOT user_ticket_actions.action_id:58")
     # @tickets_58 = Ticket.search(query: "user_ticket_actions.action_id:58 AND user_ticket_actions.feedback_reopen:true")
 
