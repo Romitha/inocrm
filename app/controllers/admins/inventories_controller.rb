@@ -2253,7 +2253,6 @@ module Admins
       authorize! :create_srn, Organization
 
       @srn = Srn.new srn_params
-      @srn.srn_no = CompanyConfig.first.next_sup_last_srn_no
 
       if @srn.srn_items.any? and @srn.save
         Organization
