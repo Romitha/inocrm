@@ -2089,7 +2089,7 @@ module Admins
       Organization
       Inventory
       @prn = InventoryPrn.new prn_params
-
+      @prn.prn_no = CompanyConfig.first.next_sup_last_prn_no
       respond_to do |format|
         if @prn.inventory_prn_items.any? and @prn.save
           if session[:prn_srn_arrived_time].present?
