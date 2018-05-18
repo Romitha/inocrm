@@ -4569,14 +4569,16 @@ class TicketsController < ApplicationController
 
         # redirect_to @ticket, notice: @flash_message
       else
+        @flash_message = "ticket is not updated."
         # redirect_to @ticket, alert: @flash_message
       end
     else
+      @flash_message = "Unable to proceed from BPM."
       # redirect_to @ticket, alert: @flash_message
     end
 
     redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
-    redirect_to redirect_response[:url], {redirect_response[:message_type] => redirect_response[:flash_message]}
+    redirect_to redirect_response[:url], {redirect_response[:message_type] => "#{redirect_response[:flash_message]} - #{@flash_message}"}
 
   end
 
@@ -4746,7 +4748,7 @@ class TicketsController < ApplicationController
       # redirect_to @ticket, alert: @flash_message
     end
     redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
-    redirect_to redirect_response[:url], {redirect_response[:message_type] => redirect_response[:flash_message]}
+    redirect_to redirect_response[:url], {redirect_response[:message_type] => "#{redirect_response[:flash_message]} - #{@flash_message}"}
   end
 
   def update_action_taken
