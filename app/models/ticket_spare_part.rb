@@ -222,8 +222,8 @@ class TicketSparePartStore < ActiveRecord::Base
   end
 
   def create_support_srn(current_user_id, store_id, inventory_product_id, quantity, main_inventory_product_id=nil)
-
-    srn = Srn.create(store_id: store_id, created_by: current_user_id, created_at: DateTime.now, requested_module_id: BpmModule.find_by_code("SPT").id, srn_no: CompanyConfig.first.next_sup_last_srn_no)#inv_srn
+    next_sup_last_srn_no = CompanyConfig.first.next_sup_last_srn_no
+    srn = Srn.create(store_id: store_id, created_by: current_user_id, created_at: DateTime.now, requested_module_id: BpmModule.find_by_code("SPT").id, srn_no: next_sup_last_srn_no)#inv_srn
 
     srn_item = srn.srn_items.create(product_id: inventory_product_id, quantity: quantity, returnable: false, spare_part: true, main_product_id: main_inventory_product_id)#inv_srn_item
 
