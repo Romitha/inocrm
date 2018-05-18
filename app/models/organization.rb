@@ -293,14 +293,14 @@ class CompanyConfig < ActiveRecord::Base
   # has_many :organizations, foreign_key: "type_id"
 
   def increase_inv_last_srn_no
-    updatable_inv_last_srn_no = next_inv_last_srn_no
+    updatable_inv_last_srn_no = next_sup_last_srn_no
     update inv_last_srn_no: updatable_inv_last_srn_no
     updatable_inv_last_srn_no
 
   end
 
   def increase_inv_last_gin_no
-    updatable_inv_last_gin_no = next_inv_last_gin_no
+    updatable_inv_last_gin_no = next_sup_last_gin_no
     update inv_last_gin_no: updatable_inv_last_gin_no
     updatable_inv_last_gin_no
   end
@@ -312,7 +312,7 @@ class CompanyConfig < ActiveRecord::Base
   end
 
   def increase_inv_last_grn_no
-    updatable_inv_last_grn_no = next_inv_last_grn_no
+    updatable_inv_last_grn_no = next_sup_last_grn_no
     update inv_last_grn_no: updatable_inv_last_grn_no
     updatable_inv_last_grn_no
   end
@@ -360,7 +360,7 @@ class CompanyConfig < ActiveRecord::Base
   end
 
   def increase_inv_last_prn_no
-    updatable_inv_last_prn_no = next_inv_last_prn_no
+    updatable_inv_last_prn_no = next_sup_last_prn_no
     update inv_last_prn_no: updatable_inv_last_prn_no
     updatable_inv_last_prn_no
   end
