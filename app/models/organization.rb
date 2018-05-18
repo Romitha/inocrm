@@ -293,63 +293,76 @@ class CompanyConfig < ActiveRecord::Base
   # has_many :organizations, foreign_key: "type_id"
 
   def increase_inv_last_srn_no
-    update inv_last_srn_no: (inv_last_srn_no.to_i+1)
-    inv_last_srn_no
+    updatable_inv_last_srn_no = next_inv_last_srn_no
+    update inv_last_srn_no: updatable_inv_last_srn_no
+    updatable_inv_last_srn_no
+
   end
 
   def increase_inv_last_gin_no
-    update inv_last_gin_no: (inv_last_gin_no.to_i+1)
-    inv_last_gin_no
+    updatable_inv_last_gin_no = next_inv_last_gin_no
+    update inv_last_gin_no: updatable_inv_last_gin_no
+    updatable_inv_last_gin_no
   end
 
   def increase_inv_last_srr_no
-    update inv_last_srr_no: (inv_last_srr_no.to_i+1)
-    inv_last_srr_no
+    updatable_inv_last_srr_no = next_inv_last_srr_no
+    update inv_last_srr_no: updatable_inv_last_srr_no
+    updatable_inv_last_srr_no
   end
 
   def increase_inv_last_grn_no
-    update inv_last_grn_no: (inv_last_grn_no.to_i+1)
-    inv_last_grn_no
+    updatable_inv_last_grn_no = next_inv_last_grn_no
+    update inv_last_grn_no: updatable_inv_last_grn_no
+    updatable_inv_last_grn_no
   end
 
   def increase_inv_last_po_no
-    update inv_last_po_no: (inv_last_po_no.to_i+1)
-    inv_last_po_no
+    updatable_inv_last_po_no = next_inv_last_po_no
+    update inv_last_po_no: updatable_inv_last_po_no
+    updatable_inv_last_po_no
   end
 
   def increase_sup_last_invoice_no
-    update sup_last_invoice_no: (sup_last_invoice_no.to_i+1)
-    sup_last_invoice_no
+    updatable_sup_last_invoice_no = next_sup_last_invoice_no
+    update sup_last_invoice_no: updatable_sup_last_invoice_no
+    updatable_sup_last_invoice_no
   end
 
   def increase_sup_last_receipt_no
-    update sup_last_receipt_no: (sup_last_receipt_no.to_i+1)
-    sup_last_receipt_no
+    updatable_sup_last_receipt_no = next_sup_last_receipt_no
+    update sup_last_receipt_no: updatable_sup_last_receipt_no
+    updatable_sup_last_receipt_no
   end
 
   def increase_sup_last_bundle_no
-    update sup_last_bundle_no: (sup_last_bundle_no.to_i+1)
-    sup_last_bundle_no
+    updatable_sup_last_bundle_no = next_sup_last_bundle_no
+    update sup_last_bundle_no: updatable_sup_last_bundle_no
+    updatable_sup_last_bundle_no
   end
 
   def increase_sup_last_quotation_no
-    update sup_last_quotation_no: (sup_last_quotation_no.to_i+1)
-    sup_last_quotation_no
+    updatable_sup_last_quotation_no = next_sup_last_quotation_no
+    update sup_last_quotation_no: updatable_sup_last_quotation_no
+    updatable_sup_last_quotation_no
   end
 
   def increase_sup_last_fsr_no
-    update sup_last_fsr_no: (sup_last_fsr_no.to_i+1)
-    sup_last_fsr_no
+    updatable_sup_last_fsr_no = next_sup_last_fsr_no
+    update sup_last_fsr_no: updatable_sup_last_fsr_no
+    updatable_sup_last_fsr_no
   end
 
   def increase_sup_last_contract_serial_no
-    update sup_last_contract_serial_no: (sup_last_contract_serial_no.to_i+1)
-    sup_last_contract_serial_no
+    updatable_sup_last_contract_serial_no = next_sup_last_contract_serial_no
+    update sup_last_contract_serial_no: updatable_sup_last_contract_serial_no
+    updatable_sup_last_contract_serial_no
   end
 
   def increase_inv_last_prn_no
-    update inv_last_prn_no: (inv_last_prn_no.to_i+1)
-    inv_last_prn_no
+    updatable_inv_last_prn_no = next_inv_last_prn_no
+    update inv_last_prn_no: updatable_inv_last_prn_no
+    updatable_inv_last_prn_no
   end
 
   def next_sup_last_invoice_no
