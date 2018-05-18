@@ -107,7 +107,7 @@ class Srn < ActiveRecord::Base
     created_by_user.full_name
   end
 
-  before_create :assign_srn_no
+  # before_create :assign_srn_no
   def assign_srn_no
     Organization
 
