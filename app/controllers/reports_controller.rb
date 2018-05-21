@@ -827,7 +827,7 @@ class ReportsController < ApplicationController
     Product
     TaskAction
     @user_ticket_actions = UserTicketAction.where(action_id: '37').order("action_at desc")
-
+    # Receive Spare part from Manufacture
     render "reports/returned_manufacture"
   end
 
@@ -850,7 +850,13 @@ class ReportsController < ApplicationController
     # @tickets = Ticket.search(query: "ticket_type_name:'In house' AND job_finished:true AND NOT user_ticket_actions.action_id:58")
     # @tickets_58 = Ticket.search(query: "user_ticket_actions.action_id:58 AND user_ticket_actions.feedback_reopen:true")
 
-    @combined_tickets = Ticket.search(query: "ticket_type_code:'IH' AND job_finished:true").select{|t| t.user_ticket_actions.none?{|u| u.action_id == 58 and !u.feedback_reopen } }
+    # @combined_tickets = Ticket.search(query: "ticket_type_code:'IH' AND job_finished:true").select{|t| t.user_ticket_actions.none?{|u| u.action_id == 58 and !u.feedback_reopen } }
+
+    @combined_tickets = Ticket.where(ticket_type_id: '1', status_id:'6')
+    # @combined_tickets = Ticket.search(query: "ticket_type_code:'IH' AND ticket_status_code:'CFB'")
+
+
+    
     # @combined_tickets = (@tickets.to_a + @tickets_58.to_a)
     # @ticket_manufactures = UserTicketAction.where.not(action_id: '58').order("action_at desc").to_a.uniq{|t| t.ticket_id }
 
@@ -882,6 +888,9 @@ class ReportsController < ApplicationController
     @pending_parts = TicketSparePartStore.where(store_requested: true, issued: false)
     render "reports/parts_pending"
   end
+
+  # and (request_approval_required= false or  request_approved = true)
+
   def parts_available
     TicketSparePart
     @available_parts = TicketSparePartStore.joins(:ticket_spare_part).where("spt_ticket_spare_part.received_eng_by is NULL AND issued")#where("recived_eng_at IS NULL AND issued")
