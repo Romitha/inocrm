@@ -42,7 +42,6 @@
     //0.0.0.0:3000/reports/excel_output.xls
     - @ticket.each do |ticket|
       %tr
-        %td= ticket.customer.organization.id
         %td= ticket.customer.name
         %td
           - if ticket.customer.organization
