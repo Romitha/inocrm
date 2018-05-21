@@ -70,18 +70,18 @@
               
             .col-md-4.small_scale_margin-top1
               = label_tag "Customer (Registered)"
-              = select_tag "search_ticket[customer.name]", options_from_collection_for_select(Organization.organization_customers, :name, :name), include_blank: true, class: "form-control"
+              = select_tag "search_ticket[customer.organization.id]", options_from_collection_for_select(Organization.customers, :id, :name), include_blank: true, class: "form-control"
               %br/
-              / = label_tag "Customer"
-              / / = select_tag "search_ticket[customer.name]", options_from_collection_for_select(Customer.all, :name, :name), include_blank: true, class: "form-control"
-              / = text_field_tag "search_ticket[customer.name]", nil, :placeholder => "Customer", class: "form-control"
+              = label_tag "Customer (Not Registered)"
+              / = select_tag "search_ticket[customer.name]", options_from_collection_for_select(Customer.all, :name, :name), include_blank: true, class: "form-control"
+              = text_field_tag "search_ticket[customer.name]", nil, :placeholder => "Customer", class: "form-control"
             .col-md-4.small_scale_margin-top1
               = label_tag "District"
               = select_tag "search_ticket[customer.district.id]", options_from_collection_for_select(District.all, :id, :name), include_blank: true, class: "form-control"
 
             .col-md-4.small_scale_margin-top1
               = label_tag "Ticket Status"
-              = select_tag "search_ticket[ticket_status.name]", options_from_collection_for_select(TicketStatus.all, :name, :name), include_blank: true, class: "form-control"
+              = select_tag "search_ticket[ticket_status.id]", options_from_collection_for_select(TicketStatus.all, :id, :name), include_blank: true, class: "form-control"
 
           .row.small_scale_margin-top1
             .col-md-1
