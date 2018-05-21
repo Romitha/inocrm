@@ -363,7 +363,7 @@ class TicketSparePartManufacture < ActiveRecord::Base
       only: [:id, :spare_part_id, :event_no, :order_no, :collect_pending_manufacture, :order_pending, :updated_at],
       include: {
         ticket_spare_part:{
-          only: [:id, :spare_part_no, :spare_part_description, :request_from],
+          only: [:id, :spare_part_no, :spare_part_description, :request_from, :part_returned],
           include: {
             ticket: {
               only: [:id],

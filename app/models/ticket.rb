@@ -72,7 +72,7 @@ class Ticket < ActiveRecord::Base
     UserTicketAction
     to_json(
       only: [:created_at, :cus_chargeable, :id, :ticket_no, :logged_at, :slatime, :job_started_at, :job_started_action_id, :problem_description, :job_type_id, :job_finished_at, :job_finished, :status_hold, :re_open_count,:owner_engineer_id, :final_invoice_id, :resolution_summary, :ticket_type, :updated_at],
-      methods: [:customer_name, :inhouse_type_select,:sla_description, :is_hold_and_have_last_hold_action?, :ticket_product_brand_name,:ticket_product_brand_id, :ticket_product_serial_no, :ticket_product_cat_id, :ticket_product_cat1_id, :ticket_product_cat2_id, :ticket_support_engineer_cost,:ticket_additional_cost,:ticket_external_cost, :ticket_engineer_cost, :ticket_part_cost, :ticket_contract_contract_end_at, :ticket_contract_contract_start_at, :job_type_get, :owner_engineer_name, :ticket_status_name, :warranty_type_name, :support_ticket_no, :ticket_type_name, :ticket_type_code,  :ticket_contract_product_amount, :ticket_contract_location],
+      methods: [:customer_name, :inhouse_type_select,:sla_description, :is_hold_and_have_last_hold_action?, :ticket_product_brand_name,:ticket_product_brand_id, :ticket_product_serial_no, :ticket_product_cat_id, :ticket_product_cat1_id, :ticket_product_cat2_id, :ticket_support_engineer_cost,:ticket_additional_cost,:ticket_external_cost, :ticket_engineer_cost, :ticket_part_cost, :ticket_contract_contract_end_at, :ticket_contract_contract_start_at, :job_type_get, :owner_engineer_name, :ticket_status_name, :ticket_status_code, :warranty_type_name, :support_ticket_no, :ticket_type_name, :ticket_type_code,  :ticket_contract_product_amount, :ticket_contract_location],
       include: {
         ticket_contract: {
           only: [ :id, :customer_id, :products, :contract_no,:amount, :contract_start_at,:contract_end_at, :season, :accepted_at, :updated_at],
@@ -303,7 +303,9 @@ class Ticket < ActiveRecord::Base
   def ticket_status_name
     ticket_status.name
   end
-
+  def ticket_status_code
+    ticket_status.code
+  end
   def warranty_type_name
     Warranty
     warranty_type.name

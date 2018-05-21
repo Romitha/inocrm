@@ -9,16 +9,16 @@
       %th Customer Contact No
       %th Customer Email
       %th Product Brand
+      %th Category
       %th Model Number
       %th Product Number
       %th Product Serial No
-      %th Category
       %th SLA
       %th Job Number (Partner)
       %th CASE ID / HP Advisory
-      %th Log Date & Time
-      %th Engrs Assign Date & Time
-      %th Start Date & Time
+      %th Log Date
+      %th Engineer Assign Date
+      %th Start Date
       %th Start Action
       %th Problem Description
       %th Support Group (SBU)
@@ -42,7 +42,8 @@
     //0.0.0.0:3000/reports/excel_output.xls
     - @ticket.each do |ticket|
       %tr
-        %td= ticket.customer.name
+        %td= ticket.logged_at
+        / %td= ticket.customer.name
         %td
           - if ticket.customer.organization
             Corporate
@@ -77,6 +78,10 @@
             / - ticket.products.each do |product|
             /   = product.try(:brand_name)
         %td
+          // Category
+          - if ticket.products
+            = ticket.products.map { |p| p.category_full_name_index }.join(", ")
+        %td
           - if ticket.products
             = ticket.products.map { |p| p.model_no }.join(", ")
             / - ticket.products.pluck(:model_no).join(", ")
@@ -92,10 +97,6 @@
           - if ticket.products
             = ticket.products.map { |p| p.serial_no }.join(", ")
             / - ticket.products.pluck(:serial_no).join(", ")
-        %td
-          // Category
-          - if ticket.products
-            = ticket.products.map { |p| p.category_name }.join(", ")
             
         %td
           // SLA
@@ -105,18 +106,20 @@
           = ticket.support_ticket_no
         %td
           // CASE ID / HP Advisory
-          = ticket.products.map { |p| p.case_id }.join(", ")
+          = ticket.hp_cases.map { |h| h.case_id }.join(", ")
           / - ticket.hp_cases.pluck(:case_id).join(", ")
 
         %td
           // Log Date & Time
-          = ticket.logged_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
+          = ticket.logged_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
         %td
           // Engrs Assign Date & Time
-          = ticket.try(:owner_engineer).try(:create_at).try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
+          - if  ticket.owner_engineer.present?
+            = ticket.try(:owner_engineer).try(:created_at).to_date.strftime(INOCRM_CONFIG["short_date_format"])
         %td
           // Start Date & Time
-          = ticket.try(:job_started_at).try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
+          - if ticket.job_started_at.present?
+            = ticket.try(:job_started_at).to_date.strftime(INOCRM_CONFIG["short_date_format"])
         %td
           // Start Action
           = ticket.try(:ticket_start_action).try(:action)
