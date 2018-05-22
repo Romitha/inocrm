@@ -101,7 +101,8 @@
     %dl.dl-horizontal   
       %dt POP status
       %dd
-        = product.product_pop_status.try(:name)
+        = link_to "#", class: "inline_edit", data: {type: "select", source: ProductPopStatus.where(active: true).collect{|pop| {value: pop.id, text: pop.name}}, resource: "product", name: "pop_status_id", url: product_update_tickets_path(product_id: product.id ), "original-title" => "Update Pop Status"} do
+          = product.product_pop_status.try(:name)
         = link_to "View POP (#{product.pop_doc_url.file.try :filename})", product.pop_doc_url.url, target: "_blank" if product.pop_doc_url.file.present?
       %dt Sold country
       %dd= product.product_sold_country.try(:country_name_with_code)

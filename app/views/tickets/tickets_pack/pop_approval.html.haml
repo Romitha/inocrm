@@ -42,7 +42,7 @@
               .col-md-3
                 = p.association :product_pop_status, collection: ProductPopStatus.where(active: true).offset(3), include_blank: false, wrapper_html: {class: "col-md-11"}, label: "Product POP status"
               .col-md-3
-                = p.association :product_sold_country, wrapper_html: {class: "col-md-11"}, label_method: :Country, value_method: :id
+                = p.association :product_sold_country, wrapper_html: {class: "col-md-11"}, label_method: :country_name_with_code, value_method: :id
 
               .col-md-2
                 = link_to "View POP (#{product.pop_doc_url.file.try :filename})", product.pop_doc_url.url, target: "_blank" if product.pop_doc_url.file.present?

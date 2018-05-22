@@ -162,7 +162,7 @@
                   %legend POP
                   .row
                     .col-md-3
-                      = f.association :product_pop_status, collection: ProductPopStatus.where(active: true)
+                      = fieldset.association :product_pop_status, collection: ProductPopStatus.where(active: true)
                     .col-md-4
                       = f.input :pop_note
                     .col-md-3

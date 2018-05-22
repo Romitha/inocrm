@@ -18,7 +18,7 @@
   .col-md-4
     %h4 Contact Person 1 #{raw("<span class='text-success'>(Inform to)</span>") if ticket.inform_cp == 1}
     %dt Name
-    %dd #{ticket.contact_person1.mst_title.title} #{ticket.contact_person1.name.capitalize}
+    %dd #{ticket.contact_person1.full_name}
     - ticket.contact_person1.contact_person_contact_types.each do |contact_person_contact_type|
       %dt= contact_person_contact_type.contact_type.try(:name)
       %dd= contact_person_contact_type.value

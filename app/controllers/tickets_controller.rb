@@ -131,6 +131,19 @@ class TicketsController < ApplicationController
     end
   end
 
+  def update_product
+    Ticket
+    product = Product.find params[:product_id]
+    respond_to do |format|
+      if product.update product_params
+        product.update_index
+        format.json { render json: product }
+      else
+        format.json { render json: product.errors }
+      end
+    end
+  end
+
   def create_product
     Ticket
     ContactNumber
