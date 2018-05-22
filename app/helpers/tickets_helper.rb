@@ -53,7 +53,7 @@ module TicketsHelper
     body_merger = {}
 
     if ticket.present?
-      customer_info = {customer_name: ticket.customer.full_name, customer_address: ticket.customer.full_address, customer_code: (ticket.customer.organization and ticket.customer.organization.account.code), customer_contact_person_name: "#{ticket.contact_person1.full_name} (#{ticket.contact_person1.contact_person_contact_types.select{|c| c.contact_type.mobile }.map { |c| c.contact_info }.join(', ')})" }
+      customer_info = {customer_name: ticket.customer.full_name, customer_address: ticket.customer.full_address, customer_code: (ticket.customer.organization and ticket.customer.organization.account.code), customer_contact_person_name: "#{ticket.contact_person1.full_name} (#{ticket.contact_person1.contact_person_contact_types.select{|c| c.contact_type.mobile or c.contact_type.fixedline}.map { |c| c.contact_info }.join(', ')})" }
 
       body_merger.merge!(customer_info)
 
