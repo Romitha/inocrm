@@ -37,8 +37,10 @@
           Replaced parts
         .col-md-4
           %h4 Manufacture Parts Return Required: #{CompanyConfig.first.sup_mf_parts_return_required ? 'Yes' : 'No'}
-          %strong No of Return pending parts:
-          = f.object.ticket_spare_parts.where(part_terminated: false, part_returned: false, engineer_id: job_engineers.ids).count
+          - sp = f.object.ticket_spare_parts.where(part_terminated: false, part_returned: false, engineer_id: job_engineers.ids).count
+          - nsp = f.object.ticket_spare_parts.joins(:ticket_spare_part_non_stock).where(part_terminated: false, part_returned: false, engineer_id: job_engineers.ids).count          
+          %strong No of Return pending parts: #{(sp - nsp)}
+
 
         .col-md-4
           %strong No of un-closed events:
