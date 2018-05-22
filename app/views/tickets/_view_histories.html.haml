@@ -10,9 +10,9 @@
         %dt Date
         %dd= history.logged_at.try(:strftime, "%m-%d-%Y")
         %dt By
-        %dd= history.created_by
+        %dd= history.created_by_user_full_name
         %dt Status
-        %dd= history.ticket_status.name
+        %dd= history.ticket_status_name
         %dt Problem Category
         %dd= history.problem_category.try(:name)
         %dt Problem Description
@@ -28,9 +28,9 @@
         %dd #{history.report_person and history.report_person.full_name}
         %br
         %dt Engineer
-        %dd= User.find_by_id(history.owner_engineer_id).try(:full_name)
-        %dt Reported by
-        %dd
+        %dd=history.owner_eng_full_name
+        / %dt Reported by
+        / %dd
         %dt Resolution summary
         %dd= history.resolution_summary
         %br

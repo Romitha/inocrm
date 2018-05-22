@@ -827,7 +827,7 @@ class ReportsController < ApplicationController
     Product
     TaskAction
     @user_ticket_actions = UserTicketAction.where(action_id: '37').order("action_at desc")
-    # Receive Spare part from Manufacture
+    # 37 action is Receive Spare part from Manufacture
     render "reports/returned_manufacture"
   end
 
@@ -942,7 +942,7 @@ class ReportsController < ApplicationController
 
       request.format = "xls"
     end
-    params[:per_page] = 100
+    params[:per_page] = 10000
     params[:query] = refined_search_ticket
     @ticket = Ticket.search(params)
 
