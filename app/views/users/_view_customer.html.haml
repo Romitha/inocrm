@@ -30,7 +30,7 @@
       - ticket.contact_person2.contact_person_contact_types.each do |contact_person_contact_type|
         %dt= contact_person_contact_type.contact_type.try(:name)
         %dd= contact_person_contact_type.value
-  - if ticket.contact_person2.present?
+  - if ticket.report_person.present?
     .col-md-4
       %h4 Reporter
       %dt Name

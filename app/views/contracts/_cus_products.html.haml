@@ -87,8 +87,12 @@
 
               / = collapse collapse_type: "info", labelledby: "labelledby_#{f.object.id}", header_content: "Product: #{f.object.product_brand.try(:name)}:#{f.object.product_category.try(:name)}:#{f.object.serial_no}", collapse_link: "invunitlink_#{f.object.id}", collapse_id: "products_collapse" do
               - product = f.object
+              - ticket_count = f.object.tickets.count
+              - do_not_edit = ticket_count > 0
+              - if ticket_count == 1
+                - do_not_edit = f.object.tickets.last.job_finished
               .panel-body
-                - if f.object.tickets.any? || f.object.contract_products.any?
+                - if do_not_edit || f.object.contract_products.any?
                   .row
                     .col-md-4
                       = label_tag "Serial No :"
@@ -162,7 +166,7 @@
                   %legend POP
                   .row
                     .col-md-3
-                      = fieldset.association :product_pop_status, collection: ProductPopStatus.where(active: true)
+                      = f.association :product_pop_status, collection: ProductPopStatus.where(active: true)
                     .col-md-4
                       = f.input :pop_note
                     .col-md-3

@@ -131,8 +131,8 @@
     %h4 Remarks
   .col-md-10
     %dd
-      = link_to_if params[:edit_ticket], simple_format(ticket.remarks), "#" , class: "inline_edit", data: {type: "textarea", resource: "ticket", name: "remarks", url: update_edit_ticket_tickets_path(ticket_id: ticket.id, edit_ticket: true), "original-title" => "Update inform_method", value: ""} do
-        = simple_format ticket.remarks
+      / = link_to_if params[:edit_ticket], simple_format(ticket.remarks), "#" , class: "inline_edit", data: {type: "textarea", resource: "ticket", name: "remarks", url: update_edit_ticket_tickets_path(ticket_id: ticket.id, edit_ticket: true), "original-title" => "Update inform_method", value: ""} do
+      = simple_format ticket.remarks
       - if ticket.remarks.present?
         %button.btn.btn-link#remarks_popover{"data-container" => "body", "data-content" => ticket.remarks.to_s, "data-placement" => "bottom", "data-toggle" => "popover", "data-trigger" =>"focus", :type => "button","data-html"=>"true",class: "has-popover"}
           More
