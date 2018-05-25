@@ -227,6 +227,9 @@ mst_spt_action = [
   ["88", 'Finish the Job', '3', false],
   ["89", 'Approve Spare Part from Manufacture', '16', false],
   ["90", 'Reject Spare Part from Manufacture', '16', false]
+  ["91", 'Collect the Product for In-house repair (On-Site Job)', '3', false]
+  ["92", 'Return the Product after In-house repair (On-Site Job)', '3', false]
+  ["93", 'Manufacture Part Order Approval Requested', '9', false]
 ].each{ |t| TaskAction.create_with(action_description: t[1], task_id: t[2], hide: t[3]).find_or_create_by(action_no: t[0]) }
 
 Product

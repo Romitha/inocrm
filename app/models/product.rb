@@ -139,17 +139,18 @@ class Product < ActiveRecord::Base
     ticket_contracts.find_by_id(contract_id) and ticket_contracts.find_by_id(contract_id).tickets.any? and ((ticket_ids - ticket_contracts.find_by_id(contract_id).ticket_ids) != ticket_ids)
   end
 
-  def create_product_owner_history(owner_customer_id, created_by, note)
+  def create_product_owner_history(owner_customer_id, created_by, note, created_mode)
     if self.owner_customer_id != owner_customer_id
       if persisted?
         update owner_customer_id: owner_customer_id
-        product_customer_histories.create(owner_customer_id: owner_customer_id, created_by: created_by, note: note)
+        product_customer_histories.create(owner_customer_id: owner_customer_id, created_by: created_by, note: note, created_mode: created_mode)
       else
         owner_customer_id = owner_customer_id
         product_customer_histories.build(owner_customer_id: owner_customer_id, created_by: created_by, note: note)
       end
     end
   end
+
 
   def strip_serial_no
     self.update serial_no: self.serial_no.strip if self.serial_no.present?

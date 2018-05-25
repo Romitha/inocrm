@@ -82,7 +82,9 @@
             .col-md-4.small_scale_margin-top1
               = label_tag "Ticket Status"
               = select_tag "search_ticket[ticket_status.id]", options_from_collection_for_select(TicketStatus.all, :id, :name), include_blank: true, class: "form-control"
-
+            .col-md-2.small_scale_margin-top2
+              = label_tag "Product Inside:"
+              = select_tag "search_ticket[product_inside]", raw("<option value=1>Inside</option> <option value=0>Not Inside</option>"), class: "form-control parent_class", include_blank: true
           .row.small_scale_margin-top1
             .col-md-1
               .search
