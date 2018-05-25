@@ -854,6 +854,7 @@ class TicketsController < ApplicationController
           company_config = CompanyConfig.lock.first.reload
 
           @ticket.ticket_no = company_config.sup_last_ticket_no.to_i
+          @ticket.product_inside = 1 if @ticket.ticket_type_code == "IH"
           if @ticket.save!
 
             @ticket.products << @product

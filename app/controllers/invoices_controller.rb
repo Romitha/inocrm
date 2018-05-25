@@ -350,7 +350,7 @@ class InvoicesController < ApplicationController
 
     customer_feedback_payment_completed = params[:payment_completed].present?
     customer_feedback_unit_return_customer = params[:unit_return_customer].present?
-    customer_feedback_reopen_reason = params[:re_open_reason].present?
+    customer_feedback_reopen_reason = params[:re_open_reason]
     customer_feedback_feedback_id = params[:feedback_id]
     customer_feedback_dispatch_method_id = params[:dispatch_method_id]
     customer_feedback_re_opened = params[:re_opened].present?
@@ -410,6 +410,7 @@ class InvoicesController < ApplicationController
         @continue = true
 
       end
+      editable_ticket_params.merge! product_inside: false
       @ticket.update editable_ticket_params# if editable_ticket_params.present?
       unless re_open
         @ticket.set_ticket_close(current_user.id)
@@ -425,7 +426,7 @@ class InvoicesController < ApplicationController
         action_no = 58
       end
       user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(action_no).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
-      user_ticket_action.build_customer_feedback(re_opened: customer_feedback_re_opened, unit_return_customer: customer_feedback_unit_return_customer, re_open_reason:customer_feedback_reopen_reason,payment_received_id: @ticket_payment_received.try(:id), payment_completed: customer_feedback_payment_completed, feedback_id: customer_feedback_feedback_id, feedback_description: customer_feedback_feedback_description, created_at: DateTime.now, updated_at: current_user.id, dispatch_method_id: customer_feedback_dispatch_method_id, ticket_terminated: @ticket.ticket_terminated)
+      user_ticket_action.build_customer_feedback(re_opened: customer_feedback_re_opened, unit_return_customer: customer_feedback_unit_return_customer, re_open_reason: customer_feedback_reopen_reason, payment_received_id: @ticket_payment_received.try(:id), payment_completed: customer_feedback_payment_completed, feedback_id: customer_feedback_feedback_id, feedback_description: customer_feedback_feedback_description, created_at: DateTime.now, updated_at: current_user.id, dispatch_method_id: customer_feedback_dispatch_method_id, ticket_terminated: @ticket.ticket_terminated)
       user_ticket_action.save!
 
       # bpm output variables
@@ -789,7 +790,7 @@ class InvoicesController < ApplicationController
     end
 
     def ticket_params
-      ticket_params = params.require(:ticket).permit(:id, :remarks, :final_amount_to_be_paid, user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_id, :action_by, :re_open_index, act_quality_control_attributes: [:approved, :reject_reason]], ge_q_and_answers_attributes: [:id, :general_question_id, :ticket_action_id, :answer], q_and_answers_attributes: [:id, :problematic_question_id, :ticket_action_id, :answer], act_terminate_job_payments_attributes: [:id, :_destroy, :payment_item_id, :amount, :currency_id])
+      ticket_params = params.require(:ticket).permit(:id, :remarks, :product_inside, :final_amount_to_be_paid, user_ticket_actions_attributes: [:id, :_destroy, :action_at, :action_id, :action_by, :re_open_index, act_quality_control_attributes: [:approved, :reject_reason]], ge_q_and_answers_attributes: [:id, :general_question_id, :ticket_action_id, :answer], q_and_answers_attributes: [:id, :problematic_question_id, :ticket_action_id, :answer], act_terminate_job_payments_attributes: [:id, :_destroy, :payment_item_id, :amount, :currency_id])
       ticket_params[:current_user_id] = current_user.id
       ticket_params
     end

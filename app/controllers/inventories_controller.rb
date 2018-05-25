@@ -1013,6 +1013,8 @@ class InventoriesController < ApplicationController
         user_ticket_action.build_deliver_unit(ticket_deliver_unit_id: @ticket_deliver_unit.id, deliver_to_id: @ticket_deliver_unit.deliver_to_id, deliver_note: ticket_deliver_unit_note)
 
         user_ticket_action.save
+
+        @ticket.product_inside = false
       end
 
       if ticket_deliver_unit.collected
@@ -1028,6 +1030,8 @@ class InventoriesController < ApplicationController
           user_ticket_action.build_deliver_unit(ticket_deliver_unit_id: @ticket_deliver_unit.id, deliver_to_id: @ticket_deliver_unit.deliver_to_id, deliver_note: ticket_deliver_unit_note)
 
           user_ticket_action.save
+
+          @ticket.product_inside = true
 
           # bpm output variables
           bpm_variables = view_context.initialize_bpm_variables
