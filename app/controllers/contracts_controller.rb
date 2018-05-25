@@ -132,10 +132,10 @@ class ContractsController < ApplicationController
 
       @cus_product.save
 
-      @cus_product.products.each do |product|
-        product.create_product_owner_history(@organization.id, current_user.id, "Added in contract")
+      # @cus_product.products.each do |product|
+      #   product.create_product_owner_history(@organization.id, current_user.id, "Added in contract", 0)
 
-      end
+      # end
     end
   end
 
@@ -239,10 +239,10 @@ class ContractsController < ApplicationController
     end
 
     Rails.cache.delete([:contract_products, request.remote_ip])
-    @contract.products.each do |product|
-      product.create_product_owner_history(@organization.id, current_user.id, "Added in contract")
+    # @contract.products.each do |product|
+    #   product.create_product_owner_history(@organization.id, current_user.id, "Added in contract", 0)
 
-    end
+    # end
 
   end
 
@@ -410,7 +410,6 @@ class ContractsController < ApplicationController
           @contract = (cached_contract or TicketContract.new)
           @contract.attributes = contract_params
         end
-        puts "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
         @contract.update_index
         # Rails.cache.delete([:new_product_with_pop_doc_url1, request.remote_ip])
         @contract.save
@@ -615,7 +614,7 @@ class ContractsController < ApplicationController
           Rails.cache.delete([:products, request.remote_ip])
 
           @organization.products.each do |product|
-            product.create_product_owner_history(@organization.id, current_user.id, "Added in Product")
+            product.create_product_owner_history(@organization.id, current_user.id, "Added in Product", 0)
           end
         end
       end
@@ -704,7 +703,7 @@ class ContractsController < ApplicationController
 
   private
     def contract_params
-      params.require(:ticket_contract).permit(:id, :created_at, :created_by, :customer_id, :sla_id, :contract_no, :contract_type_id, :hold, :contract_b2b, :remind_required, :currency_id, :amount, :contract_start_at, :contract_end_at, :remarks, :owner_organization_id, :process_at, :legacy_contract_no, :organization_bill_id, :bill_address_id, :organization_contact_id, :product_brand_id, :product_category_id, :product_category1_id, :product_category2_id,:contact_person_id, :additional_charges, :season, :status_id, :contact_address_id, :accepted_at, :payment_type_id, :documnet_received, contract_products_attributes: [ :id, :_destroy, :invoice_id, :item_no, :description, :amount, :sla_id, :remarks, product_attributes: [:id, :_destroy, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by, :remarks]], contract_attachments_attributes: [:id, :_destroy, :attachment_url], contract_payment_installments_attributes: [:id, :payment_installment, :installment_amount, :total_amount,:installment_start_date, :installment_end_date])
+      params.require(:ticket_contract).permit(:id, :created_at, :created_by, :account_managed_by, :so_number, :customer_id, :sla_id, :contract_no, :contract_type_id, :hold, :contract_b2b, :remind_required, :currency_id, :amount, :contract_start_at, :contract_end_at, :remarks, :owner_organization_id, :process_at, :legacy_contract_no, :organization_bill_id, :bill_address_id, :organization_contact_id, :product_brand_id, :product_category_id, :product_category1_id, :product_category2_id,:contact_person_id, :additional_charges, :season, :status_id, :contact_address_id, :accepted_at, :payment_type_id, :documnet_received, contract_products_attributes: [ :id, :_destroy, :invoice_id, :item_no, :description, :amount, :sla_id, :remarks, product_attributes: [:id, :_destroy, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by, :remarks]], contract_attachments_attributes: [:id, :_destroy, :attachment_url], contract_payment_installments_attributes: [:id, :payment_installment, :installment_amount, :total_amount,:installment_start_date, :installment_end_date])
     end
 
     def payment_params

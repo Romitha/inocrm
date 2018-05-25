@@ -20,7 +20,9 @@
 
       .col-md-3.small_scale_padding-top1
         = f.input :required_at, as: :string, input_html: {class: "datepicker"}, label: "Required date"
-      .col-md-9.small_scale_padding-top1
+      .col-md-3.small_scale_padding-top1
+        = f.input :support_ticket_no, label: "Support Ticket No"
+      .col-md-6.small_scale_padding-top1
         = f.input :remarks
 
       .col-md-12

@@ -1,6 +1,12 @@
 - joint_tickets = ticket.joint_tickets.collect{|j| j.joint_ticket_id}
 
-- customer.tickets.where(logged_at: [(Time.now.beginning_of_day-7.days)..Time.now.end_of_day]).each do |t|
+.row 
+%br
+  %font{:size => "2"} Tickets which are logged within last 7 days and not completed listed here.
+%br
+%br
+.row
+- customer.tickets.where(logged_at: [(Time.now.beginning_of_day-7.days)..Time.now.end_of_day], job_finished: false).each do |t|
   - unless joint_tickets.include?(t.id)
     - ticket.joint_tickets.build joint_ticket_id: t.id
 - if ticket.joint_tickets.present?

@@ -2359,7 +2359,7 @@ module Admins
       end
 
       def prn_params
-        prn_params = params.require(:inventory_prn).permit(:id, :store_id, :created_by, :prn_no, :required_at, :remarks, inventory_prn_items_attributes: [:id, :product_id, :_destroy, :quantity, :remarks, :prn_item_object_id])
+        prn_params = params.require(:inventory_prn).permit(:id, :store_id, :created_by, :prn_no, :required_at, :support_ticket_no,:remarks, inventory_prn_items_attributes: [:id, :product_id, :_destroy, :quantity, :remarks, :prn_item_object_id])
         prn_params[:current_user_id] = current_user.id
         prn_params
       end

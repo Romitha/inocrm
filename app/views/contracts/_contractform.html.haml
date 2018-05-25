@@ -196,6 +196,11 @@
       = f.input :accepted_at, as: :string, input_html: {class: "datepicker", value: f.object.accepted_at.try(:strftime,INOCRM_CONFIG["short_date_format"])}
     .col-md-4.small_scale_margin-top2
       = f.input :documnet_received, wrapper: :append, label: "Signed Document Received"
+  .row
+    .col-md-2
+      = f.association :account_manager, collection: User.where(organization_id: organization.id), include_blank: true, label_method: :full_name, label: "Account Manager"
+    .col-md-2
+      = f.input :so_number, label: "So Number"
   - have_instalments = false
   - if not contract_product_required
     .row
