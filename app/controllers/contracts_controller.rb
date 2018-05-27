@@ -225,11 +225,14 @@ class ContractsController < ApplicationController
     # end
     Rails.cache.fetch([:contract_products, request.remote_ip]).to_a.each do |product|
       unless @contract.product_ids.include?(product.id)
-        c_product = @contract.contract_products.create(product_serial_id: product.id, sla_id: product.product_brand.sla_id)
+        c_product = @contract.contract_products.build(product_serial_id: product.id, sla_id: product.product_brand.sla_id)
 
         if params['contract_product_additional_params'].present?
           if params['contract_product_additional_params'][c_product.product_serial_id.to_s].present?
             c_product_attr = params['contract_product_additional_params'].require(c_product.product_serial_id.to_s).permit('amount', 'discount_amount', 'contract_start_at', 'contract_end_at', 'contract_b2b', 'location_address_id', 'installed_location_id','remarks' )
+
+            c_product_attr['contract_start_at'] = Time.strptime(c_product_attr['contract_start_at'],'%Y-%m-%d') if c_product_attr['contract_start_at'].present?
+            c_product_attr['contract_end_at'] = Time.strptime(c_product_attr['contract_end_at'],'%Y-%m-%d') if c_product_attr['contract_end_at'].present?
 
             c_product.update!(c_product_attr)
             c_product.ticket_contract.update_index
@@ -307,9 +310,6 @@ class ContractsController < ApplicationController
         fined_query = ["owner_customer_id:#{organization_ids_query}", "product_brand_id:#{params[:product_brand]}", params[:query]].map { |e| e if e.present? }.compact.join(" AND ")
         puts "brand witharai"
       end
-      puts "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-      puts fined_query
-      puts "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
       if params[:contract_id].present?
         @contract_id = TicketContract.find params[:contract_id]
         @products = Product.search(query: fined_query).select{|p| !@contract_id.product_ids.map(&:to_s).include? p.id }
@@ -604,26 +604,35 @@ class ContractsController < ApplicationController
       if params[:owner_customer_id].present?
         @organization = Organization.find params[:owner_customer_id]
         @organization.attributes = customer_product_params
+        flash_msg = {type: :notice, message: ""}
+
+        @organization.products.each do |product|
+          if product.marked_for_destruction? and product.persisted?
+            product.validate_destruction
+            product.reload if product.persisted?
+          end
+        end
+
         if @organization.save
           Rails.cache.fetch([:products, request.remote_ip]).to_a.each do |product|
             product.update owner_customer_id: params[:owner_customer_id]
-            # unless @cus_product.product_ids.include?(product.id)
-            #   @cus_product.products.create(owner_customer_id: )
-            # end
           end
           Rails.cache.delete([:products, request.remote_ip])
 
-          @organization.products.each do |product|
-            product.create_product_owner_history(@organization.id, current_user.id, "Added in Product", 0)
-          end
+          # @organization.products.each do |product|
+          #   product.create_product_owner_history(@organization.id, current_user.id, "Added in Product", 0)
+          # end
+
+          flash_msg[:message] = "Successfully saved!"
         end
+
       end
     end
     if request.xhr?
       render :index
     else
       respond_to do |format|
-        format.html {redirect_to customer_search_contracts_path, notice: "Successfully Saved!"}
+        format.html { redirect_to customer_search_contracts_path, flash_msg }
       end
     end
   end
@@ -703,7 +712,13 @@ class ContractsController < ApplicationController
 
   private
     def contract_params
-      params.require(:ticket_contract).permit(:id, :created_at, :created_by, :account_managed_by, :so_number, :customer_id, :sla_id, :contract_no, :contract_type_id, :hold, :contract_b2b, :remind_required, :currency_id, :amount, :contract_start_at, :contract_end_at, :remarks, :owner_organization_id, :process_at, :legacy_contract_no, :organization_bill_id, :bill_address_id, :organization_contact_id, :product_brand_id, :product_category_id, :product_category1_id, :product_category2_id,:contact_person_id, :additional_charges, :season, :status_id, :contact_address_id, :accepted_at, :payment_type_id, :documnet_received, contract_products_attributes: [ :id, :_destroy, :invoice_id, :item_no, :description, :amount, :sla_id, :remarks, product_attributes: [:id, :_destroy, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by, :remarks]], contract_attachments_attributes: [:id, :_destroy, :attachment_url], contract_payment_installments_attributes: [:id, :payment_installment, :installment_amount, :total_amount,:installment_start_date, :installment_end_date])
+      tspt_params = params.require(:ticket_contract).permit(:id, :created_at, :created_by, :account_managed_by, :so_number, :customer_id, :sla_id, :contract_no, :contract_type_id, :hold, :contract_b2b, :remind_required, :currency_id, :amount, :contract_start_at, :contract_end_at, :remarks, :owner_organization_id, :process_at, :legacy_contract_no, :organization_bill_id, :bill_address_id, :organization_contact_id, :product_brand_id, :product_category_id, :product_category1_id, :product_category2_id,:contact_person_id, :additional_charges, :season, :status_id, :contact_address_id, :accepted_at, :payment_type_id, :documnet_received, contract_products_attributes: [ :id, :_destroy, :invoice_id, :item_no, :description, :amount, :sla_id, :remarks, product_attributes: [:id, :_destroy, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by, :remarks]], contract_attachments_attributes: [:id, :_destroy, :attachment_url], contract_payment_installments_attributes: [:id, :payment_installment, :installment_amount, :total_amount,:installment_start_date, :installment_end_date])
+
+      # tspt_params[:contract_start_at] = Time.strptime(tspt_params[:contract_start_at],'%d-%m-%Y') if tspt_params[:contract_start_at].present?
+      # tspt_params[:contract_end_at] = Time.strptime(tspt_params[:contract_end_at],'%d-%m-%Y') if tspt_params[:contract_end_at].present?
+      # tspt_params[:accepted_at] = Time.strptime(tspt_params[:accepted_at],'%d-%m-%Y') if tspt_params[:accepted_at].present?
+      # tspt_params[:process_at] = Time.strptime(tspt_params[:process_at],'%d-%m-%Y') if tspt_params[:process_at].present?
+      tspt_params
     end
 
     def payment_params
@@ -711,7 +726,7 @@ class ContractsController < ApplicationController
     end
 
     def customer_product_params
-      params.require(:organization).permit(:id, products_attributes: [:id, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by, :remarks, :description, :name, :date_installation, :note, :dn_number, :invoice_number, :invoice_date, :location_address_id, :sla_id, :_destroy, warranties_attributes:[:start_at, :end_at, :product_serial_id, :warranty_type_id, :period_part, :period_labour, :period_onsight, :care_pack_product_no, :care_pack_reg_no, :note, :_destroy]])
+      params.require(:organization).permit(:id, products_attributes: [:id, :create_by_id, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by, :remarks, :description, :name, :date_installation, :note, :dn_number, :invoice_number, :invoice_date, :location_address_id, :sla_id, :_destroy, warranties_attributes:[:start_at, :end_at, :product_serial_id, :warranty_type_id, :period_part, :period_labour, :period_onsight, :care_pack_product_no, :care_pack_reg_no, :note, :_destroy]])
     end
 
     def contract_product_params

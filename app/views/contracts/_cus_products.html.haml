@@ -76,7 +76,8 @@
           %li= error
 
     = o.simple_fields_for :products do |f| # "products_attributes[]", o.object.products.build
-      - if f.object.id.present?
+      = f.input :create_by_id, as: :hidden, input_html: {value: current_user.id}
+      - if f.object.persisted?
         .panel-group#accordion{ role: "tablist", "aria-multiselectable"=>"true"}
           .panel.panel-info
             .panel-heading{role: "tab", id: "headingOne_#{f.object.id}"}
@@ -95,36 +96,42 @@
                 - if do_not_edit || f.object.contract_products.any?
                   .row
                     .col-md-4
-                      = label_tag "Serial No :"
-                      = product.serial_no
-                  .row
-                    .col-md-4
-                      = label_tag "SLA Time :"
-                      = product.sla_time.try(:description)
-                  .row
-                    .col-md-6
-                      = label_tag "Product Brand :"
-                      = product.product_brand.try(:name)
-                  .row
-                    .col-md-6
-                      = label_tag "Category :"
-                      = product.category_full_name_index
-                  .row
-                    .col-md-2
-                      = label_tag "Model No :"
-                      = product.model_no
-                  .row
-                    .col-md-2
-                      = label_tag "Product No :"
-                      = product.product_no
-                  .row
-                    .col-md-4
-                      = label_tag "Name :"
-                      = product.name
-                  .row
+                      .row
+                        .col-md-12
+                          Serial No :
+                          = product.serial_no
+                        .col-md-12
+                          SLA Time :
+                          = product.sla_time.try(:description)
+                        .col-md-12
+                          Product Brand :
+                          = product.product_brand.try(:name)
+                        .col-md-12
+                          Category :
+                          = product.category_full_name_index
+                        .col-md-12
+                          Model No :
+                          = product.model_no
+                        .col-md-12
+                          Product No :
+                          = product.product_no
+                        .col-md-12
+                          Name :
+                          = product.name
+                        .col-md-12
+                          Description :
+                          = product.description
                     .col-md-8
-                      = label_tag "Description :"
-                      = product.description
+                      .row
+                        - f.object.contract_products.each do |c|
+                          .col-md-6
+                            %dl.dl-horizontal
+                              %dt Contract No:
+                              %dd= c.ticket_contract.contract_no
+                              %dt Contract start at:
+                              %dd= c.contract_start_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+                              %dt Contract end at:
+                              %dd= c.contract_end_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
                 - else
                   .row
                     .col-md-4
@@ -134,7 +141,7 @@
                   .row.product_cat
                     .select_wrapper
                       .col-md-3
-                        = f.association :product_brand,collection: ProductBrand.where(active: true), required: true, input_html: {class: "product_brand"}
+                        = f.association :product_brand, collection: ProductBrand.where(active: true), required: true, input_html: {class: "product_brand"}
                       .col-md-3
                         %font{:color => "#90032A"}
                           = label_tag "Product Category 1"
@@ -144,9 +151,6 @@
                           = label_tag "Product Category 2"
                           = select_tag "search_product_category2_cus_product", option_groups_from_collection_for_select(ProductCategory1.all, :active_product_category2s, :id, :id, :name, "#"), include_blank: true, class: "product_category2 form-control"
 
-                      / .col-md-3
-                      /   = label_tag "Product Category 3"
-                      /   = select_tag "search_product_category3", option_groups_from_collection_for_select(ProductCategory2.all, :product_categories, :name, :id, :name, "#"), include_blank: true, class: "product_category form-control"
                       .col-md-3
                         = f.association :product_category, collection: ProductCategory2.all, as: :grouped_select, group_method: :active_product_categories, group_label_method: :id, value_method: :id, required: true, input_html: {class: "product_category chosen-select", onchange: "Tickets.product_name(this);"}, label: "Product Category 3"
                   .row
@@ -434,22 +438,6 @@
 
     %hr
     = o.submit "Save", class: "btn btn-sm btn-success", remote: true, data: {disable_with: "Please wait..."}
-
-
-
-
-/ .panel-group#accordion{ role: "tablist", "aria-multiselectable"=>"true"}
-/   - .each do |product|
-/     .panel.panel-default
-/       .panel-heading{role: "tab", id: "headingOne_#{}"}
-/       %h4.panel-title
-/         %a{"aria-controls" => "collapseOne_#{}", "aria-expanded" => "true", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapseOne_#{}", :role => "button"}
-/           Collapsible Group Item #1
-/       .panel-collapse.collapse.in{"aria-labelledby" => "headingOne_#{}", :id => "collapseOne_#{}", :role => "tabpanel"}
-/         .panel-body
-
-
-
 
 #productsModel.modal.fade{:role => "dialog"}
   .modal-dialog.modal-lg
