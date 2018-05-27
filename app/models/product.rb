@@ -134,7 +134,7 @@ class Product < ActiveRecord::Base
     ticket_contracts.find_by_id(contract_id) and ticket_contracts.find_by_id(contract_id).tickets.any? and ((ticket_ids - ticket_contracts.find_by_id(contract_id).ticket_ids) != ticket_ids)
   end
 
-  def create_product_owner_history(created_by, note, created_mode)
+  def create_product_owner_history(owner_customer_id, created_by, note, created_mode)
     if persisted?
       update owner_customer_id: owner_customer_id
       product_customer_histories.create(owner_customer_id: owner_customer_id, created_by: created_by, note: note)
@@ -146,7 +146,7 @@ class Product < ActiveRecord::Base
     # end
   end
 
-  after_create -> { create_product_owner_history(create_by_id, "Added", 0) }
+  after_create -> { create_product_owner_history(owner_customer_id, create_by_id, "Added", 0) }
 
   def create_by_id
     @create_by_id
