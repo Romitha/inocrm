@@ -30,7 +30,7 @@ class Product < ActiveRecord::Base
     Warranty
     to_json(
       only: [:id, :serial_no, :model_no, :product_no, :created_at, :owner_customer_id, :name, :description, :product_brand_id, :product_category_id, :updated_at],
-      methods: [:category_full_name_index, :category_cat_id, :category_cat1_id, :category_cat2_id, :brand_name, :brand_id, :owner_customer_name, :owner_customer_id, :location_address_full],
+      methods: [:category_full_name_index, :category_cat_id, :category_cat1_id, :category_cat2_id, :brand_name, :brand_id, :owner_customer_name, :location_address_full],
       include: {
         tickets: {
           only: [:created_at, :cus_chargeable, :id],
@@ -92,10 +92,6 @@ class Product < ActiveRecord::Base
     owner_customer.try(:name)
   end
 
-  def owner_customer_id
-    owner_customer.try(:id)
-  end
-
   def location_address_full
     location_address.try(:full_address)
   end
@@ -111,12 +107,11 @@ class Product < ActiveRecord::Base
   has_many :contract_products, foreign_key: :product_serial_id
   has_many :ticket_contracts, through: :contract_products
 
-  has_many :product_customer_histories, foreign_key: :product_serial_id
+  has_many :product_customer_histories, foreign_key: :product_serial_id, dependent: :delete_all
 
   has_many :ref_product_serials, class_name: "TicketProductSerial", foreign_key: :ref_product_serial_id
   accepts_nested_attributes_for :ref_product_serials, allow_destroy: true
 
-  # belongs_to :warranty_type, foreign_key: :product_brand_id
   belongs_to :product_brand, foreign_key: :product_brand_id
   belongs_to :product_category, foreign_key: :product_category_id
   belongs_to :product_pop_status, foreign_key: :pop_status_id
@@ -139,21 +134,39 @@ class Product < ActiveRecord::Base
     ticket_contracts.find_by_id(contract_id) and ticket_contracts.find_by_id(contract_id).tickets.any? and ((ticket_ids - ticket_contracts.find_by_id(contract_id).ticket_ids) != ticket_ids)
   end
 
-  def create_product_owner_history(owner_customer_id, created_by, note, created_mode)
-    if self.owner_customer_id != owner_customer_id
-      if persisted?
-        update owner_customer_id: owner_customer_id
-        product_customer_histories.create(owner_customer_id: owner_customer_id, created_by: created_by, note: note, created_mode: created_mode)
-      else
-        owner_customer_id = owner_customer_id
-        product_customer_histories.build(owner_customer_id: owner_customer_id, created_by: created_by, note: note)
-      end
+  def create_product_owner_history(created_by, note, created_mode)
+    if persisted?
+      update owner_customer_id: owner_customer_id
+      product_customer_histories.create(owner_customer_id: owner_customer_id, created_by: created_by, note: note)
+    else
+      owner_customer_id = owner_customer_id
+      product_customer_histories.build(owner_customer_id: owner_customer_id, created_by: created_by, note: note)
     end
+    # if self.owner_customer_id != owner_customer_id
+    # end
   end
 
+  after_create -> { create_product_owner_history(create_by_id, "Added", 0) }
+
+  def create_by_id
+    @create_by_id
+  end
+
+  def create_by_id=(create_by_id)
+    @create_by_id=create_by_id
+  end
 
   def strip_serial_no
     self.update serial_no: self.serial_no.strip if self.serial_no.present?
+  end
+
+  def validate_destruction
+    if tickets.any? or ticket_contracts.any?
+      product_customer_histories.where(owner_customer_id: owner_customer_id).update_all(note: 'Removed from the customer')
+      update!(owner_customer_id: nil)
+    else
+      destroy
+    end
   end
 
 end

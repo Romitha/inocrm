@@ -724,7 +724,7 @@ class TicketContract < ActiveRecord::Base
   belongs_to :product_category,foreign_key: :product_category_id
   belongs_to :ticket_contract_payment_type, foreign_key: :payment_type_id 
   belongs_to :contract_status,foreign_key: :status_id
-  belongs_to :account_manager, class_name: "User", foreign_key: :account_managed_by
+  # belongs_to :account_manager, class_name: "User", foreign_key: :account_managed_by
 
 
   belongs_to :organization_contact, class_name: "Organization"
@@ -762,7 +762,6 @@ class TicketContract < ActiveRecord::Base
           must { string params[:query] } if params[:query].present?
           if not params[:report_summery].present?
             if not params[:report].present?
-              puts "not inside report"
               must { range :contract_start_at, gte: params[:contract_date_from].to_date.beginning_of_day } if params[:contract_date_from].present?
               must { range :contract_end_at, lte: params[:contract_date_to].to_date.end_of_day } if params[:contract_date_to].present?
             end
@@ -771,7 +770,6 @@ class TicketContract < ActiveRecord::Base
           # must { range :created_at, gte: params[:po_date_from].to_date.beginning_of_day } if params[:po_date_from].present?
           # must { term :author_id, params[:author_id] } if params[:author_id].present?
           if params[:contract_date_from].present? and params[:contract_date_to].present? and params[:report].present?
-            puts "inside report"
             must { range :contract_start_at, lte: params[:contract_date_from].to_date.beginning_of_day }
             must { range :contract_end_at, gte: params[:contract_date_to].to_date.end_of_day }
           end

@@ -197,10 +197,10 @@
     .col-md-4.small_scale_margin-top2
       = f.input :documnet_received, wrapper: :append, label: "Signed Document Received"
   .row
-    .col-md-2
-      = f.association :account_manager, collection: User.where(organization_id: organization.id), include_blank: true, label_method: :full_name, label: "Account Manager"
-    .col-md-2
-      = f.input :so_number, label: "So Number"
+    / .col-md-2
+    /   = f.association :account_manager, collection: User.where(organization_id: organization.id), include_blank: true, label_method: :full_name, label: "Account Manager"
+    / .col-md-2
+    /   = f.input :so_number, label: "So Number"
   - have_instalments = false
   - if not contract_product_required
     .row
@@ -381,7 +381,7 @@
   .row
     %hr
     .col-md-2
-      = f.association :contract_status, collection: ContractStatus.where(active: true),include_blank: false, label: "Status"
+      = f.association :contract_status, collection: ContractStatus.where(active: true), include_blank: false, label: "Status", required: true
     .col-md-10
     .col-md-12
       = f.submit "Save", class: "btn btn-sm btn-success", remote: true, data: {disable_with: "Please wait..."}
