@@ -3114,14 +3114,14 @@ class TicketsController < ApplicationController
       if params[:new_product].present?
         @product = Product.new product_params
         if @product.save
-          @ticket.ticket_product_serials.update_all(product_id: @product.id)
+          @ticket.ticket_product_serials.update_all(product_serial_id: @product.id)
           @ticket.update_index
           continue_bpm = true
         end
       elsif params[:selected_product].present?
         @product = Product.find params[:product_id]
 
-        @ticket.ticket_product_serials.update_all(product_id: @product.id)
+        @ticket.ticket_product_serials.update_all(product_serial_id: @product.id)
         @ticket.update_index
         continue_bpm = true
       elsif @product.update product_params
