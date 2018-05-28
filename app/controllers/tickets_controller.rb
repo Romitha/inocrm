@@ -417,7 +417,7 @@ class TicketsController < ApplicationController
 
           if @new_customer.save!
             # @product.update(owner_customer_id: organization.id)
-            # @product.create_product_owner_history(organization.id, current_user.id, "Added in ticket", 1)
+            @product.create_product_owner_history(organization.id, current_user.id, "Added in ticket", 1)
             @ticket.customer_id = @new_customer.id
             contact_person1 = @product.owner_customer.organization_contact_persons.contact_persons1.first
             contact_person2 = @product.owner_customer.organization_contact_persons.contact_persons2.first
