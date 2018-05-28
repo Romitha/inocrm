@@ -4,6 +4,7 @@
 - uri = URI(request.url)
 - uri_path = (uri.path == "/tickets/edit_serial") ? uri.path : uri.path == "/tickets/call_mf_order_template" ? "/tickets/order_manufacture_parts" : "/#{params[:controller].split('/').last}/#{params[:action]}"
 - bpm_params_variables = Rails.cache.fetch([uri_path, params[:task_id]])[:bpm_input_variables].present? ? Hash[ Rails.cache.fetch([uri_path, params[:task_id]])[:bpm_input_variables] ] : {}
+= Rails.cache.fetch([uri_path, params[:process_id]])
 %fieldset
   %legend Edit Serial No
   - if product.ticket_contracts.any?
@@ -30,7 +31,7 @@
                   .col-md-1= product.model_no
                   .col-md-1= product.product_no
                   .col-md-4= product.description
-                  .col-md-2= link_to "Select", update_edit_serial_tickets_path({selected_product: true, product_id: product.id, process_id: Rails.cache.fetch([uri_path, params[:process_id]])[:process_id], task_id: Rails.cache.fetch([uri_path, params[:task_id]])[:task_id], owner: Rails.cache.fetch([uri_path, params[:task_id]])[:owner]  }), method: :post
+                  .col-md-2= link_to "Select", update_edit_serial_tickets_path({selected_product: true, product_id: product.id }), method: :post
                 %hr
 
   - elsif product.owner_customer.present?
@@ -50,7 +51,7 @@
         .col-md-1= product.model_no
         .col-md-1= product.product_no
         .col-md-4= product.description
-        .col-md-2= link_to "Select", update_edit_serial_tickets_path({selected_product: true, product_id: product.id, process_id: Rails.cache.fetch([uri_path, params[:process_id]])[:process_id], task_id: Rails.cache.fetch([uri_path, params[:task_id]])[:task_id], owner: Rails.cache.fetch([uri_path, params[:task_id]])[:owner]  }), method: :post
+        .col-md-2= link_to "Select", update_edit_serial_tickets_path({selected_product: true, product_id: product.id }), method: :post
       %hr
 
   - elsif product.tickets.any?{|t| t.id != ticket.id }
