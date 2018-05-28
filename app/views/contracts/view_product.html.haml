@@ -1,5 +1,6 @@
 - product = @product
 - contract_product = @contract_product
+
 %br
 %h3 View product
 %br
@@ -57,7 +58,7 @@
       %dd= link_to(product.pop_doc_url.file.try(:filename), product.pop_doc_url.url, target: "_blank")
       %hr
       %dt Product Sold Country:
-      %dd= product.product_sold_country.try(:code)
+      %dd= product.product_sold_country.try(:country_code_with_name)
       %hr
       %dt Corporate Product:
       %dd= boolean_in_word product.corporate_product, "Yes", "No"

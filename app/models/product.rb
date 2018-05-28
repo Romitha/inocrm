@@ -263,10 +263,11 @@ class ProductSoldCountry < ActiveRecord::Base
     Inventory
     products.any? or inventory_product_info.present?
   end
-  def country_name_with_code
-    "#{code} (#{self.Country})"
-  end
+  
 
+  def country_code_with_name
+    "#{self.Country} (#{self.code})"
+  end
 
 end
 
