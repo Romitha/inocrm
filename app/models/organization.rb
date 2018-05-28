@@ -409,6 +409,10 @@ class CompanyConfig < ActiveRecord::Base
     sup_last_bundle_no.to_i+1
   end
 
+  def next_sup_last_receipt_no
+    sup_last_receipt_no.to_i+1
+  end
+
   def increase_after_assign_ticket_no ticket
     begin
       if ticket.is_a? Ticket
