@@ -1231,7 +1231,7 @@ class TicketsController < ApplicationController
         # sbu_engineer = SbuEngineer.find params[:filter_sbu]
         # sbu = sbu_engineer.sbu
 
-        @sbus = sbu.engineers.where(active: true).map { |s| {id: s.id, name: "#{s.full_name} (#{ TicketEngineer.where(user_id: s.id, job_completed_at: nil).count })"} }
+        @sbus = sbu.sbu_engineers.where(active: true).map { |s| {id: s.engineer.id, name: "#{s.engineer.full_name} (#{ TicketEngineer.where(user_id: s.engineer_id, job_completed_at: nil).count })"} }
 
       else
         @sbus = Sbu.where(active: true).map { |s| {id: s.id, name: s.sbu} }
@@ -3104,7 +3104,6 @@ class TicketsController < ApplicationController
 
   def update_edit_serial
     Ticket
-    @product = Product.find params[:product_id]
     # @ticket = @product.tickets.first
     @ticket = Ticket.find params[:ticket_id]
     continue_bpm = false
@@ -3120,11 +3119,13 @@ class TicketsController < ApplicationController
           continue_bpm = true
         end
       elsif params[:selected_product].present?
-        @product = Product.find params[:selected_product_id]
+        @product = Product.find params[:product_id]
+
         @ticket.ticket_product_serials.update_all(product_id: @product.id)
         @ticket.update_index
         continue_bpm = true
       elsif @product.update product_params
+        @product = Product.find params[:product_id]
         continue_bpm = true
       end
 
