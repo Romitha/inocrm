@@ -737,7 +737,7 @@ class InventoriesController < ApplicationController
 
             end
 
-            if process_name
+            if process_name.present?
               bpm_response1 = view_context.send_request_process_data start_process: true, process_name: process_name, query: query
 
               if bpm_response1[:status].try(:upcase) == "SUCCESS"
@@ -767,6 +767,7 @@ class InventoriesController < ApplicationController
     updatable_estimation_params.merge!( status_id: EstimationStatus.find_by_code("CLS").id, cust_approved_at: DateTime.now, cust_approved_by: current_user.id )
 
     continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    continue = params[:task_id].present? ? bpm_continue : true
     engineer_id = params[:engineer_id]
     # bpm output variables
     bpm_variables = view_context.initialize_bpm_variables
@@ -813,7 +814,7 @@ class InventoriesController < ApplicationController
         if bpm_response[:status].upcase == "SUCCESS"
           @flash_message = {notice: "Successfully updated with bpm."}
         else
-          @flash_message = {error: "estimation is updated. but Bpm error"}
+          @flash_message = {error: "estimation is updated without bpm updates"}
         end
       end
 
@@ -831,7 +832,7 @@ class InventoriesController < ApplicationController
           user_ticket_action.save
         end
 
-        view_context.ticket_bpm_headers params[:process_id], @estimation.ticket_id
+        view_context.ticket_bpm_headers params[:process_id], @estimation.ticket_id if params[:process_id].present?
         Rails.cache.delete([:workflow_header, params[:process_id]])        
 
         if @estimation.cust_approved
