@@ -3107,6 +3107,7 @@ class TicketsController < ApplicationController
     # @ticket = @product.tickets.first
     @ticket = Ticket.find params[:ticket_id]
     continue_bpm = false
+    complete_task = true #params[:complete_task]
 
     @continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
     if @continue
@@ -3135,7 +3136,7 @@ class TicketsController < ApplicationController
         user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(35).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
         user_ticket_action.save
 
-        if params[:complete_task]
+        if complete_task
 
           # bpm output variables
           bpm_variables = view_context.initialize_bpm_variables
