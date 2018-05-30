@@ -3106,6 +3106,7 @@ class TicketsController < ApplicationController
     Ticket
     # @ticket = @product.tickets.first
     @ticket = Ticket.find params[:ticket_id]
+    @product = Product.find params[:product_id] if params[:product_id].present?
     continue_bpm = false
     complete_task = true #params[:complete_task]
 
@@ -3120,7 +3121,6 @@ class TicketsController < ApplicationController
           continue_bpm = true
         end
       elsif params[:selected_product].present?
-        @product = Product.find params[:product_id]
 
         @ticket.ticket_product_serials.update_all(product_serial_id: @product.id)
         @ticket.update_index
