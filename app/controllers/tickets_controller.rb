@@ -3108,7 +3108,7 @@ class TicketsController < ApplicationController
     @ticket = Ticket.find params[:ticket_id]
     @product = Product.find params[:product_id] if params[:product_id].present?
     continue_bpm = false
-    complete_task = true #params[:complete_task]
+    complete_task = params[:complete_task].present? ? params[:complete_task].to_bool : true
 
     @continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
     if @continue

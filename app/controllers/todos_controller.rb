@@ -78,7 +78,7 @@ class TodosController < ApplicationController
       session[:engineer_id] = @bpm_input_variables.map{|e| [e[:variable_id], e[:value]]}.detect{ |v| v.first == "engineer_id"}.try(:last)
 
       session[:cache_key] = [url, task_id]
-      Rails.cache.fetch(session[:cache_key]){ {process_id: process_instance_id, task_id: task_id, owner: owner, bpm_input_variables: @bpm_input_variables.map{|e| [e[:variable_id], e[:value]]} } }
+      Rails.cache.write([url, task_id], { process_id: process_instance_id, task_id: task_id, owner: owner, bpm_input_variables: @bpm_input_variables.map{|e| [e[:variable_id], e[:value]] } })
 
       @redirect_url = "#{url}?process_id=#{process_instance_id}&task_id=#{task_id}&owner=#{owner}&#{@bpm_input_variables.map{|e| e[:variable_id]+'='+e[:value]}.join('&')}"
     else
