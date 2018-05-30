@@ -267,7 +267,7 @@ class ProductSoldCountry < ActiveRecord::Base
   end
   
 
-  def country_code_with_name
+  def country_name_with_code
     "#{self.Country} (#{self.code})"
   end
 
