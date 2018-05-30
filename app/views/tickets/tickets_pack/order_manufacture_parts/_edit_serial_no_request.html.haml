@@ -8,7 +8,7 @@
 
 %fieldset
   %legend Edit Serial No
-  - if product.ticket_contracts.any?
+  - if ticket.ticket_contract.present?
     .row.strong
       .col-md-2 Serial No
       .col-md-2 Category
@@ -18,22 +18,21 @@
       .col-md-2 Select
     %hr
 
-    - product.ticket_contracts.each do |ticket_contract|
-      .row
-        .col-md-12
-          .panel.panel-default
-            .panel-heading
-              .panel-title Contract No: #{ticket_contract.contract_no}
-            .panel-body
-              - ticket_contract.products.each do |product|
-                .row
-                  .col-md-2= product.serial_no
-                  .col-md-2= product.category_full_name("|")
-                  .col-md-1= product.model_no
-                  .col-md-1= product.product_no
-                  .col-md-4= product.description
-                  .col-md-2= link_to "Select", update_edit_serial_tickets_path({selected_product: true, product_id: product.id, process_id: Rails.cache.fetch([uri_path, params[:task_id]])[:process_id], task_id: Rails.cache.fetch([uri_path, params[:task_id]])[:task_id], owner: Rails.cache.fetch([uri_path, params[:task_id]])[:owner] }.merge(bpm_params_variables)), method: :post
-                %hr
+    .row
+      .col-md-12
+        .panel.panel-default
+          .panel-heading
+            .panel-title Contract No: #{ticket.ticket_contract.contract_no}
+          .panel-body
+            - ticket.ticket_contract.products.each do |product|
+              .row
+                .col-md-2= product.serial_no
+                .col-md-2= product.category_full_name("|")
+                .col-md-1= product.model_no
+                .col-md-1= product.product_no
+                .col-md-4= product.description
+                .col-md-2= link_to "Select", update_edit_serial_tickets_path({selected_product: true, product_id: product.id, process_id: Rails.cache.fetch([uri_path, params[:task_id]])[:process_id], task_id: Rails.cache.fetch([uri_path, params[:task_id]])[:task_id], owner: Rails.cache.fetch([uri_path, params[:task_id]])[:owner] }.merge(bpm_params_variables)), method: :post
+              %hr
 
   - elsif product.owner_customer.present?
     .row.strong
@@ -212,16 +211,10 @@
       .row
         .col-md-6
           = f.input :serial_no, label:"New Serial No"
-        / .col-md-6
-        /   = f.simple_fields_for :ticket_product_serials do |sr|
-        /     - if sr.object.ticket_id == ticket.id
-        /       / = f.input :ref_product_serial, label:"Ref product serial"
-        /       = sr.association :ref_product_serial, value_method: :id, label_method: :serial_no, input_html: {class: "chosen-select"}
-
 
       .hide
-        - if @complete_task or @edit_serial
-          = label_tag "Task completed"
-          = check_box_tag "complete_task", true, true # this is for extend_warranty purpose. this can be used anywhere as render
+        = label_tag "Task completed"
+        = check_box_tag "complete_task", true, (@call_template != "edit_serial_no_request") # this is for extend_warranty purpose. this can be used anywhere as render
+        / - if @complete_task or @edit_serial
 
       = f.submit "Save", class: "btn btn-success", data: {disable_with: "Please wait..."}

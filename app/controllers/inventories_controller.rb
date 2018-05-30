@@ -766,7 +766,7 @@ class InventoriesController < ApplicationController
     request_deliver_unit = params[:request_deliver_unit].present?
     updatable_estimation_params.merge!( status_id: EstimationStatus.find_by_code("CLS").id, cust_approved_at: DateTime.now, cust_approved_by: current_user.id )
 
-    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    bpm_continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
     continue = params[:task_id].present? ? bpm_continue : true
     engineer_id = params[:engineer_id]
     # bpm output variables
