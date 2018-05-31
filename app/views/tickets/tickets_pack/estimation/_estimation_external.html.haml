@@ -193,7 +193,7 @@
         = simple_format f.object.note
         - if ticket_estimation_externals.present? and not (estimation.ticket.ticket_deliver_units.any?{|d| !d.received} or estimation.ticket.job_finished) 
 
-          .request_part_check
+          .request_part_check{class: "#{'hide' if params[:from_where1] == 'estimations_quotations'}"}
             = label_tag "Request to deliver unit"
-            = check_box_tag :request_deliver_unit, true, (estimation.advance_payment_amount.to_f == 0)
+            = check_box_tag :request_deliver_unit, true, (estimation.advance_payment_amount.to_f == 0 or params[:from_where1] != "estimations_quotations")
         = f.submit "Save", class: "btn btn-success btn-sm"

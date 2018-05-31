@@ -498,7 +498,60 @@ end
 class GrnSerialItem < ActiveRecord::Base
   self.table_name = "inv_grn_serial_item"
 
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+
   include Backburner::Performable
+
+  mapping do
+    indexes :grn_item, type: "nested", include_in_parent: true
+    indexes :inventory_serial_item, type: "nested", include_in_parent: true
+    indexes :gin_sources, type: "nested", include_in_parent: true
+    indexes :damages, type: "nested", include_in_parent: true
+  end
+
+  def self.search(params)
+    # https://www.elastic.co/guide/en/elasticsearch/reference/2.3/query-dsl-query-string-query.html
+    tire.search(page: (params[:page] || 1), per_page: 10) do
+      query do
+        boolean do
+          must { string params[:query] } if params[:query].present?
+          # must { term :store_id, params[:store_id] } if params[:store_id].present?
+          # puts params[:store_id]
+        end
+      end
+      sort { by :created_at, {order: "desc", ignore_unmapped: true} }
+      # filter :range, published_at: { lte: Time.zone.now}
+      # raise to_curl
+    end
+  end
+
+  def to_indexed_json
+    to_json(
+      only: [:id],
+      methods: [:store_id],
+      include: {
+        grn_item: {
+          only: [:remaining_quantity, :recieved_quantity, :inventory_not_updated],
+          include: {
+            inventory_product: {
+              only: [:currency, :code],
+            },
+            grn: {
+              only: [:created_at, :store_id],
+              methods: [:grn_no_format],
+            },
+          },
+        },
+        inventory_serial_item: {
+          only: [:id, :serial_no, :parts_not_completed, :scavenge, :damage, :repaired, :reserved, :ct_no, :remarks, :used, :manufatured_date, :manufatured_date, :expiry_date],
+          methods: [:batch_no, :lot_no, :status_name, :product_condition_condition ]
+
+        },
+      },
+    )
+
+  end
 
   belongs_to :grn_item, foreign_key: :grn_item_id
   accepts_nested_attributes_for :grn_item, allow_destroy: true

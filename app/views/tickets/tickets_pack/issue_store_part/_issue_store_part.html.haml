@@ -255,11 +255,11 @@
                         %td= grn_serial_item.grn_item.grn.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
                         %td= grn_serial_item.grn_item.recieved_quantity
                         %td= grn_serial_item.grn_item.remaining_quantity
-                        %td= grn_serial_item.inventory_serial_item.inventory_batch.try(:batch_no)
-                        %td= grn_serial_item.inventory_serial_item.inventory_batch.try(:lot_no)
+                        %td= grn_serial_item.inventory_serial_item.batch_no
+                        %td= grn_serial_item.inventory_serial_item.lot_no
                         %td= grn_serial_item.inventory_serial_item.serial_no
-                        %td= grn_serial_item.inventory_serial_item.inventory_serial_item_status.name
-                        %td= grn_serial_item.inventory_serial_item.product_condition.try(:condition)
+                        %td= grn_serial_item.inventory_serial_item.status_name
+                        %td= grn_serial_item.inventory_serial_item.product_condition_condition
                         %td= grn_serial_item.inventory_serial_item.parts_not_completed ? "Not completed" : ""
                         %td= grn_serial_item.inventory_serial_item.scavenge ? "Scavenge" : ""
                         %td= grn_serial_item.inventory_serial_item.damage ? "Damaged" : ""
