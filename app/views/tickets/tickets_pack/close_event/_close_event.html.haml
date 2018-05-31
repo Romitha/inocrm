@@ -18,7 +18,7 @@
 
   .col-md-3
     %strong Repair Time:
-    - if spare_part.repare_start and spare_part.repare_end
+    - if spare_part.repare_start and spare_part.repare_end 
       %em{title: "#{spare_part.repare_start.strftime(INOCRM_CONFIG['short_date_format']+' '+INOCRM_CONFIG['time_format'])} - #{spare_part.repare_end.strftime(INOCRM_CONFIG['short_date_format']+' '+INOCRM_CONFIG['time_format'])} (#{convert_hours_minutes(spare_part.repare_end - spare_part.repare_start)})"}
         = distance_of_time_in_words spare_part.repare_start, spare_part.repare_end
     - elsif spare_part.repare_start
@@ -28,10 +28,12 @@
     %strong Part used status:
     #{spare_part.spare_part_status_use.name}
 
+    #!["NAP", "USD"].include?(spare_part.spare_part_status_use.code)
+    .col-md-3
 
-  .col-md-3
-    %strong Un Used Return Reason:
-    #{Reason.find_by_id(spare_part.unused_reason_id).try(:reason)}
+
+      %strong Un Used Return Reason:
+      #{Reason.find_by_id(spare_part.unused_reason_id).try(:reason)}
 
 .row
   .col-md-3
@@ -59,6 +61,11 @@
   .col-md-6
     %strong Requested quantity:
     = spare_part.ticket_spare_part_manufacture.try(:requested_quantity)
+.row
+  .col-md-3
+    %strong Part Returned :
+    #{boolean_in_word spare_part.part_returned, "Yes", "No"}
+
 
 .row.small_scale_margin-top1
   .col-md-12

@@ -33,6 +33,8 @@
       %th Engrs Finished Date & Time
       %th Call Status
       %th Hold
+
+
       %th Hold Reason
       %th Re-Open Count
       %th Chargeable
@@ -163,8 +165,10 @@
           // Hold
           = boolean_in_word ticket.status_hold, "Yes", "No"
         %td
-          // Hold Reason
-          = ticket.try(:reason).try(:reason)
+          - if ticket.status_hold
+
+            // Hold Reason
+            = ticket.try(:reason).try(:reason)
         %td
           // Re-Open Count
           = ticket.re_open_count
