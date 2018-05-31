@@ -479,6 +479,8 @@ class InventoryProductInfo < ActiveRecord::Base
 
   belongs_to :product_sold_country, foreign_key: :country_id
 
+  validates_presence_of :product_id
+
   def currency_type
     currency.code
   end
@@ -786,6 +788,22 @@ class InventorySerialItem < ActiveRecord::Base
 
   def generated_serial_no
     serial_no.to_s.rjust(5, INOCRM_CONFIG["inventory_serial_no_format"])
+  end
+
+  def batch_no
+    inventory_batch.try(:batch_no)
+  end
+
+  def lot_no
+    inventory_batch.try(:lot_no)
+  end
+
+  def status_name
+    inventory_serial_item_status.name
+  end
+
+  def product_condition_condition
+    product_condition.try(:condition)
   end
 
 end
