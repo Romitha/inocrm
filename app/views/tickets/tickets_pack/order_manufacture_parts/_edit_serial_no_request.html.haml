@@ -8,7 +8,52 @@
 
 %fieldset
   %legend Edit Serial No
+  %dl.dl-horizontal
+    %dt Brand
+    %dd= product.product_brand.name
+    %dt Category
+    %dd= product.category_full_name("|")
+    %dt Model number
+    %dd= product.model_no
+    %dt Product number
+    %dd= product.product_no
+    %dt Serial no
+    %dd= product.serial_no
+    %dt Name
+    %dd= product.name
+    %dt Description
+    %dd= product.description
+    %dt Product Inside The Premises
+    %dd= boolean_in_word ticket.product_inside, "Yes", "No"
+  %hr
+
   - if ticket.ticket_contract.present?
+    .row
+      .col-md-12
+        %dl.dl-horizontal
+          %dt Contract No:
+          %dd= ticket.ticket_contract.contract_no
+          %dt Created At:
+          %dd= ticket.ticket_contract.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+          %dt Created By:
+          %dd= ticket.ticket_contract.created_by_user_full_name
+          %dt Contract Type:
+          %dd= ticket.ticket_contract.ticket_contract_type.name
+          %dt Service Provider:
+          %dd= ticket.ticket_contract.owner_organization.try(:name)
+          %dt Back to Back Contract:
+          %dd= boolean_in_word ticket.ticket_contract.contract_b2b, "Yes", "No"
+          %dt Hold:
+          %dd= boolean_in_word ticket.ticket_contract.hold, "Yes", "No"
+          %dt Start Date:
+          %dd= ticket.ticket_contract.contract_start_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+          %dt Exp Date:
+          %dd= ticket.ticket_contract.contract_end_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+          %dt Amount:
+          %dd= ticket.ticket_contract.amount
+          %dt Remarks:
+          %dd= ticket.ticket_contract.remarks
+    %hr
     .row.strong
       .col-md-2 Serial No
       .col-md-2 Category
@@ -16,8 +61,8 @@
       .col-md-1 Product No
       .col-md-4 Description
       .col-md-2 Select
-    %hr
 
+    %hr
     .row
       .col-md-12
         .panel.panel-default
@@ -31,7 +76,7 @@
                 .col-md-1= product.model_no
                 .col-md-1= product.product_no
                 .col-md-4= product.description
-                .col-md-2= link_to "Select", update_edit_serial_tickets_path({selected_product: true, product_id: product.id, process_id: Rails.cache.fetch([uri_path, params[:task_id]])[:process_id], task_id: Rails.cache.fetch([uri_path, params[:task_id]])[:task_id], owner: Rails.cache.fetch([uri_path, params[:task_id]])[:owner] }.merge(bpm_params_variables)), method: :post
+                .col-md-2= link_to "Select", update_edit_serial_tickets_path({selected_product: true, product_id: product.id, process_id: Rails.cache.fetch([uri_path, params[:task_id]])[:process_id], task_id: Rails.cache.fetch([uri_path, params[:task_id]])[:task_id], owner: Rails.cache.fetch([uri_path, params[:task_id]])[:owner] }.merge(bpm_params_variables)), method: :post, data: {confirm: "Are you sure? do you want this product to be with this ticket?"}
               %hr
 
   - elsif product.owner_customer.present?
@@ -51,7 +96,7 @@
         .col-md-1= product.model_no
         .col-md-1= product.product_no
         .col-md-4= product.description
-        .col-md-2= link_to "Select", update_edit_serial_tickets_path({selected_product: true, product_id: product.id, process_id: Rails.cache.fetch([uri_path, params[:task_id]])[:process_id], task_id: Rails.cache.fetch([uri_path, params[:task_id]])[:task_id], owner: Rails.cache.fetch([uri_path, params[:task_id]])[:owner] }.merge(bpm_params_variables)), method: :post
+        .col-md-2= link_to "Select", update_edit_serial_tickets_path({selected_product: true, product_id: product.id, process_id: Rails.cache.fetch([uri_path, params[:task_id]])[:process_id], task_id: Rails.cache.fetch([uri_path, params[:task_id]])[:task_id], owner: Rails.cache.fetch([uri_path, params[:task_id]])[:owner] }.merge(bpm_params_variables)), method: :post, data: {confirm: "Are you sure? do you want this product to be with this ticket?"}
       %hr
 
   - elsif product.tickets.any?{|t| t.id != ticket.id }
