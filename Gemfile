@@ -103,9 +103,9 @@ group :test do
   # database_cleaner is not required, but highly recommended
   gem 'database_cleaner'
   # gem 'watir'
-  gem 'capybara'
+  #gem 'capybara'
   gem 'selenium-webdriver', '~> 3.0.0.beta3'
-  gem "capybara-webkit" # sudo apt-get install libqt4-dev libqtwebkit-dev
+  #gem "capybara-webkit" # sudo apt-get install libqt4-dev libqtwebkit-dev
   gem 'rspec-rails'
   gem 'ffaker'
   gem "shoulda-matchers"
