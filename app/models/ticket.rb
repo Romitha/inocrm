@@ -207,7 +207,7 @@ class Ticket < ActiveRecord::Base
     created_by_user.full_name
   end  
   def owner_eng_full_name
-    owner_engineer.user.full_name
+    owner_engineer and owner_engineer.user.full_name
   end
   def inhouse_type_select
     ticket_type.code

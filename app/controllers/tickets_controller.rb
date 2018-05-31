@@ -3119,15 +3119,22 @@ class TicketsController < ApplicationController
           @ticket.ticket_product_serials.update_all(product_serial_id: @product.id)
           @ticket.update_index
           continue_bpm = true
+        else
+          @flash_message = {error: "Unable to save. Please retry #{@product.errors.full_messages.join(', ')}"}
         end
+
       elsif params[:selected_product].present?
 
         @ticket.ticket_product_serials.update_all(product_serial_id: @product.id)
         @ticket.update_index
         continue_bpm = true
-      elsif @product.update product_params
-        @product = Product.find params[:product_id]
-        continue_bpm = true
+      else
+        if @product.update product_params
+          @product = Product.find params[:product_id]
+          continue_bpm = true
+        else
+          @flash_message = {error: "Unable to save. Please retry #{@product.errors.full_messages.join(', ')}"}
+        end
       end
 
       if continue_bpm
