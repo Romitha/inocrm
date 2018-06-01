@@ -3587,7 +3587,7 @@ class TicketsController < ApplicationController
 
       # @grn_serial_items = GrnSerialItem.search(query: "store_id:#{@onloan_or_store.approved_store_id} AND grn_item.inventory_not_updated:false AND grn_item.product_id:#{@onloan_or_store.approved_inventory_product.id} AND remaining:true")
 
-      search_hash = {}
+      search_hash = {page: params[:page]}
       search_hash[:query] = "store_id:#{@onloan_or_store.approved_store_id} AND grn_item.inventory_not_updated:false AND grn_item.product_id:#{@onloan_or_store.approved_inventory_product.id} AND remaining:true"
 
       if @onloan_or_store.approved_inventory_product.inventory_product_info.need_serial
