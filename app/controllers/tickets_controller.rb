@@ -5383,7 +5383,7 @@ class TicketsController < ApplicationController
     end
     # redirect_to todos_url, @flash_message
     redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
-    redirect_to redirect_response[:url], {redirect_response[:message_type] => "#{redirect_response[:flash_message]} - #{@flash_message}"}
+    redirect_to redirect_response[:url], {redirect_response[:message_type] => "#{redirect_response[:flash_message]} - #{@flash_message[:notice]}"}
   end
 
   def suggesstion_data
