@@ -267,8 +267,8 @@
                       / %td= grn_serial_item.inventory_serial_item.repaired ? "Repaired" : ""
                       / %td= grn_serial_item.inventory_serial_item.reserved ? "Reserved" : ""
                       / %td= grn_serial_item.inventory_serial_item.ct_no
-                      .col-md-1= grn_serial_item.inventory_serial_item.manufatured_date.to_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
-                      .col-md-1= grn_serial_item.inventory_serial_item.expiry_date.to_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
+                      .col-md-1= grn_serial_item.inventory_serial_item.manufatured_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
+                      .col-md-1= grn_serial_item.inventory_serial_item.expiry_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
                       .col-md-1= simple_format grn_serial_item.inventory_serial_item.remarks
                       .col-md-1= radio_button_tag "grn_serial_item_id", grn_serial_item.id, false,{class: "seperate_product_ckeckbox"} if srn_item.quantity == 1
 
