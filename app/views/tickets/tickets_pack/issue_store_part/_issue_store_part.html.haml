@@ -251,6 +251,8 @@
                             = (index+1) + 10*(params[:page].to_i-1)
                           - else
                             = (index+1)
+                          #{grn_serial_item.id}-id
+
                         %td= grn_serial_item.grn_item.grn.grn_no
                         %td= grn_serial_item.grn_item.grn.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
                         %td= grn_serial_item.grn_item.recieved_quantity
