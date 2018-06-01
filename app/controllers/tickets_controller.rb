@@ -3585,7 +3585,7 @@ class TicketsController < ApplicationController
 
       # grn_item_ids = GrnItem.search(query: "grn.store_id:#{@onloan_or_store.approved_store_id} AND inventory_not_updated:false AND inventory_product.id:#{@onloan_or_store.approved_inventory_product.id}").map{|grn_item| grn_item.id}
 
-      @grn_serial_items = GrnSerialItem.search(query: "store_id:#{@onloan_or_store.approved_store_id} AND grn_item.inventory_not_updated:false AND grn_item.inventory_product.id:#{@onloan_or_store.approved_inventory_product.id} AND remaining:true")
+      @grn_serial_items = GrnSerialItem.search(query: "store_id:#{@onloan_or_store.approved_store_id} AND grn_item.inventory_not_updated:false AND grn_item.product_id:#{@onloan_or_store.approved_inventory_product.id} AND remaining:true")
 
       if @onloan_or_store.approved_inventory_product.inventory_product_info.need_serial
         @fifo_grn_serial_items = if @onloan_or_store.approved_inventory_product.fifo
@@ -3599,7 +3599,7 @@ class TicketsController < ApplicationController
         end
 
         # @paginated_fifo_grn_serial_items = Kaminari.paginate_array(@fifo_grn_serial_items).page(params[:page]).per(10)
-        @paginated_fifo_grn_serial_items = @grn_serial_items
+        @paginated_fifo_grn_serial_items = @fifo_grn_serial_items
 
       elsif @onloan_or_store.approved_inventory_product.inventory_product_info.need_batch
         @grn_batches = GrnBatch.where(grn_item_id: grn_item_ids).where("remaining_quantity > 0").page(params[:page]).per(10)
