@@ -544,8 +544,8 @@ class GrnSerialItem < ActiveRecord::Base
           },
         },
         inventory_serial_item: {
-          only: [:id, :serial_no, :parts_not_completed, :scavenge, :damage, :repaired, :reserved, :ct_no, :remarks, :used, :manufatured_date, :manufatured_date, :expiry_date],
-          methods: [:batch_no, :lot_no, :status_name, :product_condition_condition ]
+          only: [:id, :serial_no, :parts_not_completed, :scavenge, :damage, :repaired, :reserved, :ct_no, :remarks, :used, :manufatured_date, :expiry_date],
+          methods: [ :batch_no, :lot_no, :status_name, :product_condition_condition ]
 
         },
       },
