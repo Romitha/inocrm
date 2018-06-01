@@ -28,10 +28,8 @@
     %strong Part used status:
     #{spare_part.spare_part_status_use.name}
 
-    #!["NAP", "USD"].include?(spare_part.spare_part_status_use.code)
+  - if !["NAP", "USD"].include?(spare_part.spare_part_status_use.code)
     .col-md-3
-
-
       %strong Un Used Return Reason:
       #{Reason.find_by_id(spare_part.unused_reason_id).try(:reason)}
 
