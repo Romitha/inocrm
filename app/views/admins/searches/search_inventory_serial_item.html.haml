@@ -125,11 +125,12 @@
           = serial_item.try(:remarks).try :truncate, 50
 
       %tr
-        %td{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Serial No: #{serial_item.try(:serial_no)}", "data-content"=> yield(:serial_item_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "top", "data-container" => "body" }
-          - if params[:page]
-            = (index+1) + 10*(params[:page].to_i-1)
-          - else
-            = (index+1)
+        %td
+          %a{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Serial No: #{serial_item.try(:serial_no)}", "data-content"=> yield(:serial_item_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "top" }
+            - if params[:page]
+              = (index+1) + 10*(params[:page].to_i-1)
+            - else
+              = (index+1)
         %td
           = serial_item.inventory_product.try(:generated_item_code)
         %td

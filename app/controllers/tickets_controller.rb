@@ -3598,7 +3598,7 @@ class TicketsController < ApplicationController
 
         end
 
-        @paginated_fifo_grn_serial_items = Kaminari.paginate_array(@fifo_grn_serial_items).page(params[:page]).per(10)
+        @paginated_fifo_grn_serial_items = Kaminari.paginate_array(@fifo_grn_serial_items)#.page(params[:page]).per(10)
         # @paginated_fifo_grn_serial_items = @fifo_grn_serial_items
 
       elsif @onloan_or_store.approved_inventory_product.inventory_product_info.need_batch
