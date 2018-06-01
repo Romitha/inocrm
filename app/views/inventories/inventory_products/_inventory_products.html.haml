@@ -62,7 +62,7 @@
 
         %tr
           %td
-            %a{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Item code: #{inventory_search_types(params[:from_where], inventory_product)[:item_code]}", data: {"html" => true, "trigger" => "hover", "placement" => "right", "content"=> yield(:inventory_p_more) }
+            %a{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Item code: #{inventory_search_types(params[:from_where], inventory_product)[:item_code]}", data: {"html" => true, "trigger" => "hover", "placement" => "right", "content"=> yield(:inventory_p_more) }}
               - if params[:page]
                 = (index+1)+ 10*(params[:page].to_i-1)
               - else
