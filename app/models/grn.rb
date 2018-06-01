@@ -520,7 +520,7 @@ class GrnSerialItem < ActiveRecord::Base
           # puts params[:store_id]
         end
       end
-      sort { by :created_at, {order: "desc", ignore_unmapped: true} }
+      sort { by :created_at, {order: (params[:order] || "desc"), ignore_unmapped: true} }
       # filter :range, published_at: { lte: Time.zone.now}
       # raise to_curl
     end

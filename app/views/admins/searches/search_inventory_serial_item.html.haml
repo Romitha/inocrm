@@ -121,8 +121,8 @@
 
         %br/
         %strong Remarks:
-        %span{title: serial_item.try(:remarks)}
-          = serial_item.try(:remarks).try :truncate, 50
+        %span
+          = serial_item.try(:remarks)
 
       %tr
         %td
