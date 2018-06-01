@@ -216,7 +216,7 @@
             / For Seperate grn Serial Product / Grn Batch / Grn Item
             = tab_content tabpointer: :seperate_product_tab, active_class: "active" do
               - if sto.object.approved_inventory_product.inventory_product_info.need_serial
-                = paginate @paginated_fifo_grn_serial_items, remote: false, method: :get
+                / = paginate @paginated_fifo_grn_serial_items, remote: false, method: :get
                 / For Seperate Grn Serial Product
                 %h4 Serial Product
                 .row
