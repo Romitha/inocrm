@@ -274,7 +274,8 @@
 
                 / = paginate @paginated_fifo_grn_serial_items, remote: false, method: :get
                 / = link_to "Load more", prn_admins_inventories_path(srn: "search_srn", query: params[:query], page: (session[:page] || 2), load_more: true), remote: true
-                = link_to_next_page @paginated_fifo_grn_serial_items, "Load More", remote: true, method: :get
+                #next_paginate_link_serial_items
+                  = link_to_next_page @paginated_fifo_grn_serial_items, "Load More", remote: true, method: :get
 
               - elsif sto.object.approved_inventory_product.inventory_product_info.need_batch
                 = paginate @grn_batches, remote: false, method: :get
