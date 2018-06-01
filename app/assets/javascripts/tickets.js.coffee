@@ -452,7 +452,7 @@ window.Tickets =
 
   call_mf_order_template: (call_template)->
     $("#mf_template_caller").change ->
-      $.post "/tickets/call_mf_order_template", {call_template: $(@).val(), task_id: $(":selected", @).data("task-id")}
+      $.post "/tickets/call_mf_order_template", {call_template: $(@).val(), task_id: $(":selected", @).data("task-id"), ticket_id: $(":selected", @).data("ticket-id")}
 
   toggle_hold_unhold: ->
     $("#hold_button").change ->

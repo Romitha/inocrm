@@ -71,7 +71,7 @@
         / - if present_of_start_ticket_action and not ticket.job_finished
         %option{:value => "terminate_order", data: {task_id: params[:task_id]}} Terminate Order
         / - if present_of_start_ticket_action and not ticket.job_finished
-        %option{:value => "edit_serial_no_request", data: {task_id: params[:task_id]}} Edit Serial No
+        %option{:value => "edit_serial_no_request", data: { task_id: params[:task_id], ticket_id: ticket.id }} Edit Serial No
     .form-group
       #mf_order_templates
 
