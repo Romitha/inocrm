@@ -3640,7 +3640,7 @@ class TicketsController < ApplicationController
 
     respond_to do |format|
       format.html {render "tickets/tickets_pack/issue_store_part"}
-      format.js { render "tickets/tickets_pack/issue_store_part_paginate" }
+      format.js { render "tickets/tickets_pack/issue_store_part/issue_store_part_paginate" }
     end
   end
 
