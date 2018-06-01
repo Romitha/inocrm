@@ -248,7 +248,7 @@
                       %tr
                         %td
                           - if params[:page]
-                            = (index+1)+ 10**(params[:page].to_i-1)
+                            = (index+1) + 10*(params[:page].to_i-1)
                           - else
                             = (index+1)
                         %td= grn_serial_item.grn_item.grn.grn_no
