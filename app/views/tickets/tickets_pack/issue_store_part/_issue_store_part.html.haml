@@ -219,7 +219,7 @@
                 / = paginate @paginated_fifo_grn_serial_items, remote: false, method: :get
                 / For Seperate Grn Serial Product
                 %h4 Serial Product
-                .row
+                .row.strong
                   .col-md-1 No
                   .col-md-1 GRN No
                   .col-md-1 GRN date
@@ -251,8 +251,8 @@
                         - else
                           = (index+1)
 
-                      .col-md-1= grn_serial_item.grn_item.grn.grn_no
-                      .col-md-1= grn_serial_item.grn_item.grn.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+                      .col-md-1= grn_serial_item.grn_item.grn.grn_no_format
+                      .col-md-1= grn_serial_item.grn_item.grn.created_at.to_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
                       .col-md-1= grn_serial_item.grn_item.recieved_quantity
                       .col-md-1= grn_serial_item.grn_item.remaining_quantity
                       .col-md-1= grn_serial_item.inventory_serial_item.serial_no
@@ -267,8 +267,8 @@
                       / %td= grn_serial_item.inventory_serial_item.repaired ? "Repaired" : ""
                       / %td= grn_serial_item.inventory_serial_item.reserved ? "Reserved" : ""
                       / %td= grn_serial_item.inventory_serial_item.ct_no
-                      .col-md-1= grn_serial_item.inventory_serial_item.manufatured_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
-                      .col-md-1= grn_serial_item.inventory_serial_item.expiry_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
+                      .col-md-1= grn_serial_item.inventory_serial_item.manufatured_date.to_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
+                      .col-md-1= grn_serial_item.inventory_serial_item.expiry_date.to_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
                       .col-md-1= simple_format grn_serial_item.inventory_serial_item.remarks
                       .col-md-1= radio_button_tag "grn_serial_item_id", grn_serial_item.id, false,{class: "seperate_product_ckeckbox"} if srn_item.quantity == 1
 
