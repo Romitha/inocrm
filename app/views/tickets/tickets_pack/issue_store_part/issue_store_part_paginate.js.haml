@@ -28,5 +28,10 @@
       .col-md-1= simple_format grn_serial_item.inventory_serial_item.remarks
       .col-md-1= radio_button_tag "grn_serial_item_id", grn_serial_item.id, false,{class: "seperate_product_ckeckbox"} if @srn_item.try(:quantity) == 1
 
+- content_for :link_serial_item do
+  = link_to_next_page @paginated_fifo_grn_serial_items, "Load More", remote: true, method: :get
+
 
 $("#paginateble_serial_items").append("#{j content_for :content_for}");
+$("#next_paginate_link_serial_items").html("#{j content_for :link_serial_item}");
+Tickets.remove_ajax_loader();
