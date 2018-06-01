@@ -80,7 +80,7 @@
                 .col-md-1= product.model_no
                 .col-md-1= product.product_no
                 .col-md-4= product.description
-                .col-md-2= link_to "Select", update_edit_serial_tickets_path({complete_task: !from_order_template, selected_product: true, product_id: product.id, process_id: Rails.cache.fetch([uri_path, params[:task_id]])[:process_id], task_id: Rails.cache.fetch([uri_path, params[:task_id]])[:task_id], owner: Rails.cache.fetch([uri_path, params[:task_id]])[:owner] }.merge(bpm_params_variables)), method: :post, data: {confirm: "Are you sure? do you want this product to be with this ticket?"}
+                .col-md-2= link_to "Select", update_edit_serial_tickets_path({complete_task: !from_order_template, from_order_template: from_order_template, selected_product: true, product_id: product.id, process_id: Rails.cache.fetch([uri_path, params[:task_id]])[:process_id], task_id: Rails.cache.fetch([uri_path, params[:task_id]])[:task_id], owner: Rails.cache.fetch([uri_path, params[:task_id]])[:owner] }.merge(bpm_params_variables)), method: :post, data: {confirm: "Are you sure? do you want this product to be with this ticket?"}
               %hr
 
   - elsif product.owner_customer.present?
@@ -100,7 +100,7 @@
         .col-md-1= product.model_no
         .col-md-1= product.product_no
         .col-md-4= product.description
-        .col-md-2= link_to "Select", update_edit_serial_tickets_path({complete_task: !from_order_template, selected_product: true, product_id: product.id, process_id: Rails.cache.fetch([uri_path, params[:task_id]])[:process_id], task_id: Rails.cache.fetch([uri_path, params[:task_id]])[:task_id], owner: Rails.cache.fetch([uri_path, params[:task_id]])[:owner] }.merge(bpm_params_variables)), method: :post, data: {confirm: "Are you sure? do you want this product to be with this ticket?"}
+        .col-md-2= link_to "Select", update_edit_serial_tickets_path({complete_task: !from_order_template, from_order_template: from_order_template, selected_product: true, product_id: product.id, process_id: Rails.cache.fetch([uri_path, params[:task_id]])[:process_id], task_id: Rails.cache.fetch([uri_path, params[:task_id]])[:task_id], owner: Rails.cache.fetch([uri_path, params[:task_id]])[:owner] }.merge(bpm_params_variables)), method: :post, data: {confirm: "Are you sure? do you want this product to be with this ticket?"}
       %hr
 
   - elsif product.tickets.any?{|t| t.id != ticket.id }
@@ -112,6 +112,8 @@
         = hidden_field_tag :owner, Rails.cache.fetch([uri_path, params[:task_id]])[:owner]
         - Rails.cache.fetch([uri_path, params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
           = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+        = hidden_field_tag :from_order_template, from_order_template
+
         .panel-body
           .row
             %h4 New Product
@@ -257,6 +259,7 @@
         = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
       = hidden_field_tag :product_id, product.id
+      = hidden_field_tag :from_order_template, from_order_template
 
       %strong Serial No:
       = f.object.serial_no

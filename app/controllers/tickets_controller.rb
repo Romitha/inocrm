@@ -3573,8 +3573,10 @@ class TicketsController < ApplicationController
     if @onloan_request
       @onloan_spare_part = @ticket.ticket_on_loan_spare_parts.find params[:request_onloan_spare_part_id]
       @spare_part = @onloan_spare_part.ticket_spare_part
+      @srn_item = @onloan_spare_part.srn_item
     else
       @spare_part = @ticket.ticket_spare_parts.find request_spare_part_id
+      @srn_item = @spare_part.ticket_spare_part_store.try(:srn_item)
     end
 
     @onloan_or_store = @onloan_request ? @onloan_spare_part : @spare_part.ticket_spare_part_store
