@@ -219,61 +219,62 @@
                 = paginate @paginated_fifo_grn_serial_items, remote: false, method: :get
                 / For Seperate Grn Serial Product
                 %h4 Serial Product
-                %table.table.table-hover.table-condensed
-                  %thead
-                    %tr
-                      %th No
-                      %th GRN No
-                      %th GRN date
-                      %th GRN received qty
-                      %th GRN remaining qty
-                      %th Batch no
-                      %th Lot No
-                      %th Serial No
-                      %th Status
-                      %th Condition
-                      %th Part not completed
-                      %th Scavenge
-                      %th Damage
-                      %th Used
-                      %th Repaired
-                      %th Reserved
-                      %th CT No
-                      %th Date of manufacture
-                      %th Date of expire
-                      %th Remarks
-                      %th Issue
-                  %tbody
-                    - @paginated_fifo_grn_serial_items.each_with_index do |grn_serial_item, index|
-                      %tr
-                        %td
-                          - if params[:page]
-                            = (index+1) + 10*(params[:page].to_i-1)
-                          - else
-                            = (index+1)
+                .row
+                  .col-md-1 No
+                  .col-md-1 GRN No
+                  .col-md-1 GRN date
+                  .col-md-1 GRN received qty
+                  .col-md-1 GRN remaining qty
+                  .col-md-1 Serial No
+                  .col-md-1 Status
+                  .col-md-1 Condition
+                  / .col-md-1 Batch no
+                  / .col-md-1 Lot No
+                  / .col-md-1 Part not completed
+                  / .col-md-1 Scavenge
+                  / .col-md-1 Damage
+                  / .col-md-1 Used
+                  / .col-md-1 Repaired
+                  / .col-md-1 Reserved
+                  / .col-md-1 CT No
+                  .col-md-1 Date of manufacture
+                  .col-md-1 Date of expire
+                  .col-md-1 Remarks
+                  .col-md-1 Issue
 
-                        %td= grn_serial_item.grn_item.grn.grn_no
-                        %td= grn_serial_item.grn_item.grn.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
-                        %td= grn_serial_item.grn_item.recieved_quantity
-                        %td= grn_serial_item.grn_item.remaining_quantity
-                        %td= grn_serial_item.inventory_serial_item.batch_no
-                        %td= grn_serial_item.inventory_serial_item.lot_no
-                        %td= grn_serial_item.inventory_serial_item.serial_no
-                        %td= grn_serial_item.inventory_serial_item.status_name
-                        %td= grn_serial_item.inventory_serial_item.product_condition_condition
-                        %td= grn_serial_item.inventory_serial_item.parts_not_completed ? "Not completed" : ""
-                        %td= grn_serial_item.inventory_serial_item.scavenge ? "Scavenge" : ""
-                        %td= grn_serial_item.inventory_serial_item.damage ? "Damaged" : ""
-                        %td= grn_serial_item.inventory_serial_item.used ? "Used" : ""
-                        %td= grn_serial_item.inventory_serial_item.repaired ? "Repaired" : ""
-                        %td= grn_serial_item.inventory_serial_item.reserved ? "Reserved" : ""
-                        %td= grn_serial_item.inventory_serial_item.ct_no
-                        %td= grn_serial_item.inventory_serial_item.manufatured_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
-                        %td= grn_serial_item.inventory_serial_item.expiry_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
-                        %td= simple_format grn_serial_item.inventory_serial_item.remarks
-                        %td= radio_button_tag "grn_serial_item_id", grn_serial_item.id, false,{class: "seperate_product_ckeckbox"} if srn_item.quantity == 1
+                #paginateble_serial_items
+                  - @paginated_fifo_grn_serial_items.each_with_index do |grn_serial_item, index|
+                    .row
+                      .col-md-1
+                        - if params[:page]
+                          = (index+1) + 10*(params[:page].to_i-1)
+                        - else
+                          = (index+1)
 
-                = paginate @paginated_fifo_grn_serial_items, remote: false, method: :get
+                      .col-md-1= grn_serial_item.grn_item.grn.grn_no
+                      .col-md-1= grn_serial_item.grn_item.grn.created_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+                      .col-md-1= grn_serial_item.grn_item.recieved_quantity
+                      .col-md-1= grn_serial_item.grn_item.remaining_quantity
+                      .col-md-1= grn_serial_item.inventory_serial_item.serial_no
+                      .col-md-1= grn_serial_item.inventory_serial_item.status_name
+                      .col-md-1= grn_serial_item.inventory_serial_item.product_condition_condition
+                      / %td= grn_serial_item.inventory_serial_item.batch_no
+                      / %td= grn_serial_item.inventory_serial_item.lot_no
+                      / %td= grn_serial_item.inventory_serial_item.parts_not_completed ? "Not completed" : ""
+                      / %td= grn_serial_item.inventory_serial_item.scavenge ? "Scavenge" : ""
+                      / %td= grn_serial_item.inventory_serial_item.damage ? "Damaged" : ""
+                      / %td= grn_serial_item.inventory_serial_item.used ? "Used" : ""
+                      / %td= grn_serial_item.inventory_serial_item.repaired ? "Repaired" : ""
+                      / %td= grn_serial_item.inventory_serial_item.reserved ? "Reserved" : ""
+                      / %td= grn_serial_item.inventory_serial_item.ct_no
+                      .col-md-1= grn_serial_item.inventory_serial_item.manufatured_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
+                      .col-md-1= grn_serial_item.inventory_serial_item.expiry_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
+                      .col-md-1= simple_format grn_serial_item.inventory_serial_item.remarks
+                      .col-md-1= radio_button_tag "grn_serial_item_id", grn_serial_item.id, false,{class: "seperate_product_ckeckbox"} if srn_item.quantity == 1
+
+                / = paginate @paginated_fifo_grn_serial_items, remote: false, method: :get
+                / = link_to "Load more", prn_admins_inventories_path(srn: "search_srn", query: params[:query], page: (session[:page] || 2), load_more: true), remote: true
+                = link_to_next_page @paginated_fifo_grn_serial_items, "Load More", remote: true, method: :get
 
               - elsif sto.object.approved_inventory_product.inventory_product_info.need_batch
                 = paginate @grn_batches, remote: false, method: :get

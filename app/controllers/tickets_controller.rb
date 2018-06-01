@@ -3131,6 +3131,7 @@ class TicketsController < ApplicationController
       else
         if @product.update product_params
           @product = Product.find params[:product_id]
+          @ticket.update_index
           continue_bpm = true
         else
           @flash_message = {error: "Unable to save. Please retry #{@product.errors.full_messages.join(', ')}"}
@@ -3639,6 +3640,7 @@ class TicketsController < ApplicationController
 
     respond_to do |format|
       format.html {render "tickets/tickets_pack/issue_store_part"}
+      format.js { render "tickets/tickets_pack/issue_store_part_paginate" }
     end
   end
 
