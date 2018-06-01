@@ -528,14 +528,14 @@ class GrnSerialItem < ActiveRecord::Base
 
   def to_indexed_json
     to_json(
-      only: [:id],
+      only: [:id, :remaining],
       methods: [:store_id],
       include: {
         grn_item: {
-          only: [:remaining_quantity, :recieved_quantity, :inventory_not_updated],
+          only: [:remaining_quantity, :recieved_quantity, :inventory_not_updated, :product_id],
           include: {
             inventory_product: {
-              only: [:currency, :code],
+              only: [:id, :currency, :code],
             },
             grn: {
               only: [:created_at, :store_id],
@@ -569,6 +569,10 @@ class GrnSerialItem < ActiveRecord::Base
 
   def set_remaining
     self.remaining = true
+  end
+
+  def store_id
+    grn_item.grn.store_id
   end
 
 end

@@ -1,8 +1,10 @@
 - ticket = @ticket
 - product = @product
-- from_order_template = (uri.path == "/tickets/call_mf_order_template")
 
 - uri = URI(request.url)
+
+- from_order_template = (uri.path == "/tickets/call_mf_order_template")
+
 - uri_path = (uri.path == "/tickets/edit_serial") ? uri.path : from_order_template ? "/tickets/order_manufacture_parts" : "/#{params[:controller].split('/').last}/#{params[:action]}"
 - bpm_params_variables = Rails.cache.fetch([uri_path, params[:task_id]])[:bpm_input_variables].present? ? Hash[ Rails.cache.fetch([uri_path, params[:task_id]])[:bpm_input_variables] ] : {}
 = Rails.cache.fetch([uri_path, params[:task_id]]).inspect
