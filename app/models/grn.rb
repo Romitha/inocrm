@@ -438,7 +438,7 @@ class GrnBatch < ActiveRecord::Base
       methods: [:batch_stock_cost],
       include: {
         grn_item: {
-          only: [:id, :current_unit_cost, :remaining_quantity, :inventory_not_updated, :product_id],
+          only: [:id, :current_unit_cost, :remaining_quantity, :reserved_quantity, :remarks, :inventory_not_updated, :product_id],
           include: {
             currency: {
               only: [:currency, :code],
