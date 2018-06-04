@@ -3110,7 +3110,13 @@ class TicketsController < ApplicationController
     continue_bpm = false
     complete_task = params[:complete_task].present? ? params[:complete_task].to_bool : true
 
-    @continue = params[:from_order_template].try(:to_bool) ? true : view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    if params[:from_order_template].try(:to_bool)
+      @continue = true
+      complete_task = false
+    else
+      @continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])  
+    end
+
     if @continue
 
       if params[:new_product].present?

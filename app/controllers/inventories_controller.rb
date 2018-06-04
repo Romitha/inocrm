@@ -1532,7 +1532,7 @@ class InventoriesController < ApplicationController
 
             if @add_rec # Add new record (Batch)
               # inv_inventory_batch - Add
-              @grn_item_attributes.merge! grn_item_params
+              @grn_item_attributes.merge! grn_item_params unless params[:grn_item].present?
 
               @inventory_batch_attributes.merge! product_id: @inv_gin_source.grn_batch.inventory_batch.inventory_product.id if !@inventory_batch_attributes[:product_id].present?
 

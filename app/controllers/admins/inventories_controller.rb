@@ -383,7 +383,7 @@ module Admins
             @inventory_product = InventoryProduct.new
             flash[:notice] = "Successfully saved."
           else
-            flash[:alert] = "Unable to save. Please review."
+            flash[:alert] = "Unable to save. Please review. #{@inventory_product.errors.full_messages.join(', ')}"
           end
         else
           @inventory_product = InventoryProduct.new
@@ -695,7 +695,7 @@ module Admins
         if params[:search].present?
           refined_inventory_product = params[:search_inventory][:inventory_product].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
 
-          refined_search = [refined_inventory_product, refined_search].map{|v| v if v.present? }.compact.join(" AND ")
+          refined_search = [refined_inventory_product, refined_search, "_exists_:stores"].map{|v| v if v.present? }.compact.join(" AND ")
 
         end
 
