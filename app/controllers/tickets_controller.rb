@@ -3110,7 +3110,7 @@ class TicketsController < ApplicationController
     continue_bpm = false
     complete_task = params[:complete_task].present? ? params[:complete_task].to_bool : true
 
-    @continue = params[:task_id] ? view_context.bpm_check(params[:task_id], params[:process_id], params[:owner]) : params[:from_order_template].try(:to_bool)
+    @continue = params[:from_order_template].try(:to_bool) ? true : view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
     if @continue
 
       if params[:new_product].present?
@@ -3144,12 +3144,13 @@ class TicketsController < ApplicationController
         user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(35).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
         user_ticket_action.save
 
+        @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
+
         if complete_task
 
           # bpm output variables
           bpm_variables = view_context.initialize_bpm_variables
 
-          @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
 
           @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
@@ -3610,7 +3611,8 @@ class TicketsController < ApplicationController
         # @paginated_fifo_grn_serial_items = @fifo_grn_serial_items
 
       elsif @onloan_or_store.approved_inventory_product.inventory_product_info.need_batch
-        @grn_batches = GrnBatch.where(grn_item_id: grn_item_ids).where("remaining_quantity > 0").page(params[:page]).per(10)
+        # @grn_batches = GrnBatch.where(grn_item_id: grn_item_ids).where("remaining_quantity > 0").page(params[:page]).per(10)
+        @grn_batches = GrnBatch.search(query: "grn_item.grn.store_id:#{@onloan_or_store.approved_store_id} AND grn_item.inventory_not_updated:false AND grn_item.product_id:#{@onloan_or_store.approved_inventory_product.id}")
       else
 
         # grn_items = @onloan_or_store.approved_inventory_product.grn_items.search(query: "grn.store_id:#{@onloan_or_store.approved_store_id} AND inventory_not_updated:false AND remaining_quantity:>0")

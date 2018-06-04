@@ -134,6 +134,7 @@ class SrrItem < ActiveRecord::Base
 
   has_many :ticket_spare_part_stores, foreign_key: :inv_srr_item_id
   has_many :ticket_on_loan_spare_parts, foreign_key: :inv_srr_item_id
+  has_many :dyna_columns, as: :resourceable, autosave: true
 
   attr_accessor :returned_quantity
   attr_accessor :issued_quantity
