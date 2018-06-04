@@ -1065,7 +1065,6 @@ class InventoryPo < ActiveRecord::Base
     tire.search(page: (params[:page] || 1), per_page: 10) do
       if params[:query]
         params[:query] = params[:query].split(" AND ").map{|q| q.starts_with?("formated_po_no") ? "("+q+" OR #{q.gsub('formated_po_no', 'po_no')})" : q }.join(" AND ")
-        puts params[:query]
       end
       query do
         boolean do
