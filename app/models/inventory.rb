@@ -479,7 +479,7 @@ class InventoryProductInfo < ActiveRecord::Base
 
   belongs_to :product_sold_country, foreign_key: :country_id
 
-  validates_presence_of :product_id
+  validates_presence_of :product_id, if: Proc.new {|i| t.product_id.present? }
 
   def currency_type
     currency.code
