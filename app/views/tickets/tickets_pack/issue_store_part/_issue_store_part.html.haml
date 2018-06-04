@@ -297,7 +297,7 @@
                       %th Remarks
                       %th Issue
                   %tbody
-                    - @grn_batches.where(grn_item_id: sto.object.approved_inventory_product.grn_item_ids).each_with_index do |grn_batch, index|
+                    - @grn_batches.each_with_index do |grn_batch, index|
                       %tr
                         %td
                           - if params[:page]

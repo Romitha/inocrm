@@ -3612,7 +3612,7 @@ class TicketsController < ApplicationController
 
       elsif @onloan_or_store.approved_inventory_product.inventory_product_info.need_batch
         # @grn_batches = GrnBatch.where(grn_item_id: grn_item_ids).where("remaining_quantity > 0").page(params[:page]).per(10)
-        @grn_batches = GrnBatch.search(query: "grn_item.grn.store_id:#{@onloan_or_store.approved_store_id} AND grn_item.inventory_not_updated:false AND grn_item.product_id:#{@onloan_or_store.approved_inventory_product.id}")
+        @grn_batches = GrnBatch.search(query: "grn_item.grn.store_id:#{@onloan_or_store.approved_store_id} AND grn_item.inventory_not_updated:false AND grn_item.product_id:#{@onloan_or_store.approved_inventory_product.id} AND remaining_quantity:>0").select{|b| @onloan_or_store.approved_inventory_product.grn_item_ids.include?(b.grn_item_id.to_i)}
       else
 
         # grn_items = @onloan_or_store.approved_inventory_product.grn_items.search(query: "grn.store_id:#{@onloan_or_store.approved_store_id} AND inventory_not_updated:false AND remaining_quantity:>0")
