@@ -169,12 +169,6 @@ class Organization < ActiveRecord::Base
   def self.reset_tree_path
     @tree_path = []
   end
-  # class << self
-  #   protected
-
-
-  # end
-
 
   def anchestors
     self.class.reset_tree_path

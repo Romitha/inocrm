@@ -297,7 +297,8 @@
                       %th Remarks
                       %th Issue
                   %tbody
-                    - @grn_batches.each_with_index do |grn_batch, index|
+                    - relative_grn_item_ids = sto.object.approved_inventory_product.grn_item_ids
+                    - @grn_batches.select{|b| relative_grn_item_ids.include?(b.grn_item_id.to_i)}.each_with_index do |grn_batch, index|
                       %tr
                         %td
                           - if params[:page]

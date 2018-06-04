@@ -3612,7 +3612,7 @@ class TicketsController < ApplicationController
 
       elsif @onloan_or_store.approved_inventory_product.inventory_product_info.need_batch
         # @grn_batches = GrnBatch.where(grn_item_id: grn_item_ids).where("remaining_quantity > 0").page(params[:page]).per(10)
-        @grn_batches = GrnBatch.search(query: "grn_item.grn.store_id:#{@onloan_or_store.approved_store_id} AND grn_item.inventory_not_updated:false AND grn_item.product_id:#{@onloan_or_store.approved_inventory_product.id} AND remaining_quantity:>0").select{|b| @onloan_or_store.approved_inventory_product.grn_item_ids.include?(b.grn_item_id.to_i)}
+        @grn_batches = GrnBatch.search(query: "grn_item.grn.store_id:#{@onloan_or_store.approved_store_id} AND grn_item.inventory_not_updated:false AND grn_item.product_id:#{@onloan_or_store.approved_inventory_product.id} AND remaining_quantity:>0")
       else
 
         # grn_items = @onloan_or_store.approved_inventory_product.grn_items.search(query: "grn.store_id:#{@onloan_or_store.approved_store_id} AND inventory_not_updated:false AND remaining_quantity:>0")
@@ -4208,7 +4208,7 @@ class TicketsController < ApplicationController
     TicketSparePart
     Warranty
     @call_template = params[:call_template]
-    @ticket = Ticket.find session[:ticket_id]
+    @ticket = Ticket.find(params[:ticket_id] || session[:ticket_id])
     @product = @ticket.products.first
     @user_ticket_action = @ticket.user_ticket_actions.build
     @spare_part = TicketSparePart.find session[:request_spare_part_id]
@@ -4226,6 +4226,9 @@ class TicketsController < ApplicationController
       @spare_part.build_ticket_spare_part_store
       @call_template = 'tickets/tickets_pack/order_manufacture_parts/'+@call_template
     else
+      if @product.tickets.any?{|t| t.id != @ticket.id }
+        @new_product = Product.new
+      end
       @call_template = 'tickets/tickets_pack/order_manufacture_parts/'+@call_template
     end
   end

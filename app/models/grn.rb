@@ -434,7 +434,7 @@ class GrnBatch < ActiveRecord::Base
 
   def to_indexed_json
     to_json(
-      only: [:id, :remaining_quantity, :damage_quantity, :recieved_quantity, :damage_quantity],
+      only: [:id, :remaining_quantity, :damage_quantity, :recieved_quantity, :damage_quantity, :grn_item_id],
       methods: [:batch_stock_cost],
       include: {
         grn_item: {
