@@ -1,9 +1,3 @@
-/ - render_frame = "main_prn"
-
-/ $("##{render_frame}").html("#{ j render 'admins/inventories/prn/'+@render_template }");
-/ $("#prn_frame").addClass("hide");
-
-
 - if params[:srn] == "yes"
   $("#main_prn").html("#{ j render 'admins/inventories/prn/'+@render_template }");
   $("#prn_frame").addClass("hide");
