@@ -61,8 +61,7 @@
               %dd= value
 
         %tr
-          %td
-            / %a{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Item code: #{inventory_search_types(params[:from_where], inventory_product)[:item_code]}", "data-content"=> yield(:inventory_p_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "top", "data-container" => "body" }
+          %td{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Item code: #{inventory_search_types(params[:from_where], inventory_product)[:item_code]}", "data-content"=> "#{yield(:inventory_p_more)}", "data-html" => "true", "data-trigger" => "hover", "data-placement" => "top", "data-container" => "body" }
             - if params[:page]
               = (index+1)+ 10*(params[:page].to_i-1)
             - else

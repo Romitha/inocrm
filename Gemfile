@@ -49,7 +49,7 @@ gem 'rmagick' # sudo apt-get install imagemagick libmagickcore-dev libmagickwand
 
 gem "therubyracer"
 gem "less-rails", '~> 2.8.0' #Sprockets (what Rails 3.1 uses for its asset pipeline) supports LESS
-gem 'twitter-bootstrap-rails'#, :git => 'https://github.com/seyhunak/twitter-bootstrap-rails.git', branch: "bootstrap3"
+gem 'twitter-bootstrap-rails', "3.2.2"#, :git => 'https://github.com/seyhunak/twitter-bootstrap-rails.git'#, branch: "bootstrap3"
 
 gem "rails-erd"
 
@@ -62,7 +62,7 @@ gem "mustache"
 gem 'kaminari'
 
 # gem 'chosen-sass-bootstrap-rails'
-gem "chosen-rails"
+gem "chosen-rails", "1.4.1"
 
 gem 'bootstrap-editable-rails'
 

@@ -1,4 +1,4 @@
-class WorkflowMappingUpdate < ActiveRecord::Migration
+class WorkFlowMappingUpdate < ActiveRecord::Migration
   def change
     add_column :workflow_mappings, :bpm_role_id, "INT UNSIGNED NULL"
     add_index :workflow_mappings, :bpm_role_id, name: "fk_workflow_mappings_mst_bpm_role1_idx"
