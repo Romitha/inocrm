@@ -108,15 +108,6 @@
                     = shelf.description
 
               .row.col-md-12
-                / - shelf.inventory_bins.each do |bin|
-                /   .panel.panel-info
-                /     .panel-heading
-                /       %h3.panel-title
-                /         Bin: #{bin.description}
-                /         - unless bin.is_used_anywhere?
-                /           = link_to delete_location_bin_admins_inventories_path(bin_id: bin.id),method: :delete,  :data => { :confirm => 'Are you sure?' } do
-                /             %span.glyphicon.glyphicon-trash
-                /     .panel-body
                 = collapse_wrapper collapse_id: "inventory_bin_list", labelledby: "inv_bin_labelledby" do
                   - shelf.inventory_bins.each do |bin|
                     = collapse collapse_type: "info", labelledby: "labelledby_#{bin.id}", header_content: "Bin: #{bin.description}", collapse_link: "invbinlink_#{bin.id}", collapse_id: "inventory_bin_list" do

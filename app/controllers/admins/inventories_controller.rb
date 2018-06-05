@@ -40,6 +40,7 @@ module Admins
       if @inv_product.present?
         @inv_product.inventory_product_info.delete
         @inv_product.delete
+        @inv_product.update_index
       end
       respond_to do |format|
         format.html { redirect_to product_admins_inventories_path }

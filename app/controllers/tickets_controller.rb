@@ -44,6 +44,7 @@ class TicketsController < ApplicationController
   end
 
   def new
+    Ticket
     Rails.cache.delete([:new_ticket, request.remote_ip.to_s, session[:time_now]])
     Rails.cache.delete([:ticket_params, request.remote_ip.to_s, session[:time_now]])
     Rails.cache.delete([:histories, request.remote_ip.to_s, session[:time_now]])
