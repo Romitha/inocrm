@@ -131,8 +131,9 @@
                   %dt Stock in hand:
                   %dd
                     %span{class: "label label-#{stock_quantity.to_f <= 0 ? 'danger' : 'default'}"}
-                    - stock_qty = stock_quantity.to_f
-                    = stock_qty
+                    = stock_quantity.to_f
+                  %dt Available quantity:
+                  %dd= inventory.try(:available_quantity).to_f
                   %dt Rack:
                   %dd= inventory_rack
                   %dt Shelf:

@@ -454,7 +454,10 @@
             = sto.input :note, label: "On-loan spare part Note", input_html: { value: nil}
             = simple_format sto.object.note
         .col-md-12
-          = f.submit "#{part_terminated ? 'Terminated' : 'Save'}", class: "btn btn-success btn-sm", id: "approve_store_part", data: {disable_with: "Please wait..."}
+          .col-md-6
+            = f.submit "#{part_terminated ? 'Terminated' : 'Save'}", class: "btn btn-success btn-sm", id: "approve_store_part", data: {disable_with: "Please wait..."}
+          .col-md-6
+            = link_to "Send email", send_available_email_tickets_path(onloan: "#{@onloan_request}", part_id: (@onloan_request ? request_part.id : spare_part.id )), remote: true, class: "btn btn-link", data: {disable_with: "Please wait..."}
 
 
 #inventory_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "inventory_modal", "aria-hidden" => true}

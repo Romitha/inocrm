@@ -4651,8 +4651,16 @@ class TicketsController < ApplicationController
         @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
       end
 
-      # view_context.ticket_bpm_headers process_id, ticket_id, ""
-      # Rails.cache.delete([:workflow_header, process_id])
+      TicketWorkflowProcess.where(ticket_id: @ticket.id).each do |process|
+        if process
+          process_id = process.process_id
+          ticket_spare_part_id = process.spare_part_id
+          onloan_spare_part_id = process.onloan_spare_part_id
+
+          view_context.ticket_bpm_headers process_id, @ticket.id, ticket_spare_part_id, onloan_spare_part_id
+          Rails.cache.delete([:workflow_header, process_id])
+        end
+      end
 
       WebsocketRails[:posts].trigger 'new', {task_name: "Hold for ticket", task_id: @ticket.id, task_verb: "updated.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
       redirect_to @ticket, notice: "Ticket is successfully updated."
@@ -4673,8 +4681,17 @@ class TicketsController < ApplicationController
         @ticket_engineer = TicketEngineer.find params[:engineer_id]
         @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
       end
-      # view_context.ticket_bpm_headers process_id, ticket_id, ""
-      # Rails.cache.delete([:workflow_header, process_id])
+
+      TicketWorkflowProcess.where(ticket_id: @ticket.id).each do |process|
+        if process
+          process_id = process.process_id
+          ticket_spare_part_id = process.spare_part_id
+          onloan_spare_part_id = process.onloan_spare_part_id
+
+          view_context.ticket_bpm_headers process_id, @ticket.id, ticket_spare_part_id, onloan_spare_part_id
+          Rails.cache.delete([:workflow_header, process_id])
+        end
+      end      
 
       WebsocketRails[:posts].trigger 'new', {task_name: "Un hold for ticket", task_id: @ticket.id, task_verb: "updated.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
 
@@ -5028,17 +5045,15 @@ class TicketsController < ApplicationController
               end
 
             end
-          else # Final Resolution
-            if (@ticket.try(:ticket_type_code) != "OS") and (@ticket.ticket_status.code == 'CFB')  #Customer Feedback
-              # email_to = @ticket.send("contact_person#{@ticket.inform_cp}").contact_person_contact_types.find_by_contact_type_id(ContactType.find_by_email(true).id).try(:value)
-              email_to1 = @ticket.contact_person1.contact_person_contact_types.find_by_contact_type_id(ContactType.find_by_email(true).id).try(:value)
-              email_to2 = @ticket.contact_person2.contact_person_contact_types.find_by_contact_type_id(ContactType.find_by_email(true).id).try(:value)
-              email_to3 = @ticket.report_person.contact_person_contact_types.find_by_contact_type_id(ContactType.find_by_email(true).id).try(:value)
-              email_to = email_to1+','+email_to2+','+email_to3
+          elsif @ticket.try(:ticket_type_code) != "OS" and @ticket.ticket_status.code == 'CFB'  #Customer Feedback
+            # email_to = @ticket.send("contact_person#{@ticket.inform_cp}").contact_person_contact_types.find_by_contact_type_id(ContactType.find_by_email(true).id).try(:value)
+            email_to1 = @ticket.contact_person1.contact_person_contact_types.find_by_contact_type_id(ContactType.find_by_email(true).id).try(:value)
+            email_to2 = @ticket.contact_person2.contact_person_contact_types.find_by_contact_type_id(ContactType.find_by_email(true).id).try(:value)
+            email_to3 = @ticket.report_person.contact_person_contact_types.find_by_contact_type_id(ContactType.find_by_email(true).id).try(:value)
+            email_to = email_to1+','+email_to2+','+email_to3
 
-              if email_to1.present? || email_to2.present? || email_to3.present?
-                view_context.send_email(email_to: email_to, ticket_id: @ticket.id, email_code: "COMPLETE_JOB")
-              end
+            if email_to1.present? || email_to2.present? || email_to3.present?
+              view_context.send_email(email_to: email_to, ticket_id: @ticket.id, email_code: "COMPLETE_JOB")
             end
           end
 
@@ -5614,7 +5629,28 @@ class TicketsController < ApplicationController
     end
   end
 
+  def send_available_email
 
+    if params[:onloan].try(:to_bool)
+      @onloan_request_part = TicketOnLoanSparePart.find(params[:part_id])
+
+      email_to = @onloan_request_part.engineer.user.email
+      view_context.send_email(email_to: email_to, ticket_id: @onloan_request_part.ticket.try(:id), engineer_id: @onloan_request_part.engineer_id, spare_part_id: @onloan_request_part.id, onloan: true, email_code: "STORE_PART_AVAILABLE") if email_to.present?
+
+    else
+      @ticket_spare_part = TicketSparePart.find(params[:part_id])
+
+      email_to = @ticket_spare_part.engineer.user.email
+      view_context.send_email(email_to: email_to, ticket_id: @ticket_spare_part.ticket_id, engineer_id: @ticket_spare_part.engineer_id, spare_part_id: @ticket_spare_part.id, email_code: "STORE_PART_AVAILABLE") if email_to.present?
+
+    end
+
+    respond_to do |format|
+      format.js { render js: "alert('Sending email is completed.');"}
+      format.html
+    end
+
+  end
 
   private
 

@@ -1304,7 +1304,7 @@ module Admins
 
             grn_item.grn_batches.first.update damage_quantity: damage_request.quantity if grn_item.grn_batches.first.present?
 
-            inventory_serial_item.damaged = true if inventory_serial_item.present?
+            inventory_serial_item.damage = true if inventory_serial_item.present?
 
           end
 

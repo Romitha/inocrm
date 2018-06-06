@@ -99,20 +99,3 @@
                     %td= tsp.return_part_serial_no
                     %td= tsp.request_from == 'M' ? tsp.ticket_spare_part_manufacture.try(:event_no) : ""
                     %td= tsp.ticket_spare_part_manufacture.try(:event_closed) ? "Yes" : "No"
-
-        / = collapse_wrapper collapse_id: "ticket_spare_part_fsr_#{ticket_fsr.id}" do
-        /   - ticket_fsr.ticket_spare_parts.each do |ticket_spare_part|
-        /     = collapse collapse_type: "info", header_content: "Ticket spare part: #{ticket_spare_part.spare_part_no} - #{ticket_spare_part.spare_part_description} - FSR ID: #{ticket_spare_part.ticket_fsr.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])}", collapse_link: "ticket_spare_part_fsr_link_#{ticket_spare_part.id}", collapse_id: "ticket_spare_part_fsr_#{ticket_fsr.id}", labelledby: "ticket_spare_part_lby_fsr#{ticket_spare_part.id}" do
-        /       .row
-        /         .col-md-3
-        /           %strong Spare part No:
-        /           = ticket_spare_part.spare_part_no
-        /         .col-md-3
-        /           %strong Action status:
-        /           = ticket_spare_part.spare_part_status_action.name
-        /         .col-md-3
-        /           %strong Description:
-        /           = ticket_spare_part.spare_part_description
-        /         .col-md-3
-        /           %strong Faulty serial No:
-        /           = ticket_spare_part.faulty_serial_no

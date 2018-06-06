@@ -221,6 +221,7 @@ Rails.application.routes.draw do
       get "regenerate_workflow"
 
       post "update_issue_store_parts"
+      post "send_available_email"
 
       # post "save_add_edit_contract"
 
