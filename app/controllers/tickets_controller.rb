@@ -4655,9 +4655,9 @@ class TicketsController < ApplicationController
         if process
           process_id = process.process_id
           ticket_spare_part_id = process.spare_part_id
-          onloan_spare_part_id = process.onloan_spare_part_id
+          on_loan_spare_part_id = process.on_loan_spare_part_id
 
-          view_context.ticket_bpm_headers process_id, @ticket.id, ticket_spare_part_id, onloan_spare_part_id
+          view_context.ticket_bpm_headers process_id, @ticket.id, ticket_spare_part_id, on_loan_spare_part_id
           Rails.cache.delete([:workflow_header, process_id])
         end
       end
