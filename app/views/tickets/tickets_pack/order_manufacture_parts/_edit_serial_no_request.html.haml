@@ -7,7 +7,6 @@
 
 - uri_path = (uri.path == "/tickets/edit_serial") ? uri.path : from_order_template ? "/tickets/order_manufacture_parts" : "/#{params[:controller].split('/').last}/#{params[:action]}"
 - bpm_params_variables = Rails.cache.fetch([uri_path, params[:task_id]])[:bpm_input_variables].present? ? Hash[ Rails.cache.fetch([uri_path, params[:task_id]])[:bpm_input_variables] ] : {}
-= Rails.cache.fetch([uri_path, params[:task_id]]).inspect
 
 %fieldset
   %legend Edit Serial No
