@@ -1264,6 +1264,8 @@ module Admins
         inventory = grn_item.inventory_product.inventories.find_by_store_id(@grn.store_id)
         # inventory = srr_item_source.srr_item.inventory_product.inventories.find_by_store_id(srr_item_source.srr_item.srr.store_id)
 
+        grn_item.damage_quantity = grn_item.recieved_quantity if grn_item.damage_quantity > grn_item.recieved_quantity 
+
         # inventory.stock_quantity += grn_item.recieved_quantity
         # inventory.available_quantity += (grn_item.recieved_quantity - grn_item.damage_quantity)
         # inventory.damage_quantity += grn_item.damage_quantity
@@ -1284,7 +1286,7 @@ module Admins
 
           damage_request = Rails.cache.fetch([ :extra_objects, srr_item_source_id, session[:grn_arrived_time].to_i ] )[:damage_request]
 
-          if damage_request.present?
+          if damage_request.present? && (grn_item.damage_quantity > 0)
 
             damage_request.grn_item_id = grn_item.id
             damage_request.grn_batch_id = grn_item.grn_batches.first.id if grn_item.grn_batches.first.present?
@@ -1301,6 +1303,8 @@ module Admins
             grn_item.grn_batches.first.update remaining_quantity: (grn_item.grn_batches.first.remaining_quantity - damage_request.quantity) if grn_item.grn_batches.first.present?  
 
             grn_item.grn_batches.first.update damage_quantity: damage_request.quantity if grn_item.grn_batches.first.present?
+
+            inventory_serial_item.damaged = true if inventory_serial_item.present?
 
           end
 

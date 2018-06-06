@@ -1567,7 +1567,8 @@ class InventoriesController < ApplicationController
             @grn_item_attributes.merge!({
               product_id:  @inventory_batch.product_id,
               recieved_quantity: @inv_srr_item.quantity,
-              remaining_quantity: @inv_srr_item.quantity,
+              #remaining_quantity: @inv_srr_item.quantity,
+              remaining_quantity: (params[:damage_reason_check].present? ? 0 : @inv_srr_item.quantity),
               reserved_quantity: 0,
               damage_quantity: (params[:damage_reason_check].present? ? @inv_srr_item.quantity : 0),
               current_unit_cost: @inv_grn_item.unit_cost,
@@ -1581,7 +1582,8 @@ class InventoriesController < ApplicationController
             @inv_grn_batch = @inv_grn_item.grn_batches.build
             @inv_grn_batch.inventory_batch_id = @inventory_batch.id
             @inv_grn_batch.recieved_quantity = @inv_srr_item.quantity
-            @inv_grn_batch.remaining_quantity = @inv_srr_item.quantity
+            #@inv_grn_batch.remaining_quantity = @inv_srr_item.quantity
+            @inv_grn_batch.remaining_quantity = (params[:damage_reason_check].present? ? 0 : @inv_srr_item.quantity)
             @inv_grn_batch.damage_quantity = params[:damage_reason_check].present? ? @inv_srr_item.quantity : 0
             @inv_grn.save
 
@@ -1660,7 +1662,8 @@ class InventoriesController < ApplicationController
                 @grn_item.product_id = @inv_gin_source.grn_item.product_id  
               end
               @grn_item.recieved_quantity = @inv_srr_item.quantity
-              @grn_item.remaining_quantity = @inv_srr_item.quantity
+              #@grn_item.remaining_quantity = @inv_srr_item.quantity
+              @grn_item.remaining_quantity = (params[:damage_reason_check].present? ? 0 : @inv_srr_item.quantity)              
               @grn_item.reserved_quantity = 0
               @grn_item.damage_quantity = params[:damage_reason_check].present? ? @inv_srr_item.quantity : 0
               #@grn_item.unit_cost - binded
