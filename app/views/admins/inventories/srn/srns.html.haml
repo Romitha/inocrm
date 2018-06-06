@@ -32,6 +32,12 @@
             - (srn.ticket_spare_part_stores.map{|s| s.ticket_spare_part.ticket } + srn.ticket_on_loan_spare_parts.map{|s| s.ticket }).each do |t|
               = link_to t.support_ticket_no, t, target: "_blank"
               %br/
+          - if srn.ticket_spare_part_stores.any?{|s| s.ticket_spare_part.ticket_estimation_parts.any? }
+            %dt Available estimations
+            %dd
+              - (srn.ticket_spare_part_stores.map{|s| s.ticket_spare_part.ticket } + srn.ticket_on_loan_spare_parts.map{|s| s.ticket }).each do |t|
+                = link_to "Estimation and Quotation - #{t.support_ticket_no}", resolution_tickets_path(ticket_id: t.id, from_where1: "estimations_quotations"), target: "_blank"
+
 
       %h4.small_scale_padding-top1 SRN Items
       %table.table.table-bordered
