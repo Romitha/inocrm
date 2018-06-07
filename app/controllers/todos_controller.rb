@@ -29,7 +29,7 @@ class TodosController < ApplicationController
           @formatted_workflow_mapping_for_role[@potential_owner][:role_content] = @workflow_mapping_for_role.map{|w| {process_name: w[:workflow_mapping].process_name, task_name: w[:workflow_mapping].task_name, url: w[:workflow_mapping].url, first_header_title: w[:workflow_mapping].first_header_title, second_header_title_name: w[:workflow_mapping].second_header_title_name, input_variables: w[:workflow_mapping].input_variables, second_header_title: (w[:workflow_header].send(w[:workflow_mapping].second_header_title_name.to_sym) if w[:workflow_header] and w[:workflow_mapping].second_header_title_name.present?), task_content: w[:task_content]}}
 
           @formatted_workflow_mapping_for_role[@potential_owner][:role_name] = bpm_module_role.name
-          @formatted_workflow_mapping_for_role[@potential_owner][:count] = @formatted_workflow_mapping_for_role[@potential_owner][bpm_module_role.name].count
+          @formatted_workflow_mapping_for_role[@potential_owner][:count] = @formatted_workflow_mapping_for_role[@potential_owner][:role_content].count
         end
 
       end
