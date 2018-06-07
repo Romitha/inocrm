@@ -48,7 +48,7 @@ class TodosController < ApplicationController
       @formatted_workflow_mapping_for_user = @workflow_mapping_for_user.map{|w| {process_name: w[:workflow_mapping].process_name, task_name: w[:workflow_mapping].task_name, url: w[:workflow_mapping].url, first_header_title: w[:workflow_mapping].first_header_title, second_header_title_name: w[:workflow_mapping].second_header_title_name, input_variables: w[:workflow_mapping].input_variables, second_header_title: (w[:workflow_header].send(w[:workflow_mapping].second_header_title_name.to_sym) if w[:workflow_header].present? and w[:workflow_mapping].second_header_title_name.present?), task_content: w[:task_content]}}
 
       Rails.cache.fetch([:formatted_workflow_mapping_for_user]) { @formatted_workflow_mapping_for_user }
-      # @formatted_workflow_mapping_for_user = @formatted_workflow_mapping_for_user_without_pagi.page(params[:page]).per(20)
+
     end
 
   end

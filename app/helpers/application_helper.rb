@@ -801,14 +801,14 @@ module ApplicationHelper
         end
 
         if spare_part_name
-          @h2 = "#{ticket_no}#{customer_name}#{spare_part_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}"
+          @h2 = "color:#{color_code}|#{ticket_no}#{customer_name}#{spare_part_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}#{hold}"
         else
           @h2 = ""
         end
 
         if spare_part
           spare_part_name = "[#{spare_part.spare_part_no}-#{spare_part.spare_part_description.truncate(18)}]"
-          @h3 = "#{@h3_sub}#{ticket_no}#{customer_name}#{spare_part_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}"
+          @h3 = "color:#{color_code}|#{@h3_sub}#{ticket_no}#{customer_name}#{spare_part_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}#{hold}"
         else
           @h3 = ""
         end
@@ -822,7 +822,7 @@ module ApplicationHelper
         if onloan_spare_part and onloan_spare_part.inventory_product
           store_part_name = "[#{onloan_spare_part.inventory_product.description.try :truncate, 18}]"
 
-          @h2 = "#{ticket_no}#{customer_name}#{store_part_name} (On-Loan) #{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}"
+          @h2 = "color:#{color_code}|#{ticket_no}#{customer_name}#{store_part_name} (On-Loan) #{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}#{hold}"
         else
           @h2 = ""
         end
