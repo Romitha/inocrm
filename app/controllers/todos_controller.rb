@@ -12,7 +12,8 @@ class TodosController < ApplicationController
       current_user.roles.find_by_id(current_user.current_user_role_id).bpm_module_roles.each do |bpm_module_role|
         @potential_owner = bpm_module_role.try :code
         @todo_list_for_role = []
-        @workflow_mapping_for_role[@potential_owner] = {}
+        @workflow_mapping_for_role = []
+        @formatted_workflow_mapping_for_role[@potential_owner] = {}
 
         if @potential_owner
           ["InProgress", "Reserved", "Ready"].each do |status|
