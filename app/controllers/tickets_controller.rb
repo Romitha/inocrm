@@ -5631,7 +5631,7 @@ class TicketsController < ApplicationController
 
   def send_available_email
 
-    if params[:onloan].try(:to_bool)
+    if params[:onloan].present? and params[:onloan].to_bool
       @onloan_request_part = TicketOnLoanSparePart.find(params[:part_id])
 
       email_to = @onloan_request_part.engineer.user.email
