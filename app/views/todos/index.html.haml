@@ -40,11 +40,7 @@
                 = select_tag "first_header_title", options_from_collection_for_select(BpmModuleRole.find_by_code(k).workflow_mappings, "first_header_title", "first_header_title"), class: "search"
 
                 = javascript_tag do
-                  options = {
-                  valueNames: [ 'first_header_title' ]
-                  listClass: "todo_list_search"
-                  searchClass: "search"
-                  }
+                  options = {valueNames: [ 'first_header_title' ], listClass: "todo_list_search", earchClass: "search" }
                   organizationList = new List("todo_search_initialization_#{k}", options)
 
                 .todo_list_search
