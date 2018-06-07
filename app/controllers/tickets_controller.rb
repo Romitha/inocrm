@@ -5646,7 +5646,7 @@ class TicketsController < ApplicationController
     end
 
     respond_to do |format|
-      format.js { render js: "alert('Sending email is completed.');"}
+      format.js { render js: "alert('Sending email is completed.'); Tickets.remove_ajax_loader();"}
       format.html
     end
 
