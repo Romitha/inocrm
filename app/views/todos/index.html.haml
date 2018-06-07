@@ -25,11 +25,13 @@
       = tab_content active_class: "active", tabpointer: "user_details" do
         .product
           - if formatted_workflow_mapping_for_user.is_a?(Array)
-            - formatted_workflow_mapping_for_user.sort{|pf, lf| pf[:task_content]["created_on"].to_time <=> lf[:task_content]["created_on"].to_time}.each do |formatted_workflow_mapping|
+            / - formatted_workflow_mapping_for_user.sort{|pf, lf| pf[:task_content]["created_on"].to_time <=> lf[:task_content]["created_on"].to_time}.each do |formatted_workflow_mapping|
+            - formatted_workflow_mapping_for_user.each do |formatted_workflow_mapping|
               = render "to_do_list", formatted_workflow_mapping: formatted_workflow_mapping
 
       = tab_content tabpointer: "role" do
         .product
           - if formatted_workflow_mapping_for_role.is_a?(Array)
-            - formatted_workflow_mapping_for_role.sort{|pf, lf| pf[:task_content]["created_on"].to_time <=> lf[:task_content]["created_on"].to_time}.each do |formatted_workflow_mapping|
+            / - formatted_workflow_mapping_for_role.sort{|pf, lf| pf[:task_content]["created_on"].to_time <=> lf[:task_content]["created_on"].to_time}.each do |formatted_workflow_mapping|
+            - formatted_workflow_mapping_for_role.each do |formatted_workflow_mapping|
               = render "to_do_list", formatted_workflow_mapping: formatted_workflow_mapping

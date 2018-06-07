@@ -4652,14 +4652,13 @@ class TicketsController < ApplicationController
       end
 
       TicketWorkflowProcess.where(ticket_id: @ticket.id).each do |process|
-        if process
-          process_id = process.process_id
-          ticket_spare_part_id = process.spare_part_id
-          on_loan_spare_part_id = process.on_loan_spare_part_id
+        process_id = process.process_id
+        ticket_spare_part_id = process.spare_part_id
+        on_loan_spare_part_id = process.on_loan_spare_part_id
 
-          view_context.ticket_bpm_headers process_id, @ticket.id, ticket_spare_part_id, on_loan_spare_part_id
-          Rails.cache.delete([:workflow_header, process_id])
-        end
+        view_context.ticket_bpm_headers process_id, @ticket.id, ticket_spare_part_id, on_loan_spare_part_id
+        Rails.cache.delete([:workflow_header, process_id])
+
       end
 
       WebsocketRails[:posts].trigger 'new', {task_name: "Hold for ticket", task_id: @ticket.id, task_verb: "updated.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
@@ -4683,14 +4682,13 @@ class TicketsController < ApplicationController
       end
 
       TicketWorkflowProcess.where(ticket_id: @ticket.id).each do |process|
-        if process
-          process_id = process.process_id
-          ticket_spare_part_id = process.spare_part_id
-          on_loan_spare_part_id = process.on_loan_spare_part_id
+        process_id = process.process_id
+        ticket_spare_part_id = process.spare_part_id
+        on_loan_spare_part_id = process.on_loan_spare_part_id
 
-          view_context.ticket_bpm_headers process_id, @ticket.id, ticket_spare_part_id, on_loan_spare_part_id
-          Rails.cache.delete([:workflow_header, process_id])
-        end
+        view_context.ticket_bpm_headers process_id, @ticket.id, ticket_spare_part_id, on_loan_spare_part_id
+        Rails.cache.delete([:workflow_header, process_id])
+
       end      
 
       WebsocketRails[:posts].trigger 'new', {task_name: "Un hold for ticket", task_id: @ticket.id, task_verb: "updated.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
