@@ -30,7 +30,6 @@
     - ticket.ticket_estimations.each_with_index do |estimation, index|
 
       - est_engineers = ticket_engineers.where(id: estimation.engineer_id)
-      / - est_ownership = est_engineers.pressent?
 
       - if est_engineers.any? or params[:partial_template_for_show] == "estimation"
 

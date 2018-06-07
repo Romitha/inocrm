@@ -1,11 +1,9 @@
 class TodosController < ApplicationController
   def index
 
-    @todo_list_for_role = []
-    @workflow_mapping_for_role = []
-
     @todo_list_for_user = []
     @workflow_mapping_for_user = []
+    @formatted_workflow_mapping_for_role = {}
 
     @err_message = view_context.send_request_process_data(task_list: true, status: "InProgress")[:message] if view_context.send_request_process_data(task_list: true, status: status)[:status] == "error"
 
@@ -13,6 +11,8 @@ class TodosController < ApplicationController
     unless @err_message.present?
       current_user.roles.find_by_id(current_user.current_user_role_id).bpm_module_roles.each do |bpm_module_role|
         @potential_owner = bpm_module_role.try :code
+        @todo_list_for_role = []
+        @workflow_mapping_for_role[@potential_owner] = {}
 
         if @potential_owner
           ["InProgress", "Reserved", "Ready"].each do |status|
@@ -25,8 +25,10 @@ class TodosController < ApplicationController
             @workflow_mapping_for_role << {workflow_mapping: Rails.cache.fetch([:workflow_mapping_role, task_content["name"]]){WorkflowMapping.where(task_name: task_content["name"], process_name: task_content["process_id"]).first}, workflow_header: Rails.cache.fetch([:workflow_header, task_content["process_instance_id"]]){WorkflowHeaderTitle.find_by_process_id(task_content["process_instance_id"])}, task_content: task_content}
           end
 
-          @formatted_workflow_mapping_for_role = @workflow_mapping_for_role.map{|w| {process_name: w[:workflow_mapping].process_name, task_name: w[:workflow_mapping].task_name, url: w[:workflow_mapping].url, first_header_title: w[:workflow_mapping].first_header_title, second_header_title_name: w[:workflow_mapping].second_header_title_name, input_variables: w[:workflow_mapping].input_variables, second_header_title: (w[:workflow_header].send(w[:workflow_mapping].second_header_title_name.to_sym) if w[:workflow_header] and w[:workflow_mapping].second_header_title_name.present?), task_content: w[:task_content]}}
+          @formatted_workflow_mapping_for_role[@potential_owner][:role_content] = @workflow_mapping_for_role.map{|w| {process_name: w[:workflow_mapping].process_name, task_name: w[:workflow_mapping].task_name, url: w[:workflow_mapping].url, first_header_title: w[:workflow_mapping].first_header_title, second_header_title_name: w[:workflow_mapping].second_header_title_name, input_variables: w[:workflow_mapping].input_variables, second_header_title: (w[:workflow_header].send(w[:workflow_mapping].second_header_title_name.to_sym) if w[:workflow_header] and w[:workflow_mapping].second_header_title_name.present?), task_content: w[:task_content]}}
 
+          @formatted_workflow_mapping_for_role[@potential_owner][:role_name] = bpm_module_role.name
+          @formatted_workflow_mapping_for_role[@potential_owner][:count] = @formatted_workflow_mapping_for_role[@potential_owner][bpm_module_role.name].count
         end
 
       end

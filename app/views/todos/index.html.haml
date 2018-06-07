@@ -2,6 +2,9 @@
 - formatted_workflow_mapping_for_user = @formatted_workflow_mapping_for_user
 - count = 0
 
+- tab_hash = {user_details: {active_class: "active", content: "User (#{formatted_workflow_mapping_for_user.try(:count).to_i})"}}
+- formatted_workflow_mapping_for_role.each{|k, v| count += v[:count].to_i; tab_hash.merge!({"role_#{k}" => {content: "#{v[:role_name]} (#{v[:count]})"}}) }
+
 - if @err_message.present?
   .alert.alert-danger
     = @err_message
@@ -9,7 +12,7 @@
 .row
   .col-xs-12.col-sm-6.col-md-8
     #todo_list 
-      %p To Do list (#{@formatted_workflow_mapping_for_user.try(:count).to_i+formatted_workflow_mapping_for_role.try(:count).to_i})
+      %p To Do list (#{@formatted_workflow_mapping_for_user.try(:count).to_i+count})
       %a{:href => todos_path} 
         %i.fa.fa-repeat
 
@@ -20,7 +23,7 @@
 
 #table
   = tab_panel do
-    = tab_nav_tab({}, user_details: {active_class: "active", content: "User (#{@formatted_workflow_mapping_for_user.try(:count).to_i})"}, role: {content: "#{current_user.current_user_role_name} (#{formatted_workflow_mapping_for_role.try(:count).to_i})"})
+    = tab_nav_tab({}, tab_hash)
     .tab-content
       = tab_content active_class: "active", tabpointer: "user_details" do
         .product
@@ -28,8 +31,10 @@
             - formatted_workflow_mapping_for_user.sort{|pf, lf| lf[:task_content]["created_on"].to_time <=> pf[:task_content]["created_on"].to_time}.each do |formatted_workflow_mapping|
               = render "to_do_list", formatted_workflow_mapping: formatted_workflow_mapping
 
-      = tab_content tabpointer: "role" do
-        .product
-          - if formatted_workflow_mapping_for_role.is_a?(Array)
-            - formatted_workflow_mapping_for_role.sort{|pf, lf| lf[:task_content]["created_on"].to_time <=> pf[:task_content]["created_on"].to_time}.each do |formatted_workflow_mapping|
-              = render "to_do_list", formatted_workflow_mapping: formatted_workflow_mapping
+      - formatted_workflow_mapping_for_role.each do |k, v|
+        = tab_content tabpointer: "role_#{k}" do
+          .product
+            - if v[:role_content].is_a?(Array)
+
+              - v[:role_content].sort{|pf, lf| lf[:task_content]["created_on"].to_time <=> pf[:task_content]["created_on"].to_time}.each do |formatted_workflow_mapping|
+                = render "to_do_list", formatted_workflow_mapping: formatted_workflow_mapping

@@ -38,6 +38,8 @@ class BpmModuleRole < ActiveRecord::Base
 
   has_many :module_roles, foreign_key: :bpm_role_id
   has_many :roles, through: :module_roles
+  has_many :workflow_mappings, foreign_key: :bpm_role_id
+
 end
 
 class BpmModule < ActiveRecord::Base
