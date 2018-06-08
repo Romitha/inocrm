@@ -44,7 +44,7 @@
                   - v[:role_content].sort{|pf, lf| lf[:task_content]["created_on"].to_time <=> pf[:task_content]["created_on"].to_time}.each do |formatted_workflow_mapping|
                     = render "to_do_list", formatted_workflow_mapping: formatted_workflow_mapping
 
-                = javascript_tag do
+                = javascript_tag defer: 'defer' do
                   var options = {valueNames: [ 'first_header_title' ], listClass: "todo_list_search", searchClass: "search" }
                   var organizationList = new List("todo_search_initialization_#{k}", options)
                   $("#live_seach_select_to_do_#{k}").change(function(){organizationList.search($(":selected", this).val())})
