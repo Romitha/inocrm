@@ -37,7 +37,7 @@
             - if v[:role_content].is_a?(Array)
 
               %div{id: "todo_search_initialization_#{k}"}
-                = select_tag "first_header_title", options_from_collection_for_select(BpmModuleRole.find_by_code(k).workflow_mappings, "first_header_title", "first_header_title"), class: "search"
+                = select_tag "first_header_title", options_from_collection_for_select(BpmModuleRole.find_by_code(k).workflow_mappings, "first_header_title", "first_header_title"), class: "search", id: "live_seach_select_to_do_#{k}", include_blank: "All"
 
 
                 .todo_list_search
@@ -47,3 +47,4 @@
                 = javascript_tag do
                   var options = {valueNames: [ 'first_header_title' ], listClass: "todo_list_search", searchClass: "search" }
                   organizationList = new List("todo_search_initialization_#{k}", options)
+                  $("#live_seach_select_to_do_#{k}").change(function(){organization.search((":selected", this).val())})
