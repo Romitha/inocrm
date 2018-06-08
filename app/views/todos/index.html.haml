@@ -46,5 +46,5 @@
 
                 = javascript_tag do
                   var options = {valueNames: [ 'first_header_title' ], listClass: "todo_list_search", searchClass: "search" }
-                  organizationList = new List("todo_search_initialization_#{k}", options)
-                  $("#live_seach_select_to_do_#{k}").change(function(){organization.search((":selected", this).val())})
+                  var organizationList = new List("todo_search_initialization_#{k}", options)
+                  $("#live_seach_select_to_do_#{k}").change(function(){organizationList.search($(":selected", this).val())})
