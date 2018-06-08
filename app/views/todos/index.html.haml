@@ -48,5 +48,8 @@
                   $(function(){
                   var options = {valueNames: [ 'first_header_title' ], listClass: "todo_list_search", searchClass: "search" };
                   var organizationList = new List("todo_search_initialization_#{k}", options);
-                  $("#live_seach_select_to_do_#{k}").change(function(){organizationList.search($(":selected", this).val())});
+                  $("#live_seach_select_to_do_#{k}").change(function(){
+                  console.log($(":selected", this).val())
+                  organizationList.search($(":selected", this).val());
+                  });
                   })
