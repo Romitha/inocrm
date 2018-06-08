@@ -725,6 +725,7 @@ window.Inventories =
 
   toggle_add_update_return_part: ->
     $(".toggle_add_update").click ->
+      $(".add_form").removeClass("hide")
       $.get "/inventories/toggle_add_update_return_part?object_class="+$(@).data("object-class")+"&object_id="+$(@).data("object-id")+"&rew_record="+$(@).data("new-record")+"&reject="+$(@).data("reject")+"&uri="+$(@).data("uri-path")+"&task_id="+$(@).data("task-id")+"&owner="+$(@).data("owner")+"&process_id="+$(@).data("process-id")+"&currency_code="+$(@).data("currency-code")+"&active_spare_part="+$(@).data("active-spare-part")+"&currency_id="+$(@).data("currency-id")+"&grn_cost="+$(@).data("grn-cost")
       return
 
