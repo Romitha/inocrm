@@ -45,6 +45,8 @@
                     = render "to_do_list", formatted_workflow_mapping: formatted_workflow_mapping
 
                 = javascript_tag defer: 'defer' do
-                  var options = {valueNames: [ 'first_header_title' ], listClass: "todo_list_search", searchClass: "search" }
-                  var organizationList = new List("todo_search_initialization_#{k}", options)
-                  $("#live_seach_select_to_do_#{k}").change(function(){organizationList.search($(":selected", this).val())})
+                  $(function(){
+                  var options = {valueNames: [ 'first_header_title' ], listClass: "todo_list_search", searchClass: "search" };
+                  var organizationList = new List("todo_search_initialization_#{k}", options);
+                  $("#live_seach_select_to_do_#{k}").change(function(){organizationList.search($(":selected", this).val())});
+                  })
