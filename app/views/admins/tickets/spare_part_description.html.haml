@@ -6,19 +6,6 @@
     .col-md-6
       = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_spare_part_description"
 
-/ #accordion.panel-group
-/   - @spare_part_description_all.each_with_index do |sp_description, index|
-/     .panel.panel-info
-/       .panel-heading
-/         %h3.panel-title
-/           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
-/             = sp_description.description
-/           = link_to delete_admin_spare_part_description_admins_tickets_path(sp_description_id: sp_description.id), method: :delete,  :data => { :confirm => 'Are you sure?' } do
-/             %span.glyphicon.glyphicon-trash
-
-/       .panel-collapse.collapse.in{:id => "#{index}"}
-/         .panel-body
-
 = collapse_wrapper collapse_id: "ticket_spare_part_description_list", labelledby: "tic_spare_part_description_labelledby" do
   - @spare_part_description_all.each_with_index do |sp_description, index|
     = collapse collapse_type: "info", labelledby: "labelledby_#{sp_description.id}", header_content: "#{index+1} #{sp_description.description}", collapse_link: "ticspare_part_descriptionlink_#{sp_description.id}", collapse_id: "ticket_spare_part_description_list" do

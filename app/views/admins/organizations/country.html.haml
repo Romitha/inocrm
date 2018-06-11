@@ -11,19 +11,6 @@
     .col-md-6
       = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_country"
 
-/ #accordion.panel-group
-/   - @country_all.each_with_index do |ad_country, index|
-/     .panel.panel-primary
-/       .panel-heading
-/         %h3.panel-title
-/           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
-/             = ad_country.Country
-/           - unless ad_country.is_used_anywhere?
-/             = link_to delete_admin_country_admins_organizations_path(country_id: ad_country.id), method: :delete, :data => { :confirm => 'Are you sure?' } do
-/               %span.glyphicon.glyphicon-trash
-/       .panel-collapse.collapse.in{:id => "#{index}"}
-/         .panel-body
-
 = collapse_wrapper collapse_id: "org_country_list", labelledby: "org_country_labelledby" do
   - @country_all.each_with_index do |ad_country, index|
     = collapse collapse_type: "info", labelledby: "labelledby_#{ad_country.id}", header_content: "#{ad_country.Country}", collapse_link: "org_countrylink_#{ad_country.id}", collapse_id: "org_country_list" do

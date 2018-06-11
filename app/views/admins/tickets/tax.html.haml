@@ -25,20 +25,6 @@
     .col-md-6
       = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_payment_term", name: "#{params[:edit_more] ? 'update' : 'create'}"
 
-/ #accordion.panel-group
-/   - @payment_term_all.each_with_index do |payment_term, index|
-/     .panel.panel-info
-/       .panel-heading
-/         %h3.panel-title
-/           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
-/             #{index+1} Payment Term : #{payment_term.name}
-/           - unless payment_term.is_used_anywhere?
-/             = link_to delete_payment_term_admins_tickets_path(payment_term_id: payment_term.id), method: :delete, :data => { :confirm => 'Are you sure?' } do
-/               %span.glyphicon.glyphicon-trash
-
-/       .panel-collapse.collapse.in{:id => "#{index}"}
-/         .panel-body
-
 = collapse_wrapper collapse_id: "ticket_tax_list", labelledby: "tax_labelledby" do
   - @tax_all.each_with_index do |tax, index|
     = collapse collapse_type: "info", labelledby: "labelledby_#{tax.id}", header_content: "#{index+1} Tax : #{tax.tax}", collapse_link: "ticpayment_termlink_#{tax.id}", collapse_id: "ticket_tax_list" do

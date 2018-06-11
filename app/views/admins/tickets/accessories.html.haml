@@ -6,22 +6,6 @@
     .col-md-6
       = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_accessory"
 
-
-
-/ #accordion.panel-group
-/   - @accessory_all.each_with_index do |accessory, index|
-/     .panel.panel-info
-/       .panel-heading
-/         %h3.panel-title
-/           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
-/             = accessory.accessory
-/           - unless accessory.is_used_anywhere?
-/             = link_to delete_admin_accessory_admins_tickets_path(accessory_id: accessory.id), method: :delete,  :data => { :confirm => 'Are you sure?' } do
-/               %span.glyphicon.glyphicon-trash
-
-/       .panel-collapse.collapse.in{:id => "#{index}"}
-/         .panel-body
-
 = collapse_wrapper collapse_id: "ticket_accessory_list", labelledby: "tic_accessory_labelledby" do
   - @accessory_all.each_with_index do |accessory, index|
     = collapse collapse_type: "info", labelledby: "labelledby_#{accessory.id}", header_content: "#{accessory.accessory}", collapse_link: "ticaccessorylink_#{accessory.id}", collapse_id: "ticket_accessory_list" do

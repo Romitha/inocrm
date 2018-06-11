@@ -47,6 +47,13 @@
   .col-md-3
     %strong Returned By:
     #{User.cached_find_by_id((onloan_request ? onloan_spare_part : spare_part).try(:part_returned_by)).try(:full_name)}
+  - unless onloan_request
+    .col-md-3
+      %strong
+      = spare_part.spare_part_status_use.name
+    - if spare_part.spare_part_status_use.code == "UUS"
+      .col-md-3 Unused Reason
+      %strong= spare_part.unused_reason.reason
 %hr
 .row
   .col-md-12

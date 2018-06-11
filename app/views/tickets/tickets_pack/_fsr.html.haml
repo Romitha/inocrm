@@ -5,6 +5,10 @@
     - ticket.ticket_fsrs.each do |ticket_fsr|
       = collapse collapse_type: "info", header_content: "FSR ID: #{ticket_fsr.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"])}", collapse_link: "ticket_fsr_#{ticket_fsr.id}", collapse_id: "fsr_ticket_info_id", labelledby: "ticket_fsr_lb#{ticket_fsr.id}" do
 
+        - if ticket_fsr.approved
+          .row
+            .col-md-12
+              .label.label-danger.text-right Approved
         .row
           .col-md-3
             %strong Form No:
@@ -87,6 +91,7 @@
                   %th Return Part S/N
                   %th Event No.
                   %th Event Closed
+                  %th Close approved
               %tbody
                 - ticket_fsr.ticket_spare_parts.each_with_index do |tsp, i|
                   %tr
@@ -99,3 +104,4 @@
                     %td= tsp.return_part_serial_no
                     %td= tsp.request_from == 'M' ? tsp.ticket_spare_part_manufacture.try(:event_no) : ""
                     %td= tsp.ticket_spare_part_manufacture.try(:event_closed) ? "Yes" : "No"
+                    %td= tsp.close_approved ? "Yes" : "No"

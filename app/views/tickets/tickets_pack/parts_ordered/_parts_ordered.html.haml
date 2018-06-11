@@ -155,6 +155,9 @@
               %dd= ticket_spare_part.received_part_ct_no
               %dt Part used status:
               %dd= ticket_spare_part.spare_part_status_use.name
+              - if ticket_spare_part.spare_part_status_use.code == "UUS"
+                %dt Unused Reason
+                %dd= ticket_spare_part.unused_reason.reason
 
         %hr
         .row

@@ -6,20 +6,6 @@
     .col-md-6
       = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_customer_feedback"
 
-/ #accordion.panel-group
-/   - @customer_feedback_all.each_with_index do |ad_feedback, index|
-/     .panel.panel-info
-/       .panel-heading
-/         %h3.panel-title
-/           %a.accordion-toggle{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "##{index}"}
-/             Customer Feedback : #{ad_feedback.feedback}
-/             - unless ad_feedback.is_used_anywhere?
-/               = link_to delete_admin_customer_feedback_admins_tickets_path(customer_feedback_id: ad_feedback.id),  method: :delete, :data => { :confirm => 'Are you sure?' } do
-/                 %span.glyphicon.glyphicon-trash
-
-/       .panel-collapse.collapse.in{:id => "#{index}"}
-/         .panel-body
-
 = collapse_wrapper collapse_id: "ticket_customer_feedback_list", labelledby: "tic_customer_feedback_labelledby" do
   - @customer_feedback_all.each_with_index do |ad_feedback, index|
     = collapse collapse_type: "info", labelledby: "labelledby_#{ad_feedback.id}", header_content: "Customer Feedback : #{ad_feedback.feedback}", collapse_link: "ticcustomer_feedbacklink_#{ad_feedback.id}", collapse_id: "ticket_customer_feedback_list" do

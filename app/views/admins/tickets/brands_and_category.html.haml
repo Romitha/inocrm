@@ -159,26 +159,3 @@
             .col-md-4
               = link_to "#", class: "inline_edit", data: {type: "text", resource: "product_brand", name: "warranty_date_format", url: brands_and_category_admins_tickets_path(edit: true, brands_and_category_id: brands_and_category.id), "original-title" => "Update Brands"} do
                 = brands_and_category.warranty_date_format
-
-
-          / .row.col-md-12
-          /   - brands_and_category.product_categories.each do |product_category|
-          /     .panel.panel-info
-          /       .panel-heading
-          /         %h3.panel-title
-          /           %span Product Category: #{product_category.name}
-          /           - unless product_category.is_used_anywhere?
-          /             = link_to delete_product_category_admins_inventories_path(product_category_id: product_category.id),  method: :delete, :data => { :confirm => 'Are you sure?' } do
-          /               %span.glyphicon.glyphicon-trash
-          /       .panel-body
-          /         .row.col-md-12
-          /           .col-md-2
-          /             %strong Name:
-          /           .col-md-4
-          /             = link_to "#", class: "inline_edit", data: {type: "text", resource: "product_category", name: "name", url: brands_and_category_admins_tickets_path(edit: true, product_category_id: product_category.id), "original-title" => "Update Product Category"} do
-          /               = product_category.name
-          /           .col-md-2
-          /             %strong SLA Time (hrs):
-          /           .col-md-4
-          /             = link_to "#", class: "inline_edit", data: {type: "select", source: SlaTime.all.collect{|sla| {value: sla.id, text: sla.sla_time}}, resource: "product_category", name: "sla_id", url: brands_and_category_admins_tickets_path(edit: true, product_category_id: product_category.id), "original-title" => "Update Product Category"} do
-          /               = product_category.sla_time.try(:sla_time)
