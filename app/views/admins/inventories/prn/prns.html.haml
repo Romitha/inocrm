@@ -18,6 +18,8 @@
         %dd= prn.created_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
         %dt Created by
         %dd= prn.created_by_user_full_name
+        %dt Support Ticket No
+        %dd= prn.support_ticket_no
 
       %h4.small_scale_padding-top1 PRN Items
       %table.table.table-bordered
