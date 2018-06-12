@@ -113,8 +113,7 @@
             - else
               - "(Not Approved)"
 
-            - cus_approved = if estimation.estimation_status.code != "CLS"
-              - ""
+            - cus_approved = "" if estimation.estimation_status.code != "CLS"
 
 
           %td= [estimation.estimation_status.name, cus_approved].join(" ")

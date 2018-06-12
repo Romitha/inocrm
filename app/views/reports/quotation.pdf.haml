@@ -138,13 +138,12 @@
     .col-xs-11
       %table.table.table-stripped
         %thead
-          %tr
+          %tr{style: "text-align: left"}
             %th No
             %th Description
             %th Quantity
             %th Unit Price
             %th Total Price
-            %th Total Amount
         %tbody
           - @print_object[:repeat_data].each_with_index do |ob, index|
             %tr
@@ -154,17 +153,18 @@
                 = ob[:description]
               %td
                 = (ob[:quantity] and ob[:quantity].to_f)
-              %td.col-xs-2.text-right
+              %td.col-xs-2{style: "text-align: right"}
                 - if ob[:unit_price].present?
                   =ob[:currency]
                 = ob[:unit_price]
-              %td.col-xs-2.text-right
+              %td.col-xs-2{style: "text-align: right"}
                 = ob[:currency]
                 = ob[:totalprice]
-          %tr
             %td
-              = print_object[:currency]
-              = print_object[:total_amount]
+              %td{colspan: 4} Total Amount
+              %td{style: "text-align: right"}
+                = print_object[:currency]
+                = number_with_precision print_object[:total_amount], precision: 2
 
       %table.table.table-striped
         %tbody
