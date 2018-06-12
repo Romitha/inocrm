@@ -1761,6 +1761,10 @@ class TicketsController < ApplicationController
             # @onloan_request_part.update status_action_id: SparePartStatusAction.find_by_code("CLS").id
 
             @onloan_request_part.ticket_on_loan_spare_part_status_actions.create([{status_id: SparePartStatusAction.find_by_code("RJS").id, done_by: current_user.id, done_at: DateTime.now}, {status_id: SparePartStatusAction.find_by_code("CLS").id , done_by: current_user.id, done_at: DateTime.now}])
+
+            email_to = @onloan_request_part.engineer.user.email
+            view_context.send_email(email_to: email_to, ticket_id: @onloan_request_part.ticket.try(:id), engineer_id: @onloan_request_part.engineer_id, spare_part_id: @onloan_request_part.id, onloan: true, email_code: "STORE_PART_TERMINATED") if email_to.present?
+
           end
 
           user_ticket_action = @onloan_request_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @onloan_request_part.ticket.re_open_count, action_id: action_id)
@@ -1807,6 +1811,10 @@ class TicketsController < ApplicationController
             @ticket_spare_part.update status_action_id: SparePartStatusAction.find_by_code("CLS").id
 
             @ticket_spare_part.ticket_spare_part_status_actions.create([{status_id: SparePartStatusAction.find_by_code("RJS").id, done_by: current_user.id, done_at: DateTime.now}, {status_id: SparePartStatusAction.find_by_code("CLS").id , done_by: current_user.id, done_at: DateTime.now}])
+
+            email_to = @ticket_spare_part.engineer.user.email
+            view_context.send_email(email_to: email_to, ticket_id: @ticket_spare_part.ticket.try(:id), engineer_id: @ticket_spare_part.engineer.id, spare_part_id: @ticket_spare_part.id, email_code: "STORE_PART_TERMINATED") if email_to.present?
+
           end
 
           user_ticket_action = @ticket_spare_part.ticket.user_ticket_actions.build(action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket_spare_part.ticket.re_open_count, action_id: action_id)

@@ -18,7 +18,6 @@
       %h3{:style => "text-decoration: underline;"} Customer Quotation
     %span12
       %strong=print_object1.owner.name
-    %br/
     %span12
       %strong=print_object1.owner.address
     %br/
@@ -141,18 +140,16 @@
         %thead
           %tr
             %th No
-            %th Item Code
             %th Description
             %th Quantity
             %th Unit Price
             %th Total Price
+            %th Total Amount
         %tbody
           - @print_object[:repeat_data].each_with_index do |ob, index|
             %tr
               %td
                 = ob[:item_index]
-              %td
-                = ob[:item_code]
               %td{class: "ellipses"}
                 = ob[:description]
               %td
@@ -164,18 +161,13 @@
               %td.col-xs-2.text-right
                 = ob[:currency]
                 = ob[:totalprice]
+          %tr
+            %td
+              = print_object[:currency]
+              = print_object[:total_amount]
 
       %table.table.table-striped
         %tbody
-          %tr
-            %th
-            %td
-            %td
-              %strong Total Amount
-            %td :&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-            %td
-              = print_object[:currency]
-              = number_with_precision print_object[:total_amount], precision: 2
 
           %tr
             %th
