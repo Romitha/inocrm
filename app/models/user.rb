@@ -117,17 +117,13 @@ class User < ActiveRecord::Base
     self.last_name = splitted_names[1]
   end
 
-  def primary_phone_number
-    contact_numbers.find_by_primary(true)
-  end
+  # def primary_phone_number
+  #   contact_numbers.find_by_primary(true)
+  # end
 
-  def primary_phone_number=(contact_number)
-    self.contact_numbers.build(category: "Land", value: contact_number, primary: true)
-  end
-
-  def primary_address
-    addresses.find_by_primary_address(true)
-  end
+  # def primary_phone_number=(contact_number)
+  #   self.contact_numbers.build(category: "Land", value: contact_number, primary: true)
+  # end
 
   def primary_address=(address)
     self.addresses.build(category: "Support", address: address, primary: true)
