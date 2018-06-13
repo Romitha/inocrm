@@ -4708,63 +4708,76 @@ class TicketsController < ApplicationController
   end
 
   def update_create_fsr
-    TicketSparePart
-    engineer_id = params[:engineer_id]
+    @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+    redirect_response = {}
+    if @continue
+      TicketSparePart
+      engineer_id = params[:engineer_id]
 
-    @ticket_engineer = TicketEngineer.find params[:engineer_id]
-    @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
+      @ticket_engineer = TicketEngineer.find params[:engineer_id]
+      @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
 
-    @ticket.attributes = ticket_params
-    user_ticket_action = @ticket.user_ticket_actions.last
-    # @ticket.user_ticket_actions.reload
-    ticket_fsr = @ticket.ticket_fsrs.last
-    ticket_fsr.ticket_fsr_no =  CompanyConfig.first.increase_sup_last_fsr_no
+      @ticket.attributes = ticket_params
+      user_ticket_action = @ticket.user_ticket_actions.last
+      # @ticket.user_ticket_actions.reload
+      ticket_fsr = @ticket.ticket_fsrs.last
+      ticket_fsr.ticket_fsr_no =  CompanyConfig.first.increase_sup_last_fsr_no
 
-    @ticket_engineer.ticket_support_engineers.each do |sup_eng|
-      ticket_fsr.ticket_fsr_support_engineers.build engineer_support_id: sup_eng.id
+      @ticket_engineer.ticket_support_engineers.each do |sup_eng|
+        ticket_fsr.ticket_fsr_support_engineers.build engineer_support_id: sup_eng.id
+      end
+
+      ticket_fsr.save
+      last_ticket_fsr = @ticket.ticket_fsrs.last
+      act_fsr = user_ticket_action.act_fsr
+      act_fsr.fsr_id = ticket_fsr.id
+
+      user_ticket_action.save
+      print_fsr = false
+
+      if act_fsr and act_fsr.print_fsr
+        user_ticket_action1 = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(70).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id)
+        user_ticket_action1.build_act_fsr(fsr_id: act_fsr.ticket_fsr.id)
+        user_ticket_action1.save
+        print_fsr = true
+      end
     end
 
-    ticket_fsr.save
-    last_ticket_fsr = @ticket.ticket_fsrs.last
-    act_fsr = user_ticket_action.act_fsr
-    act_fsr.fsr_id = ticket_fsr.id
+    redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
 
-    user_ticket_action.save
-    print_fsr = false
-
-    if act_fsr and act_fsr.print_fsr
-      user_ticket_action1 = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(70).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id)
-      user_ticket_action1.build_act_fsr(fsr_id: act_fsr.ticket_fsr.id)
-      user_ticket_action1.save
-      print_fsr = true
-    end
-    if request.xhr?
-      render json: {print_fsr: print_fsr, fsr_id: last_ticket_fsr.id, ticket_id: @ticket.id}
-    else
-      redirect_to @ticket, notice: "Ticket is successfully to update."
-    end
+    redirect_to redirect_response[:url], notice: [redirect_response[:flash_message], @flash_message].join(", ")
   end
 
   def update_edit_fsr
-    TicketSparePart
-    engineer_id = session[:engineer_id]
-    t_params = ticket_fsr_params
-    @ticket_fsr = @ticket.ticket_fsrs.find_by_id params[:ticket_fsr_id]
-    t_params["resolution"] = t_params["resolution"].present? ? "#{t_params['resolution']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket_fsr.resolution}" : @ticket_fsr.resolution
+    @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]
+    redirect_response = {}
+    if @continue
+      TicketSparePart
+      engineer_id = session[:engineer_id]
+      t_params = ticket_fsr_params
+      @ticket_fsr = @ticket.ticket_fsrs.find_by_id params[:ticket_fsr_id]
+      t_params["resolution"] = t_params["resolution"].present? ? "#{t_params['resolution']} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket_fsr.resolution}" : @ticket_fsr.resolution
 
-    @ticket_engineer = TicketEngineer.find engineer_id
-    @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
+      @ticket_engineer = TicketEngineer.find engineer_id
+      @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
 
-    if @ticket_fsr.update t_params
-      user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(12).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id)
-      user_ticket_action.build_act_fsr(print_fsr: false, fsr_id: @ticket_fsr.id)
+      if @ticket_fsr.update t_params
+        user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(12).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id)
+        user_ticket_action.build_act_fsr(print_fsr: false, fsr_id: @ticket_fsr.id)
 
-      user_ticket_action.save
+        user_ticket_action.save
 
-      redirect_to @ticket, notice: "Successfully updated."
-    else
-      redirect_to @ticket, alert: "Unable to update. Please try again with fields validation."
+        #redirect_to @ticket, notice: "Successfully updated."
+         @flash_message = "Successfully updated."
+      else
+        #redirect_to @ticket, alert: "Unable to update. Please try again with fields validation."
+         @flash_message = "Unable to update. Please try again with fields validation."
+      end
     end
+
+    redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
+
+    redirect_to redirect_response[:url], notice: [redirect_response[:flash_message], @flash_message].join(", ")
   end
 
   def update_terminate_job

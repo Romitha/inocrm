@@ -1001,7 +1001,8 @@ class InventoriesController < ApplicationController
     @ticket.ticket_deliver_units.select{|d| d.changed?}.each do |t_d_u|
 
       ticket_deliver_unit = t_d_u
-      ticket_deliver_unit_note = ticket_deliver_unit.note_change.present? ? ticket_deliver_unit.note_change.last : ""
+      #ticket_deliver_unit_note = ticket_deliver_unit.note_change.present? ? ticket_deliver_unit.note_change.last : ""
+      ticket_deliver_unit_note = ticket_deliver_unit.note
 
       if ticket_deliver_unit.delivered_to_sup_changed? and ticket_deliver_unit.delivered_to_sup
 

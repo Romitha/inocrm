@@ -60,4 +60,7 @@
                   - else
                     = te.input :delivered_to_sup, as: :boolean, boolean_style: :inline, checked_value: true, unchecked_value: false, wrapper: :append, label: "Delivered"
                 .col-md-12
-                  = f.submit "Update"
+                  = f.input :remarks, input_html: {value: nil}
+                  = simple_format f.object.remarks
+                .col-md-12
+                  = f.submit "Update", class: "btn btn-cuccess btn-sm", data: {disable_with: "Please wait..."}
