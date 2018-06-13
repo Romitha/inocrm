@@ -268,19 +268,19 @@
                 %dd= spare_part_store.issued_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
               - if spare_part_store.srn.present?
                 %ul
-                  %li= link_to "SRN: #{spare_part_store.srn.formatted_srn_no}", srns_admins_inventories_path(srn_id: spare_part_store.srn.id), target: "_blank"
+                  %li= link_to "SRN: #{spare_part_store.srn.formatted_srn_no}", srns_admins_inventories_path(srn_id: spare_part_store.srn.id, from_where: "no_action"), target: "_blank"
                   %ul
                     - spare_part_store.srn.prn_srn_items.each do |prn_item|
-                      %li= link_to "PRN: #{prn_item.inventory_prn_item.inventory_prn.formated_prn_no}", prns_admins_inventories_path(prn_id: prn_item.inventory_prn_item.inventory_prn.id), target: "_blank"
+                      %li= link_to "PRN: #{prn_item.inventory_prn_item.inventory_prn.formated_prn_no}", prns_admins_inventories_path(prn_id: prn_item.inventory_prn_item.inventory_prn.id , from_where:"no_action"), target: "_blank"
                       %ul
                         - prn_item.inventory_prn_item.inventory_po_items.each do |inventory_po_item|
-                          %li= link_to "PO: #{inventory_po_item.inventory_po.formated_po_no}", pos_admins_inventories_path(po_id: inventory_po_item.inventory_po.id), target: "_blank"
+                          %li= link_to "PO: #{inventory_po_item.inventory_po.formated_po_no}", pos_admins_inventories_path(po_id: inventory_po_item.inventory_po.id ,from_where:"no_action"), target: "_blank"
                           %ul
                             - inventory_po_item.inventory_po.grns.each do |grn|
-                              %li= link_to "GRN: #{grn.grn_no_format}", search_grn_admins_searches_path(grn_callback: "select_grn",grn_id: grn.id), target: "_blank"
-                  %ul
-                    - spare_part_store.srn.gins.each do |gin|
-                      %li= link_to "GIN: #{gin.formatted_gin_no}", gins_admins_inventories_path(gin_id: gin.id), target: "_blank"
+                              %li= link_to "GRN: #{grn.grn_no_format}", search_grn_admins_searches_path(grn_callback: "select_grn",grn_id: grn.id ,from_where:"no_action"), target: "_blank"
+                %ul
+                  - spare_part_store.srn.gins.each do |gin|
+                    %li= link_to "GIN: #{gin.formatted_gin_no}", gins_admins_inventories_path(gin_id: gin.id ,from_where:"no_action"), target: "_blank"
           %hr
 
           .row

@@ -74,7 +74,7 @@ module ApplicationHelper
       "ADDRESS=#{fsr.ticket.customer.address1} #{fsr.ticket.customer.address2} #{fsr.ticket.customer.address3} #{fsr.ticket.customer.address4}",
       "TELPHONE=#{fsr.ticket.customer.contact_type_values.select{|c| c.contact_type.name == "Telephone"}.first.try(:value)}",
       "MOBILE=#{fsr.ticket.customer.contact_type_values.select{|c| c.contact_type.mobile}.first.try(:value)}",
-      "CONTACT_PERSON=#{contact_person.full_name} (#{contact_person.contact_person_contact_types.select{|c| c.contact_type.mobile }.map { |c| c.contact_info }.join(', ')})",
+      "CONTACT_PERSON=#{contact_person.full_name} (#{contact_person.contact_person_contact_types.select{|c| c.contact_type.mobile || c.contact_type.fixedline }.map { |c| c.contact_info }.join(', ')})",
       "TICKET_REF=#{fsr.ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG['ticket_no_format'])}",
       "ENGINEER=#{fsr.ticket_engineer and fsr.ticket_engineer.user.full_name}",
       "SERIAL_NO=#{fsr.ticket.products.first.serial_no}",

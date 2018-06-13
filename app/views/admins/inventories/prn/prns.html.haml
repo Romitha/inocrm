@@ -54,7 +54,8 @@
               %td= prn_item.quantity
               %td= prn_item.remarks
 
-= link_to "Remove", close_prn_admins_inventories_path(prn_id: prn.id, close_prn: true), remote: "true"
+- if not params[:from_where] == "no_action"
+  = link_to "Remove", close_prn_admins_inventories_path(prn_id: prn.id, close_prn: true), remote: "true"
 
 #close_prn.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "close_po_id", "aria-hidden" => true}
   .modal-dialog.modal-lg

@@ -513,3 +513,9 @@ DEPENDENCIES
   whenever
   wicked_pdf
   wkhtmltopdf-binary
+
+RUBY VERSION
+   ruby 2.2.0p0
+
+BUNDLED WITH
+   1.16.1

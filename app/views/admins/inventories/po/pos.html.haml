@@ -63,10 +63,12 @@
         %td= po.delivery_date and po.delivery_date.to_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
         %td= simple_format po.remarks
         %td= po.created_by_user_full_name
-        %td= link_to "Select", pos_admins_inventories_path(po_id: po.id), target: "_blank"
-        %td.rmclass
-          - unless po.closed
-            = link_to "Close", close_po_admins_inventories_path(po_id: po.id), data: {modalId: "close_po_id", remote: "true"}
+
+        - if not params[:from_where] == "no_action"
+          %td= link_to "Select", pos_admins_inventories_path(po_id: po.id), target: "_blank"
+          %td.rmclass
+            - unless po.closed
+              = link_to "Close", close_po_admins_inventories_path(po_id: po.id), data: {modalId: "close_po_id", remote: "true"}
 
 = paginate pos, remote: false, method: :get
 

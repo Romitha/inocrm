@@ -98,15 +98,8 @@
 
           %td
             = number_with_precision (estimation.approval_required ? estimation.approved_adv_pmnt_amount : estimation.advance_payment_amount), precision: 2
-            / - cus_approved = if estimation.approval_required
-            /   - if estimation.cust_approved
-            /     - " (Approved) 1"
-            /   - else
-            /     - " (Not Approved) 2"
-            / - else
-            /   - " (App. Not Req) 3"
 
-            - cus_approved = if !estimation.approval_required
+            - cus_approved = if !estimation.cust_approval_required
               - " (App. Not Req)"
             - elsif estimation.cust_approved
               - " (Approved)"

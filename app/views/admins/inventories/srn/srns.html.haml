@@ -84,7 +84,7 @@
               %td= srn_item.quantity
               %td= srn_item.remarks
 
-- unless srn.closed
+- unless srn.closed or params[:from_where] == "no_action"
   - if can?(:create_gin, Organization) and srn.requested_module.code != "SPT"
     = link_to "Issue", gin_admins_inventories_path(gin_callback: "select_srn", srn_id: srn.id, from: "srn_page"), remote: true, class: "btn btn-sm btn-primary"
   - if can?(:create_gin, Organization)
