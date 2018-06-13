@@ -141,28 +141,6 @@
                 Add Additional Cost
             .col-md-12
               = f.submit "Save", class: "btn btn-sm btn-success"
-
-      / - if grn_serial_item.grn_item.grn_item_current_unit_cost_histories.any?
-
-      /   .row{style: "margin-top:15px;"}
-      /     .col-md-12{style: "background-color: #98FB98; text-align:center"}
-      /       %strong GRN Cost Adgestments
-      /     .col-md-12
-      /       - grn_serial_item.grn_item.grn_item_current_unit_cost_histories.each_with_index do |hcost, index|
-      /         .row
-      /           .col-md-1
-      /           .col-md-2
-      /             =index+1
-      /           .col-md-3
-      /             %strong Date:
-      /             #{hcost.try(:created_at).try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")}
-      /           .col-md-3
-      /             %strong Cost:
-      /             #{number_with_precision hcost.current_unit_cost, precision: 2}
-      /           .col-md-3
-      /             %strong Done by:
-      /             #{hcost.created_by_user.full_name}
-
   = collapse collapse_type: "info", labelledby: "select_serial_item_form_collapse_search", header_content: "GRN Cost Adjustments", collapse_link: "select_serial_item_form_collapse_adgestment", collapse_id: "select_serial_item_form_collapse" do
     - inventory_serial_item.grn_serial_items.active_serial_items.each do |grn_serial_item|
       - if grn_serial_item.grn_item.grn_item_current_unit_cost_histories.any?

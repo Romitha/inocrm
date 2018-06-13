@@ -96,10 +96,11 @@
       .pull-right= link_to "Edit", initiate_user_profile_edit_user_path(template_params: "additional_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true, class: "#{can?(:initiate_user_profile, user) ? '' : 'disabled'}"
     - if user.is_customer=="false"
       =panels panel_type: "default", id: "id_security_details_panel", header_content: "Security" do
-        .row-fluid
-          .row
+        .row
+          .col-md-10
             XXXXXXXX
-        .pull-right= link_to "Edit", initiate_user_profile_edit_user_path(template_params: "password_security_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true, class: "#{can?(:initiate_user_profile, user) ? '' : 'disabled'}"
+          .col-md-2
+            .pull-right= link_to "Edit", initiate_user_profile_edit_user_path(template_params: "password_security_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true, class: "#{can?(:initiate_user_profile, user) ? '' : 'disabled'}"
 
 .col-md-1
 #profile_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "profile_modal", "aria-hidden" => true}
