@@ -66,7 +66,7 @@
 
   .col-md-3
     %strong Part Returned Date :
-    #{spare_part.part_returned_at}
+    #{spare_part.part_returned_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")}
 
   .col-md-3
     %strong Problem Description :

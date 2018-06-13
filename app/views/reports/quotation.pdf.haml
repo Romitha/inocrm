@@ -142,8 +142,8 @@
             %th No
             %th Description
             %th Quantity
-            %th Unit Price
-            %th Total Price
+            %th{style: "text-align: right"} Unit Price
+            %th{style: "text-align: right"} Total Price
         %tbody
           - @print_object[:repeat_data].each_with_index do |ob, index|
             %tr
@@ -160,11 +160,11 @@
               %td.col-xs-2{style: "text-align: right"}
                 = ob[:currency]
                 = ob[:totalprice]
-            %td
-              %td{colspan: 4} Total Amount
-              %td{style: "text-align: right"}
-                = print_object[:currency]
-                = number_with_precision print_object[:total_amount], precision: 2
+          %td
+            %td{colspan: 3 , style: "text-align: right"} Total Amount
+            %td{style: "text-align: right"}
+              = print_object[:currency]
+              = number_with_precision print_object[:total_amount], precision: 2
 
       %table.table.table-striped
         %tbody
