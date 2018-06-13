@@ -280,7 +280,7 @@
                               %li= link_to grn.grn_no_format, search_grn_admins_searches_path(grn_callback: "select_grn",grn_id: grn.id), target: "_blank"
                   %ul
                     - spare_part_store.srn.gins.each do |gin|
-                      %li= link_to gin.formatted_gin_no, gins_admins_inventories_path(gin_id: e[:id]), target: "_blank"
+                      %li= link_to gin.formatted_gin_no, gins_admins_inventories_path(gin_id: gin.id), target: "_blank"
           %hr
 
           .row
