@@ -1372,7 +1372,7 @@ window.Tickets =
     options = {
       valueNames: [ 'action_description' ]
       listClass: "activity_history_live_search_list"
-      saerchClass: "search"
+      searchClass: "search"
     }
 
     activityHistoryList = new List("activity_history_list", options)
