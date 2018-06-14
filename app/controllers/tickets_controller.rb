@@ -4741,11 +4741,15 @@ class TicketsController < ApplicationController
         user_ticket_action1.save
         print_fsr = true
       end
+      if request.xhr?
+        render json: {print_fsr: print_fsr, fsr_id: last_ticket_fsr.id, ticket_id: @ticket.id}
+      else
+        redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
+
+        redirect_to redirect_response[:url], notice: [redirect_response[:flash_message], @flash_message].join(", ")
+      end
     end
 
-    redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
-
-    redirect_to redirect_response[:url], notice: [redirect_response[:flash_message], @flash_message].join(", ")
   end
 
   def update_edit_fsr

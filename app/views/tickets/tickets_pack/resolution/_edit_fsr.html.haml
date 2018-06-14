@@ -4,7 +4,7 @@
   - ticket_engineers = ticket.ticket_engineers.where(workflow_process_id: ticket_workfows.first.try(:id))
 
   / = select_tag "select_fsr", options_from_collection_for_select(@select_fsrs, "id", "id")
-  = select_tag "select_fsr", options_for_select(ticket.ticket_fsrs.where(approved: false, engineer_id: ticket_engineers.ids ).map { |fsr| [ fsr.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"]) , fsr.id] }, params[:select_fsr_id]), {:prompt => "- Select FSR No -", class: "form-control"}
+  = select_tag "select_fsr", options_for_select(ticket.ticket_fsrs.where(approved: false, engineer_id: ticket_engineers.ids ).map { |fsr| [ fsr.ticket_fsr_no.to_s.rjust(6, INOCRM_CONFIG["fsr_no_format"]) , fsr.id] }, params[:select_fsr_id]), {:prompt => "- Select FSR No -", class: "form-control", data: {taskid: params[:task_id]}}
   - if @display_form
     = simple_nested_form_for @ticket_fsr, url: update_edit_fsr_ticket_path(ticket), method: :post do |fsr|
       = hidden_field_tag :ticket_fsr_id, @ticket_fsr.id
