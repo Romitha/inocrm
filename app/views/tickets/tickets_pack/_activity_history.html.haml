@@ -1,5 +1,5 @@
 %div{id: "activity_history_list"}
-  = select_tag "activity_history_select", options_for_select(@user_ticket_actions.collect{|action| action.task_action.action_description}), class: "search chosen-select small_scale_margin-top1 small_scale_margin-bottom1", id: "live_seach_select_activity_history", include_blank: "All"
+  = select_tag "activity_history_select", options_for_select(@user_ticket_actions.collect{|action| action.task_action.action_description}), class: "search chosen-select small_scale_margin-top1 small_scale_margin-bottom1", id: "live_search_select_activity_history", include_blank: "All"
   .row#activity_history_template.activity_history_live_search_list
     .col-md-12.padding0.fancy_scroll_bar{style: "max-height: 466px; overflow: auto;"}
       - @user_ticket_actions.each do |action|
@@ -10,7 +10,7 @@
                 .row
                   .col-md-4
                     Activity:
-                    .action_description= action.task_action.action_description
+                    %span.action_description= action.task_action.action_description
                   .col-md-3
                     Date Time:
                     = action.action_at.strftime "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}"
