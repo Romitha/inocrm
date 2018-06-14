@@ -344,7 +344,7 @@
                     -else
                       Collect Unit From Supplier: No
                   .col-md-4
-                    Deliver To Supplier By: #{action.deliver_unit.ticket_deliver_unit.collected_by}
+                    Deliver To Supplier By: #{(action.deliver_unit.ticket_deliver_unit.collected_by).try(:full_name)}
                   .col-md-4
                     Receive Note: #{action.deliver_unit.try(:receive_note)}
                 .row
@@ -408,7 +408,7 @@
                     -else
                       Collect Unit From Supplier: No
                   .col-md-4
-                    Deliver To Supplier By: #{action.deliver_unit.ticket_deliver_unit.collected_by}
+                    Deliver To Supplier By: #{User.cached_find_by_id(action.deliver_unit.ticket_deliver_unit.collected_by).try(:full_name)}
                   .col-md-4
                     Receive Note: #{action.deliver_unit.try(:receive_note)}
 
@@ -458,7 +458,7 @@
                     -else
                       Deliver To Supplier: No
                   .col-md-4
-                    Deliver To Supplier By: #{action.deliver_unit.ticket_deliver_unit.delivered_to_sup_by}
+                    Deliver To Supplier By: #{User.cached_find_by_id(action.deliver_unit.ticket_deliver_unit.delivered_to_sup_by).try(:full_name)}
                   .col-md-4
                     Receive Note: #{action.deliver_unit.try(:receive_note)}
                 .row
@@ -467,7 +467,7 @@
 
 
             -if action.action_id == 30
-              .panel-body 
+              .panel-body
                 .row
                   .col-md-4
                     -if action.deliver_unit.ticket_deliver_unit.collected == true
@@ -475,7 +475,7 @@
                     -else
                       Collect Unit From Supplier: No
                   .col-md-4
-                    Deliver To Supplier By: #{action.deliver_unit.ticket_deliver_unit.collected_by}
+                    Deliver To Supplier By: #{User.cached_find_by_id(action.deliver_unit.ticket_deliver_unit.collected_by).try(:full_name)}
                   .col-md-4
                     Receive Note: #{action.deliver_unit.try(:receive_note)}
                 .row
