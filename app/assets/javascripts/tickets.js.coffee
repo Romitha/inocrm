@@ -1369,7 +1369,7 @@ window.Tickets =
       $(".decendent").removeClass("hide")
 
   activity_history_live_search: ->
-    options = {valueNames: [ 'activity_history_select' ], listClass: "activity_history_live_search_list" }
+    options = {valueNames: [ 'action_description' ], listClass: "activity_history_live_search_list" }
     activityHistoryList = new List("activity_history_list", options)
 
     $("#live_seach_select_activity_history").change ->

@@ -10,7 +10,7 @@
                 .row
                   .col-md-4
                     Activity:
-                    = action.task_action.action_description
+                    .action_description= action.task_action.action_description
                   .col-md-3
                     Date Time:
                     = action.action_at.strftime "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}"
