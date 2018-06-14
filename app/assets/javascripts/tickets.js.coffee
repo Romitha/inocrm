@@ -1373,4 +1373,4 @@ window.Tickets =
     activityHistoryList = new List("activity_history_list", options)
 
     $("#live_seach_select_activity_history").change ->
-      activityHistoryList.search($(":selected", @).val()
+      activityHistoryList.search($(":selected", @).val())
