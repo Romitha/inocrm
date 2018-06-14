@@ -136,7 +136,7 @@
   %hr
   .row
     .col-xs-11
-      %table.table.table-stripped{style: "width: 85%"}
+      %table.table.table-stripped{style: "width: 90%"}
         %thead
           %tr{style: "text-align: left"}
             %th No
@@ -161,7 +161,7 @@
                 = ob[:currency]
                 = ob[:totalprice]
           %td
-            %td{colspan: 3 , style: "text-align: right"} Total Amount
+            %td{colspan: 3 , style: "text-align: right" , weight: "bold" } Total Amount
             %td{style: "text-align: right"}
               = print_object[:currency]
               = number_with_precision print_object[:total_amount], precision: 2

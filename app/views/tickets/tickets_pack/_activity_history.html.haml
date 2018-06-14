@@ -344,7 +344,7 @@
                     -else
                       Collect Unit From Supplier: No
                   .col-md-4
-                    Deliver To Supplier By: #{(action.deliver_unit.ticket_deliver_unit.collected_by).try(:full_name)}
+                    Deliver To Supplier By: #{User.cached_find_by_id(action.deliver_unit.ticket_deliver_unit.collected_by).try(:full_name)}
                   .col-md-4
                     Receive Note: #{action.deliver_unit.try(:receive_note)}
                 .row

@@ -122,7 +122,7 @@
         .col-md-9
           %p.bg-info.h5.strong{style: "text-align: center;"} GRN Cost Adjustments
         .col-md-3
-          - if !@cost_change or params[:from_where] == "no_action"
+          - if !@cost_change or params[:from_where] != "no_action"
             = link_to search_grn_admins_searches_path(grn_callback: "change_cost",grnitem_id: grnitem.id), "role" => "button", class: "btn btn-info" do
               Change Cost
       - cost_count = grnitem.grn_item_current_unit_cost_histories.count
