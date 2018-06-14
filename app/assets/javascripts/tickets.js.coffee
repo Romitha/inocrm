@@ -517,7 +517,7 @@ window.Tickets =
 
   select_fsr: ->
     $("#select_fsr").change ->
-      $.post "/tickets/call_resolution_template", {call_template: "edit_fsr", select_fsr_id: $(":selected", @).val(), task_id: $(":selected", @).data("taskid")}
+      $.post "/tickets/call_resolution_template", {call_template: "edit_fsr", select_fsr_id: $(":selected", @).val(), task_id: $(@).data("taskid")}
 
   suggestion_data: ->
 
