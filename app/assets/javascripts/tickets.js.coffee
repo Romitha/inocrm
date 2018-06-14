@@ -1346,10 +1346,7 @@ window.Tickets =
     $.post("/contracts/load_installments", {start_date: start_date, end_date: end_date, installments: Math.ceil(records), num_of_ins:num_of_ins, amount_per_ins: amount_per_ins, final_amount: final_amount  }, (data)->
       $('#load_permissions_json_render').html Mustache.to_html($('#load_installments').html(), data)
     )
-    # alert num_of_ins
-    # $("#for_ins").val(records)
 
-    # data = {'installations': [{'date': records}, ]}
   expire_time_cal: ->
     start_dateParts = $("#date_from").val().split("-");
     start_date = new Date(start_dateParts[2], (start_dateParts[1]), start_dateParts[0]);
@@ -1363,9 +1360,17 @@ window.Tickets =
     # alert start_dateParts
 
     $("#date_to").val(requiredDate)
+
   decendent_cus: ->
     org = $(":selected","#organization_with_decendent").val()
     if org == ""
       $(".decendent").addClass("hide")
     else
       $(".decendent").removeClass("hide")
+
+  activity_history_live_search: ->
+    options = {valueNames: [ 'activity_history_select' ], listClass: "activity_history_live_search_list" }
+    activityHistoryList = new List("activity_history_list", options)
+
+    $("#live_seach_select_activity_history").change ->
+      activityHistoryList.search($(":selected", @).val()

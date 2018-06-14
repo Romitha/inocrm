@@ -757,6 +757,20 @@ module ApplicationHelper
 
       not_started = "[Not Started]" if @ticket.ticket_status.code == "ASN"
 
+      pending_parts_count = @ticket.ticket_spare_parts.to_a.sum{|spare_part| !(spare_part.status_action.code == 'CLS' or spare_part.received_eng) ? 1 : 0 }
+
+      pending_onloan_parts_count = @ticket.ticket_on_loan_spare_parts.to_a.sum{|onloan_spare_part| !(onloan_spare_part.status_action.code == 'CLS' or onloan_spare_part.received_eng) ? 1 : 0 }
+
+      pending_estimation_count = @ticket.estimations.to_a.sum{|estimation| estimation.status.code == 'RQS' ? 1 : 0 }
+
+      pending_unit_collect = @ticket.deliver_unit.any?{|deliver_unit| !deliver_unit.collected }
+
+      h_pending_estimation = "(#{pending_estimation_count} Estimations Pending)" if pending_estimation_count > 0
+      h_pending_parts = "(#{pending_parts_count} Parts Pending)" if pending_parts_count > 0
+      h_pending_onloan_parts = "(#{pending_onloan_parts_count} Onloan Parts Pending)" if pending_onloan_parts_count > 0
+      h_pending_unit_collect = "(Unit Recieve Pending)" if pending_unit_collect
+
+
       color_code = case
       when @ticket.ticket_status.code == "ASN"
         "red"
@@ -768,7 +782,7 @@ module ApplicationHelper
         "yellow"
       end
 
-      @h1 = "color:#{color_code}|#{ticket_no}#{customer_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}#{delivery_stage}#{hold}#{parts_recieve_pending}#{not_started}#{custormer_approval_pending}"
+      @h1 = "color:#{color_code}|#{ticket_no}#{customer_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}#{delivery_stage}#{hold}#{parts_recieve_pending}#{not_started}#{custormer_approval_pending}#{h_pending_estimation}#{h_pending_parts}#{h_pending_onloan_parts}#{h_pending_unit_collect}"
       @h3_sub = ""
 
       spare_part = @ticket.ticket_spare_parts.find_by_id(spare_part_id)
@@ -783,6 +797,9 @@ module ApplicationHelper
 
         if store_part and store_part.inventory_product
           spare_part_name = "[S: #{store_part.inventory_product.description.try :truncate, 18}]"
+
+          inventory = Inventory.where(product_id: store_part.approved_inv_product_id, store_id: store_part.approved_store_id).first
+          part_available = "(Parts Available)" if inventory.present? and inventory.available_quantity >= store_part.approved_quantity
 
         elsif manufacture_part
           spare_part_name = "[M: #{spare_part.spare_part_description.truncate(18)}]"
@@ -801,7 +818,7 @@ module ApplicationHelper
         end
 
         if spare_part_name
-          @h2 = "color:#{color_code}|#{ticket_no}#{customer_name}#{spare_part_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}#{hold}"
+          @h2 = "color:#{color_code}|#{ticket_no}#{customer_name}#{spare_part_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}#{hold}#{part_available}"
         else
           @h2 = ""
         end
