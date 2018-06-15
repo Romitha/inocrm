@@ -719,7 +719,7 @@ module ApplicationHelper
     WorkflowMapping
 
     @ticket = Ticket.find_by_id(ticket_id)
-    ticket_spare_parts = @ticket.cached_ticket_spare_parts
+    ticket_spare_parts = @ticket.ticket_spare_parts
 
     if process_id.present? and @ticket.present?
 
