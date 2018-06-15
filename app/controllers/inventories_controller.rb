@@ -375,6 +375,8 @@ class InventoriesController < ApplicationController
 
     end
 
+    view_context.ticket_bpm_headers params[:process_id], @ticket.id, request_spare_part_id
+
     if continue
       bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
@@ -913,6 +915,8 @@ class InventoriesController < ApplicationController
         @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
 
         bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+        view_context.ticket_bpm_headers params[:process_id], @ticket.id
 
         if bpm_response[:status].upcase == "SUCCESS"
 
@@ -1874,6 +1878,8 @@ class InventoriesController < ApplicationController
           @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
 
           bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+          view_context.ticket_bpm_headers params[:process_id], @ticket.id
 
           if bpm_response[:status].upcase == "SUCCESS"
 
