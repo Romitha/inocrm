@@ -1015,6 +1015,7 @@ class TicketsController < ApplicationController
 
         elsif params[:ticket][:sla_id].present?
           @ticket.errors.clear
+          puts "sla_id is successfully changed #{@ticket.sla_id}"
           Rails.cache.write([:new_ticket, request.remote_ip.to_s, @ticket_time_now], @ticket)
 
           format.json {render json: @ticket}
