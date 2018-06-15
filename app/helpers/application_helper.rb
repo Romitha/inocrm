@@ -719,6 +719,7 @@ module ApplicationHelper
     WorkflowMapping
 
     @ticket = Ticket.find_by_id(ticket_id)
+    ticket_spare_parts = @ticket.cached_ticket_spare_parts
 
     if process_id.present? and @ticket.present?
 
@@ -749,15 +750,15 @@ module ApplicationHelper
 
       # File.open(Rails.root.join("bug_file.txt"), "w+"){|file| file.write("ticket_deliver_units: #{tdu.inspect}"); file.close}
 
-      custormer_approval_pending = "[Customer Approval Pending]" if @ticket.ticket_estimations.any?{ |estimation| estimation.cust_approval_required and !estimation.cust_approved_at.present? }
+      custormer_approval_pending = "[Customer Approval Pending]" if @ticket.cached_ticket_estimations.any?{ |estimation| estimation.cust_approval_required and !estimation.cust_approved_at.present? }
 
-      parts_recieve_pending = "[Part Available]" if @ticket.cached_ticket_spare_parts.any?{ |spare_part| spare_part.spare_part_status_action.code == "CLT" }
+      #parts_recieve_pending = "[Part Available]" if @ticket.cached_ticket_spare_parts.any?{ |spare_part| spare_part.spare_part_status_action.code == "CLT" }
 
       hold = "[Hold]" if @ticket.status_hold
 
       not_started = "[Not Started]" if @ticket.ticket_status.code == "ASN"
 
-      pending_parts_count = @ticket.cached_ticket_spare_parts.to_a.sum{|spare_part| !(spare_part.spare_part_status_action.code == 'CLS' or spare_part.received_eng) ? 1 : 0 }
+      pending_parts_count = ticket_spare_parts.to_a.sum{|spare_part| !(spare_part.spare_part_status_action.code == 'CLS' or spare_part.received_eng) ? 1 : 0 }
 
       pending_onloan_parts_count = @ticket.ticket_on_loan_spare_parts.to_a.sum{|onloan_spare_part| !(onloan_spare_part.spare_part_status_action.code == 'CLS' or onloan_spare_part.received_eng) ? 1 : 0 }
 
@@ -765,10 +766,16 @@ module ApplicationHelper
 
       pending_unit_collect = @ticket.ticket_deliver_units.any?{|deliver_unit| !deliver_unit.delivered_to_sup }
 
-      h_pending_estimation = "(#{pending_estimation_count} Estimations Pending)" if pending_estimation_count > 0
-      h_pending_parts = "(#{pending_parts_count} Parts Pending)" if pending_parts_count > 0
-      h_pending_onloan_parts = "(#{pending_onloan_parts_count} Onloan Parts Pending)" if pending_onloan_parts_count > 0
-      h_pending_unit_collect = "(Unit Recieve Pending)" if pending_unit_collect
+      parts_collected_count = ticket_spare_parts.to_a.sum{|spare_part| (spare_part.spare_part_status_action.code == 'CLT' or spare_part.spare_part_status_action.code == 'RCS') ? 1 : 0 }
+
+      parts_issued_count = ticket_spare_parts.to_a.sum{|spare_part| (spare_part.spare_part_status_action.code == 'ISS') ? 1 : 0 }      
+
+      h_pending_estimation = "[ #{pending_estimation_count} Estimations Pending]" if pending_estimation_count > 0
+      h_pending_parts = "[ #{pending_parts_count} Parts Pending]" if pending_parts_count > 0
+      h_pending_onloan_parts = "[ #{pending_onloan_parts_count} Onloan Parts Pending]" if pending_onloan_parts_count > 0
+      h_pending_unit_collect = "[Unit Recieve Pending]" if pending_unit_collect
+      h_parts_collected = "[ #{parts_collected_count} Parts Collected]" if parts_collected_count > 0
+      h_parts_issued = "[ #{parts_issued_count} Parts Issued]" if parts_issued_count > 0
 
 
       color_code = case
@@ -776,13 +783,15 @@ module ApplicationHelper
         "red"
       when @ticket.status_hold
         "orange"
-      when @ticket.cached_ticket_spare_parts.any?{ |spare_part| spare_part.spare_part_status_action.code == "ISS" }
+      when ticket_spare_parts.any?{ |spare_part| spare_part.spare_part_status_action.code == "ISS" }
         "blue"
       when @ticket.cached_ticket_estimations.any?{ |estimation| estimation.cust_approval_required and !estimation.cust_approved }
         "yellow"
       end
+      h1_color_code = h2_color_code = h3_color_code = color_code
 
-      @h1 = "color:#{color_code}|#{ticket_no}#{customer_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}#{delivery_stage}#{hold}#{parts_recieve_pending}#{not_started}#{custormer_approval_pending}#{h_pending_estimation}#{h_pending_parts}#{h_pending_onloan_parts}#{h_pending_unit_collect}"
+
+      @h1 = "color:#{h1_color_code}|#{ticket_no}#{customer_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}#{delivery_stage}#{hold}#{not_started}#{custormer_approval_pending}#{h_pending_estimation}#{h_pending_parts}#{h_pending_onloan_parts}#{h_parts_collected}#{h_parts_issued}#{h_pending_unit_collect}"
       @h3_sub = ""
 
       spare_part = @ticket.ticket_spare_parts.find_by_id(spare_part_id)
@@ -799,7 +808,10 @@ module ApplicationHelper
           spare_part_name = "[S: #{store_part.inventory_product.description.try :truncate, 18}]"
 
           inventory = Inventory.where(product_id: store_part.approved_inv_product_id, store_id: store_part.approved_store_id).first
-          part_available = "(Parts Available)" if inventory.present? and inventory.available_quantity >= store_part.approved_quantity
+          if inventory.present? and inventory.available_quantity >= store_part.approved_quantity
+            part_available = "[Parts Available]"
+            h2_color_code = "blue"
+          end
 
         elsif manufacture_part
           spare_part_name = "[M: #{spare_part.spare_part_description.truncate(18)}]"
@@ -813,19 +825,21 @@ module ApplicationHelper
             @h3_sub = " [Order Updated]#{@h3_sub}"
           end
 
+          h3_color_code = "blue" if (spare_part.spare_part_status_action.code == "CLT" or spare_part.spare_part_status_action.code == "RCS")
+
         elsif non_stock_part
           spare_part_name = "[NS: #{non_stock_part.inventory_product.description.try :truncate, 18}]"
         end
 
         if spare_part_name
-          @h2 = "color:#{color_code}|#{ticket_no}#{customer_name}#{spare_part_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}#{hold}#{part_available}"
+          @h2 = "color:#{h2_color_code}|#{ticket_no}#{customer_name}#{spare_part_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}#{hold}#{part_available}"
         else
           @h2 = ""
         end
 
         if spare_part
           spare_part_name = "[#{spare_part.spare_part_no}-#{spare_part.spare_part_description.truncate(18)}]"
-          @h3 = "color:#{color_code}|#{@h3_sub}#{ticket_no}#{customer_name}#{spare_part_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}#{hold}"
+          @h3 = "color:#{h3_color_code}|#{@h3_sub}#{ticket_no}#{customer_name}#{spare_part_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}#{hold}"
         else
           @h3 = ""
         end
@@ -839,7 +853,7 @@ module ApplicationHelper
         if onloan_spare_part and onloan_spare_part.inventory_product
           store_part_name = "[#{onloan_spare_part.inventory_product.description.try :truncate, 18}]"
 
-          @h2 = "color:#{color_code}|#{ticket_no}#{customer_name}#{store_part_name} (On-Loan) #{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}#{hold}"
+          @h2 = "color:#{h2_color_code}|#{ticket_no}#{customer_name}#{store_part_name} (On-Loan) #{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}#{hold}"
         else
           @h2 = ""
         end
