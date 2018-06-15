@@ -785,7 +785,7 @@ module ApplicationHelper
       @h1 = "color:#{color_code}|#{ticket_no}#{customer_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}#{delivery_stage}#{hold}#{parts_recieve_pending}#{not_started}#{custormer_approval_pending}#{h_pending_estimation}#{h_pending_parts}#{h_pending_onloan_parts}#{h_pending_unit_collect}"
       @h3_sub = ""
 
-      spare_part = @ticket.cached_ticket_spare_parts.find_by_id(spare_part_id)
+      spare_part = @ticket.ticket_spare_parts.find_by_id(spare_part_id)
       if spare_part.present?
         if spare_part
           store_part = spare_part.ticket_spare_part_store
