@@ -2124,6 +2124,16 @@ class TicketsController < ApplicationController
             view_context.ticket_bpm_headers process_id, ticket_id, ticket_spare_part_id
             Rails.cache.delete([:workflow_header, process_id])
           end
+
+          ticket_id = ticket_spare_part_manufacture.ticket_spare_part.ticket.id
+          processes = TicketWorkflowProcess.where(ticket_id: ticket_id, process_name: "SPPT")
+          processes.each do |process|
+            process_id = process.process_id
+
+            view_context.ticket_bpm_headers process_id, ticket_id
+            Rails.cache.delete([:workflow_header, process_id])
+          end
+
         end
         flash[:notice] = "Successfully updated."
       end
@@ -3909,6 +3919,7 @@ class TicketsController < ApplicationController
           gin_source = gin_item.gin_sources.create(grn_item_id: @iss_grn_item_id, grn_batch_id: @iss_grn_batch_id, grn_serial_item_id: @iss_grn_serial_item_id, grn_serial_part_id: @iss_grn_serial_part_id, main_part_grn_serial_item_id: @iss_main_part_grn_serial_item_id, issued_quantity: @srn_item.quantity, unit_cost: @part_cost_price, returned_quantity: 0)#inv_gin_source
 
           if @onloan_request
+            ticket_id = @onloan_request_part.ticket_id
             if @onloan_request_part.ticket_spare_part
               @onloan_request_part.ticket_spare_part.update ticket_spare_part_params(@onloan_request_part.ticket_spare_part)
             else
@@ -3947,6 +3958,7 @@ class TicketsController < ApplicationController
             end
 
           else #Store Request (not On-Loan)
+            ticket_id = @ticket_spare_part.ticket_id
 
             @ticket_spare_part.received_part_serial_no = @product_serial_no if @product_serial_no.present?
             @ticket_spare_part.received_part_ct_no = @product_ct_no if @product_ct_no.present?
@@ -3985,6 +3997,14 @@ class TicketsController < ApplicationController
             else
               flash[:error] = "ticket is updated. but Bpm error"
             end
+          end
+
+          processes = TicketWorkflowProcess.where(ticket_id: ticket_id, process_name: "SPPT")
+          processes.each do |process|
+            process_id = process.process_id
+
+            view_context.ticket_bpm_headers process_id, ticket_id
+            Rails.cache.delete([:workflow_header, process_id])
           end
 
         else

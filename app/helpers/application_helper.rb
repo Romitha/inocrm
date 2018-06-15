@@ -752,30 +752,64 @@ module ApplicationHelper
 
       custormer_approval_pending = "[Customer Approval Pending]" if @ticket.cached_ticket_estimations.any?{ |estimation| estimation.cust_approval_required and !estimation.cust_approved_at.present? }
 
-      #parts_recieve_pending = "[Part Available]" if @ticket.cached_ticket_spare_parts.any?{ |spare_part| spare_part.spare_part_status_action.code == "CLT" }
-
       hold = "[Hold]" if @ticket.status_hold
 
       not_started = "[Not Started]" if @ticket.ticket_status.code == "ASN"
 
-      pending_parts_count = ticket_spare_parts.to_a.sum{|spare_part| !(spare_part.spare_part_status_action.code == 'CLS' or spare_part.received_eng) ? 1 : 0 }
+      ticket_spare_parts.each do |spare_part|
+        unless ['CLS', 'RQT'].include?(spare_part.spare_part_status_action.code) and spare_part.received_eng
+          if spare_part.request_from == "M"
+            parameter_holder[:pending_mf_parts_count] = parameter_holder[:pending_mf_parts_count].to_i + 1
+          end
 
-      pending_onloan_parts_count = @ticket.ticket_on_loan_spare_parts.to_a.sum{|onloan_spare_part| !(onloan_spare_part.spare_part_status_action.code == 'CLS' or onloan_spare_part.received_eng) ? 1 : 0 }
+          if spare_part.ticket_spare_part_store.present?
+            parameter_holder[:pending_st_sparts_count] = parameter_holder[:pending_st_sparts_count].to_i + 1
+          end
+
+
+        end
+
+        if ['ISS'].include? spare_part.spare_part_status_action.code
+          parameter_holder[:parts_issued_count] = parameter_holder[:parts_issued_count].to_i + 1
+        end
+
+        if ['CLT', 'RCS'].include? spare_part.spare_part_status_action.code
+          parameter_holder[:mf_parts_collected_count] = parameter_holder[:mf_parts_collected_count].to_i + 1
+        end
+      end
+
+      @ticket.ticket_on_loan_spare_parts.each do |onloan_spare_part|
+        unless ['CLS', 'RQT'].include?(onloan_spare_part.spare_part_status_action.code) and onloan_spare_part.received_eng
+          parameter_holder[:pending_onloan_parts_count] = parameter_holder[:pending_onloan_parts_count].to_i + 1
+        end
+        if ['ISS'].include? onloan_spare_part.spare_part_status_action.code
+          parameter_holder[:parts_issued_count] = parameter_holder[:parts_issued_count].to_i + 1
+        end
+      end
 
       pending_estimation_count = @ticket.cached_ticket_estimations.to_a.sum{|estimation| estimation.estimation_status.code == 'RQS' ? 1 : 0 }
 
       pending_unit_collect = @ticket.ticket_deliver_units.any?{|deliver_unit| !deliver_unit.delivered_to_sup }
 
-      parts_collected_count = ticket_spare_parts.to_a.sum{|spare_part| (spare_part.spare_part_status_action.code == 'CLT' or spare_part.spare_part_status_action.code == 'RCS') ? 1 : 0 }
+      # pending_mf_parts_count = ticket_spare_parts.to_a.sum{|spare_part| (!(spare_part.spare_part_status_action.code == 'RQT' or spare_part.spare_part_status_action.code == 'CLS' or spare_part.received_eng) and (spare_part.request_from == "M")) ? 1 : 0 }
 
-      parts_issued_count = ticket_spare_parts.to_a.sum{|spare_part| (spare_part.spare_part_status_action.code == 'ISS') ? 1 : 0 }      
+      # pending_st_sparts_count = ticket_spare_parts.to_a.sum{|spare_part| (!(spare_part.spare_part_status_action.code == 'RQT' or spare_part.spare_part_status_action.code == 'CLS' or spare_part.received_eng) and spare_part.ticket_spare_part_store.present? ) ? 1 : 0 }
+
+      # pending_onloan_parts_count = @ticket.ticket_on_loan_spare_parts.to_a.sum{|onloan_spare_part| !(onloan_spare_part.spare_part_status_action.code == 'RQT' or onloan_spare_part.spare_part_status_action.code == 'CLS' or onloan_spare_part.received_eng) ? 1 : 0 }
+
+
+      # mf_parts_collected_count = ticket_spare_parts.to_a.sum{|spare_part| (spare_part.spare_part_status_action.code == 'CLT' or spare_part.spare_part_status_action.code == 'RCS') ? 1 : 0 }
+
+      # parts_issued_count = ticket_spare_parts.to_a.sum{|spare_part| (spare_part.spare_part_status_action.code == 'ISS') ? 1 : 0 }
+      # parts_issued_count += @ticket.ticket_on_loan_spare_parts.to_a.sum{|onloan_spare_part| (onloan_spare_part.spare_part_status_action.code == 'ISS') ? 1 : 0 }
 
       h_pending_estimation = "[ #{pending_estimation_count} Estimations Pending]" if pending_estimation_count > 0
-      h_pending_parts = "[ #{pending_parts_count} Parts Pending]" if pending_parts_count > 0
-      h_pending_onloan_parts = "[ #{pending_onloan_parts_count} Onloan Parts Pending]" if pending_onloan_parts_count > 0
-      h_pending_unit_collect = "[Unit Recieve Pending]" if pending_unit_collect
-      h_parts_collected = "[ #{parts_collected_count} Parts Collected]" if parts_collected_count > 0
-      h_parts_issued = "[ #{parts_issued_count} Parts Issued]" if parts_issued_count > 0
+      h_pending_mf_parts = "[ #{parameter_holder[:pending_mf_parts_count]} MF Parts Pending]" if parameter_holder[:pending_mf_parts_count] > 0
+      h_pending_st_parts = "[ #{parameter_holder[:pending_st_sparts_count]} ST Parts Pending]" if parameter_holder[:pending_st_sparts_count] > 0
+      h_pending_onloan_parts = "[ #{parameter_holder[:pending_onloan_parts_count]} Onloan Parts Pending]" if parameter_holder[:pending_onloan_parts_count] > 0
+      h_pending_unit_collect = "[ Unit Recieve Pending ]" if pending_unit_collect
+      h_mf_parts_collected = "[ #{parameter_holder[:mf_parts_collected_count]} MF Parts Collected]" if parameter_holder[:mf_parts_collected_count] > 0
+      h_parts_issued = "[ #{parameter_holder[:parts_issued_count]} Parts Issued]" if parameter_holder[:parts_issued_count] > 0
 
 
       color_code = case
@@ -791,7 +825,7 @@ module ApplicationHelper
       h1_color_code = h2_color_code = h3_color_code = color_code
 
 
-      @h1 = "color:#{h1_color_code}|#{ticket_no}#{customer_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}#{delivery_stage}#{hold}#{not_started}#{custormer_approval_pending}#{h_pending_estimation}#{h_pending_parts}#{h_pending_onloan_parts}#{h_parts_collected}#{h_parts_issued}#{h_pending_unit_collect}"
+      @h1 = "color:#{h1_color_code}|#{ticket_no}#{customer_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}#{delivery_stage}#{hold}#{not_started}#{custormer_approval_pending}#{h_pending_estimation}#{h_pending_mf_parts}#{h_pending_st_parts}#{h_pending_onloan_parts}#{h_mf_parts_collected}#{h_parts_issued}#{h_pending_unit_collect}"
       @h3_sub = ""
 
       spare_part = @ticket.ticket_spare_parts.find_by_id(spare_part_id)
