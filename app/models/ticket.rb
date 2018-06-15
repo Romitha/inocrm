@@ -6,6 +6,119 @@ class Ticket < ActiveRecord::Base
   include Tire::Model::Search
   include Tire::Model::Callbacks
 
+  belongs_to :ticket_type, foreign_key: :ticket_type_id
+  belongs_to :warranty_type, foreign_key: :warranty_type_id
+  belongs_to :job_type, foreign_key: :job_type_id
+  belongs_to :inform_method,foreign_key: :informed_method_id
+  belongs_to :problem_category,foreign_key: :problem_category_id
+  belongs_to :ticket_contact_type, foreign_key: :contact_type_id
+  belongs_to :ticket_contract, foreign_key: :contract_id
+  belongs_to :ticket_status, foreign_key: :status_id
+  belongs_to :ticket_currency, foreign_key: :base_currency_id
+  belongs_to :customer, foreign_key: :customer_id
+  belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
+
+  belongs_to :contact_person1, foreign_key: :contact_person1_id
+  belongs_to :contact_person2, foreign_key: :contact_person2_id
+  belongs_to :report_person, foreign_key: :reporter_id
+  belongs_to :sla_time, foreign_key: :sla_id
+  belongs_to :ticket_status_resolve, foreign_key: :status_resolve_id
+  belongs_to :repair_type, foreign_key: :repair_type_id
+  belongs_to :manufacture_currency, class_name: "Currency", foreign_key: :manufacture_currency_id
+  belongs_to :ticket_start_action, foreign_key: :job_started_action_id
+  belongs_to :ticket_repair_type, foreign_key: :repair_type_id
+  belongs_to :reason, foreign_key: :hold_reason_id
+  belongs_to :owner_engineer, class_name: "TicketEngineer"
+  belongs_to :owner_organization, class_name: "Organization"
+
+  has_many :ticket_product_serials, foreign_key: :ticket_id
+  has_many :products, through: :ticket_product_serials
+  accepts_nested_attributes_for :products, allow_destroy: true
+  has_many :customer_quotations, foreign_key: :ticket_id
+  accepts_nested_attributes_for :customer_quotations, allow_destroy: true
+
+  has_many :q_and_answers, foreign_key: :ticket_id
+  has_many :q_and_as, through: :q_and_answers
+  accepts_nested_attributes_for :q_and_answers, allow_destroy: true, :reject_if => :all_blank
+
+  has_many :ge_q_and_answers
+  accepts_nested_attributes_for :ge_q_and_answers, allow_destroy: true
+
+  has_many :ticket_accessories, foreign_key: :ticket_id
+  has_many :accessories, through: :ticket_accessories
+  accepts_nested_attributes_for :ticket_accessories, allow_destroy: true
+
+
+  has_many :dyna_columns, as: :resourceable, autosave: true
+
+  has_many :joint_tickets
+  accepts_nested_attributes_for :joint_tickets, allow_destroy: true
+
+  has_many :user_ticket_actions#, foreign_key: :action_id
+  accepts_nested_attributes_for :user_ticket_actions, allow_destroy: true
+
+  has_many :ticket_extra_remarks, foreign_key: :ticket_id
+  has_many :extra_remarks, through: :ticket_extra_remarks
+  accepts_nested_attributes_for :ticket_extra_remarks, allow_destroy: true
+
+  has_many :ticket_workflow_processes
+
+
+  has_many :ticket_spare_parts
+  accepts_nested_attributes_for :ticket_spare_parts, allow_destroy: true
+
+  has_many :ticket_on_loan_spare_parts
+  accepts_nested_attributes_for :ticket_on_loan_spare_parts, allow_destroy: true, reject_if: :all_blank
+
+
+  has_many :ticket_fsrs
+  accepts_nested_attributes_for :ticket_fsrs, allow_destroy: true
+
+  has_many :ticket_deliver_units, -> { order("created_at ASC") }
+  accepts_nested_attributes_for :ticket_deliver_units, allow_destroy: true
+
+  has_many :act_terminate_job_payments
+  accepts_nested_attributes_for :act_terminate_job_payments, allow_destroy: true
+
+  has_many :ticket_estimations, foreign_key: :ticket_id
+  accepts_nested_attributes_for :ticket_estimations, allow_destroy: true
+
+  has_many :ticket_estimation_parts, foreign_key: :ticket_estimation_id
+  accepts_nested_attributes_for :ticket_estimation_parts, allow_destroy: true
+
+  has_many :ticket_estimation_externals, foreign_key: :ticket_id
+  accepts_nested_attributes_for :ticket_estimation_externals, allow_destroy: true
+
+  has_many :ticket_estimation_additionals, foreign_key: :ticket_id
+  accepts_nested_attributes_for :ticket_estimation_additionals, allow_destroy: true
+
+  has_many :ticket_invoices, foreign_key: :ticket_id
+  accepts_nested_attributes_for :ticket_invoices, allow_destroy: true
+  belongs_to :final_invoice, class_name: "TicketInvoice", foreign_key: :final_invoice_id
+
+  has_many :ticket_payment_receiveds
+  accepts_nested_attributes_for :ticket_payment_receiveds, allow_destroy: true
+  has_many :invoices, through: :ticket_payment_receiveds
+
+  has_many :ticket_engineers, class_name: "TicketEngineer", foreign_key: :ticket_id
+  has_many :users, through: :ticket_engineers
+
+
+  belongs_to :onsite_type
+  accepts_nested_attributes_for :onsite_type, allow_destroy: true
+
+  has_many :hp_cases, through: :user_ticket_actions
+
+  has_one :ticket_total_cost
+
+  belongs_to :last_hold_action, class_name: "UserTicketAction"
+
+  validates_presence_of [:ticket_no, :priority, :status_id, :problem_description, :informed_method_id, :job_type_id, :ticket_type_id, :warranty_type_id, :base_currency_id, :problem_category_id]
+
+  validates_numericality_of [:ticket_no, :priority]
+  validates_inclusion_of :cus_chargeable, in: [true, false]
+  # validates_uniqueness_of :ticket_no
+
   mapping do
     indexes :products, type: "nested", include_in_parent: true
     indexes :customer, type: "nested", include_in_parent: true
@@ -203,22 +316,28 @@ class Ticket < ActiveRecord::Base
     )
 
   end
+
   def created_by_user_full_name
     created_by_user.full_name
-  end  
+  end
+
   def owner_eng_full_name
     owner_engineer and owner_engineer.user.full_name
   end
+
   def inhouse_type_select
     ticket_type.code
   end
+
   def sla_description
     sla_time.description
     
   end
+
   def is_hold_and_have_last_hold_action?
     last_hold_action.present?
   end
+
   def ticket_contract_contract_end_at
     ticket_contract.try(:contract_end_at)
   end
@@ -226,8 +345,6 @@ class Ticket < ActiveRecord::Base
   def ticket_contract_contract_start_at
     ticket_contract.try(:contract_start_at)
   end
-
-
 
   def ticket_part_cost
     ticket_total_cost.try(:part_cost).to_f
@@ -482,119 +599,6 @@ class Ticket < ActiveRecord::Base
     re_opened_engineer_ids
 
   end
-
-  belongs_to :ticket_type, foreign_key: :ticket_type_id
-  belongs_to :warranty_type, foreign_key: :warranty_type_id
-  belongs_to :job_type, foreign_key: :job_type_id
-  belongs_to :inform_method,foreign_key: :informed_method_id
-  belongs_to :problem_category,foreign_key: :problem_category_id
-  belongs_to :ticket_contact_type, foreign_key: :contact_type_id
-  belongs_to :ticket_contract, foreign_key: :contract_id
-  belongs_to :ticket_status, foreign_key: :status_id
-  belongs_to :ticket_currency, foreign_key: :base_currency_id
-  belongs_to :customer, foreign_key: :customer_id
-  belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
-
-  belongs_to :contact_person1, foreign_key: :contact_person1_id
-  belongs_to :contact_person2, foreign_key: :contact_person2_id
-  belongs_to :report_person, foreign_key: :reporter_id
-  belongs_to :sla_time, foreign_key: :sla_id
-  belongs_to :ticket_status_resolve, foreign_key: :status_resolve_id
-  belongs_to :repair_type, foreign_key: :repair_type_id
-  belongs_to :manufacture_currency, class_name: "Currency", foreign_key: :manufacture_currency_id
-  belongs_to :ticket_start_action, foreign_key: :job_started_action_id
-  belongs_to :ticket_repair_type, foreign_key: :repair_type_id
-  belongs_to :reason, foreign_key: :hold_reason_id
-  belongs_to :owner_engineer, class_name: "TicketEngineer"
-  belongs_to :owner_organization, class_name: "Organization"
-
-  has_many :ticket_product_serials, foreign_key: :ticket_id
-  has_many :products, through: :ticket_product_serials
-  accepts_nested_attributes_for :products, allow_destroy: true
-  has_many :customer_quotations, foreign_key: :ticket_id
-  accepts_nested_attributes_for :customer_quotations, allow_destroy: true
-
-  has_many :q_and_answers, foreign_key: :ticket_id
-  has_many :q_and_as, through: :q_and_answers
-  accepts_nested_attributes_for :q_and_answers, allow_destroy: true, :reject_if => :all_blank
-
-  has_many :ge_q_and_answers
-  accepts_nested_attributes_for :ge_q_and_answers, allow_destroy: true
-
-  has_many :ticket_accessories, foreign_key: :ticket_id
-  has_many :accessories, through: :ticket_accessories
-  accepts_nested_attributes_for :ticket_accessories, allow_destroy: true
-
-
-  has_many :dyna_columns, as: :resourceable, autosave: true
-
-  has_many :joint_tickets
-  accepts_nested_attributes_for :joint_tickets, allow_destroy: true
-
-  has_many :user_ticket_actions#, foreign_key: :action_id
-  accepts_nested_attributes_for :user_ticket_actions, allow_destroy: true
-
-  has_many :ticket_extra_remarks, foreign_key: :ticket_id
-  has_many :extra_remarks, through: :ticket_extra_remarks
-  accepts_nested_attributes_for :ticket_extra_remarks, allow_destroy: true
-
-  has_many :ticket_workflow_processes
-
-
-  has_many :ticket_spare_parts
-  accepts_nested_attributes_for :ticket_spare_parts, allow_destroy: true
-
-  has_many :ticket_on_loan_spare_parts
-  accepts_nested_attributes_for :ticket_on_loan_spare_parts, allow_destroy: true, reject_if: :all_blank
-
-
-  has_many :ticket_fsrs
-  accepts_nested_attributes_for :ticket_fsrs, allow_destroy: true
-
-  has_many :ticket_deliver_units, -> { order("created_at ASC") }
-  accepts_nested_attributes_for :ticket_deliver_units, allow_destroy: true
-
-  has_many :act_terminate_job_payments
-  accepts_nested_attributes_for :act_terminate_job_payments, allow_destroy: true
-
-  has_many :ticket_estimations, foreign_key: :ticket_id
-  accepts_nested_attributes_for :ticket_estimations, allow_destroy: true
-
-  has_many :ticket_estimation_parts, foreign_key: :ticket_estimation_id
-  accepts_nested_attributes_for :ticket_estimation_parts, allow_destroy: true
-
-  has_many :ticket_estimation_externals, foreign_key: :ticket_id
-  accepts_nested_attributes_for :ticket_estimation_externals, allow_destroy: true
-
-  has_many :ticket_estimation_additionals, foreign_key: :ticket_id
-  accepts_nested_attributes_for :ticket_estimation_additionals, allow_destroy: true
-
-  has_many :ticket_invoices, foreign_key: :ticket_id
-  accepts_nested_attributes_for :ticket_invoices, allow_destroy: true
-  belongs_to :final_invoice, class_name: "TicketInvoice", foreign_key: :final_invoice_id
-
-  has_many :ticket_payment_receiveds
-  accepts_nested_attributes_for :ticket_payment_receiveds, allow_destroy: true
-  has_many :invoices, through: :ticket_payment_receiveds
-
-  has_many :ticket_engineers, class_name: "TicketEngineer", foreign_key: :ticket_id
-  has_many :users, through: :ticket_engineers
-
-
-  belongs_to :onsite_type
-  accepts_nested_attributes_for :onsite_type, allow_destroy: true
-
-  has_many :hp_cases, through: :user_ticket_actions
-
-  has_one :ticket_total_cost
-
-  belongs_to :last_hold_action, class_name: "UserTicketAction"
-
-  validates_presence_of [:ticket_no, :priority, :status_id, :problem_description, :informed_method_id, :job_type_id, :ticket_type_id, :warranty_type_id, :base_currency_id, :problem_category_id]
-
-  validates_numericality_of [:ticket_no, :priority]
-  validates_inclusion_of :cus_chargeable, in: [true, false]
-  # validates_uniqueness_of :ticket_no
 
   before_save do |ticket|
 

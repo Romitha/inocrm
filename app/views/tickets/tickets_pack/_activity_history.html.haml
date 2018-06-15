@@ -1049,8 +1049,6 @@
                         Approved: No
                     .col-md-4
                       Reject Reason: #{action.act_ticket_close_approve.reason.try(:reason)}
-                    / .col-md-4
-                    /   Owner: #{action.user.try(:first_name)}
 
               -if action.action_id == 57
                 .panel-body

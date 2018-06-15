@@ -757,13 +757,13 @@ module ApplicationHelper
 
       not_started = "[Not Started]" if @ticket.ticket_status.code == "ASN"
 
-      pending_parts_count = @ticket.ticket_spare_parts.to_a.sum{|spare_part| !(spare_part.status_action.code == 'CLS' or spare_part.received_eng) ? 1 : 0 }
+      pending_parts_count = @ticket.cached_ticket_spare_parts.to_a.sum{|spare_part| !(spare_part.spare_part_status_action.code == 'CLS' or spare_part.received_eng) ? 1 : 0 }
 
-      pending_onloan_parts_count = @ticket.ticket_on_loan_spare_parts.to_a.sum{|onloan_spare_part| !(onloan_spare_part.status_action.code == 'CLS' or onloan_spare_part.received_eng) ? 1 : 0 }
+      pending_onloan_parts_count = @ticket.ticket_on_loan_spare_parts.to_a.sum{|onloan_spare_part| !(onloan_spare_part.spare_part_status_action.code == 'CLS' or onloan_spare_part.received_eng) ? 1 : 0 }
 
-      pending_estimation_count = @ticket.estimations.to_a.sum{|estimation| estimation.status.code == 'RQS' ? 1 : 0 }
+      pending_estimation_count = @ticket.cached_ticket_estimations.to_a.sum{|estimation| estimation.estimation_status.code == 'RQS' ? 1 : 0 }
 
-      pending_unit_collect = @ticket.deliver_unit.any?{|deliver_unit| !deliver_unit.collected }
+      pending_unit_collect = @ticket.ticket_deliver_units.any?{|deliver_unit| !deliver_unit.delivered_to_sup }
 
       h_pending_estimation = "(#{pending_estimation_count} Estimations Pending)" if pending_estimation_count > 0
       h_pending_parts = "(#{pending_parts_count} Parts Pending)" if pending_parts_count > 0
@@ -785,7 +785,7 @@ module ApplicationHelper
       @h1 = "color:#{color_code}|#{ticket_no}#{customer_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}#{delivery_stage}#{hold}#{parts_recieve_pending}#{not_started}#{custormer_approval_pending}#{h_pending_estimation}#{h_pending_parts}#{h_pending_onloan_parts}#{h_pending_unit_collect}"
       @h3_sub = ""
 
-      spare_part = @ticket.ticket_spare_parts.find_by_id(spare_part_id)
+      spare_part = @ticket.cached_ticket_spare_parts.find_by_id(spare_part_id)
       if spare_part.present?
         if spare_part
           store_part = spare_part.ticket_spare_part_store
