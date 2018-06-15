@@ -48,10 +48,11 @@
         .panel{style: "border: 1px solid #dddddd;"}
           .panel-body{style: "background-color: ##{ticket.ticket_status.colour};"}
             %strong SLA time:
-            - if ticket.ticket_contract.present?
-              #{pluralize ticket.ticket_contract.try(:sla_time).try(:sla_time), 'Hr'}
-            -else
-              #{pluralize ticket.products.first.try(:sla_time).try(:sla_time), 'Hr'}
+            / - if ticket.ticket_contract.present?
+            /   #{pluralize ticket.ticket_contract.try(:sla_time).try(:sla_time), 'Hr'}
+            / -else
+            /   #{pluralize ticket.products.first.try(:sla_time).try(:sla_time), 'Hr'}
+            #{pluralize ticket.slatime, 'Hr'}
 
             %br
             %strong Started at: 
