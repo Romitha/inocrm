@@ -720,6 +720,7 @@ module ApplicationHelper
 
     @ticket = Ticket.find_by_id(ticket_id)
     ticket_spare_parts = @ticket.ticket_spare_parts
+    parameter_holder = {}
 
     if process_id.present? and @ticket.present?
 
@@ -762,7 +763,7 @@ module ApplicationHelper
             parameter_holder[:pending_mf_parts_count] = parameter_holder[:pending_mf_parts_count].to_i + 1
           end
 
-          if spare_part.ticket_spare_part_store.present?
+          if spare_part.request_from == "S"
             parameter_holder[:pending_st_sparts_count] = parameter_holder[:pending_st_sparts_count].to_i + 1
           end
 
