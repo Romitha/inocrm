@@ -751,14 +751,14 @@ module ApplicationHelper
 
       # File.open(Rails.root.join("bug_file.txt"), "w+"){|file| file.write("ticket_deliver_units: #{tdu.inspect}"); file.close}
 
-      custormer_approval_pending = "[Customer Approval Pending]" if @ticket.cached_ticket_estimations.any?{ |estimation| estimation.cust_approval_required and !estimation.cust_approved_at.present? }
+      custormer_approval_pending = "[Customer Approval Pending]" if @ticket.ticket_estimations.any?{ |estimation| estimation.cust_approval_required and !estimation.cust_approved_at.present? }
 
       hold = "[Hold]" if @ticket.status_hold
 
       not_started = "[Not Started]" if @ticket.ticket_status.code == "ASN"
 
       ticket_spare_parts.each do |spare_part|
-        unless ['CLS', 'RQT'].include?(spare_part.spare_part_status_action.code) and spare_part.received_eng
+        unless ['CLS', 'RQT'].include?(spare_part.spare_part_status_action.code) or spare_part.received_eng
           if spare_part.request_from == "M"
             parameter_holder[:pending_mf_parts_count] = parameter_holder[:pending_mf_parts_count].to_i + 1
           end
@@ -780,7 +780,7 @@ module ApplicationHelper
       end
 
       @ticket.ticket_on_loan_spare_parts.each do |onloan_spare_part|
-        unless ['CLS', 'RQT'].include?(onloan_spare_part.spare_part_status_action.code) and onloan_spare_part.received_eng
+        unless ['CLS', 'RQT'].include?(onloan_spare_part.spare_part_status_action.code) or onloan_spare_part.received_eng
           parameter_holder[:pending_onloan_parts_count] = parameter_holder[:pending_onloan_parts_count].to_i + 1
         end
         if ['ISS'].include? onloan_spare_part.spare_part_status_action.code
@@ -788,7 +788,7 @@ module ApplicationHelper
         end
       end
 
-      pending_estimation_count = @ticket.cached_ticket_estimations.to_a.sum{|estimation| estimation.estimation_status.code == 'RQS' ? 1 : 0 }
+      pending_estimation_count = @ticket.ticket_estimations.to_a.sum{|estimation| estimation.estimation_status.code == 'RQS' ? 1 : 0 }
 
       pending_unit_collect = @ticket.ticket_deliver_units.any?{|deliver_unit| !deliver_unit.delivered_to_sup }
 
@@ -820,7 +820,7 @@ module ApplicationHelper
         "orange"
       when ticket_spare_parts.any?{ |spare_part| spare_part.spare_part_status_action.code == "ISS" }
         "blue"
-      when @ticket.cached_ticket_estimations.any?{ |estimation| estimation.cust_approval_required and !estimation.cust_approved }
+      when @ticket.ticket_estimations.any?{ |estimation| estimation.cust_approval_required and !estimation.cust_approved }
         "yellow"
       end
       h1_color_code = h2_color_code = h3_color_code = color_code
