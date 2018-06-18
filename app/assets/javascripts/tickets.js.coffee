@@ -1369,14 +1369,40 @@ window.Tickets =
       $(".decendent").removeClass("hide")
 
   activity_history_live_search: ->
-    options = {
+    radio_button_checker = (e)->
+      if $(e).is(":checked") and $(e).val() == "user"
+        console.log "a"
+        $(".user_radio_wrapper").removeClass("hide")
+        $(".activity_radio_wrapper").addClass("hide")
+      else if $(e).is(":checked") and $(e).val() == "activity"
+        console.log "b"
+        $(".user_radio_wrapper").addClass("hide")
+        $(".activity_radio_wrapper").removeClass("hide")
+
+    $(".activity_radio_class").click ->
+      radio_button_checker(this)
+
+    $(".activity_radio_class").each (e)->
+      radio_button_checker(this)
+
+    options =
       valueNames: [ 'action_description' ]
       listClass: "activity_history_live_search_list"
       searchClass: "search"
-    }
 
     activityHistoryList = new List("activity_history_list", options)
 
-    $("#live_search_select_activity_history").change ->
+    $("#live_search_select_activity_history_activity").change ->
       console.log $(":selected", @).val()
       activityHistoryList.search($(":selected", @).val())
+
+    userOptions =
+      valueNames: [ 'user_name' ]
+      listClass: "activity_history_live_search_list"
+      searchClass: "search"
+
+    activityHistoryListUser = new List("activity_history_list", userOptions)
+
+    $("#live_search_select_activity_history_user").change ->
+      console.log $(":selected", @).val()
+      activityHistoryListUser.search($(":selected", @).val())

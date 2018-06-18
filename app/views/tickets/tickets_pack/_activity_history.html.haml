@@ -1,7 +1,18 @@
 #activity_history_list
-  .small_scale_margin-top1.small_scale_margin-bottom1= select_tag "activity_history_select", options_for_select(@user_ticket_actions.collect{|action| action.task_action.action_description}), class: "search chosen-select", id: "live_search_select_activity_history", include_blank: "All"
-  .row#activity_history_template.activity_history_live_search_list
-    .col-md-12.padding0.fancy_scroll_bar{style: "max-height: 466px; overflow: auto;"}
+  .row
+    .col-md-12.small_scale_margin-top1.small_scale_margin-bottom1
+      - ["user", "activity"].each do |t|
+        = label_tag "by #{t}"
+        = radio_button_tag 'action_radio', t, false, class: "activity_radio_class"
+
+    .col-md-6.hide.user_radio_wrapper
+      = label_tag "by user"
+      = select_tag "activity_history_select_user", options_for_select(@user_ticket_actions.uniq{|a| a.action_by}.collect{|action| Rails.cache.fetch([:action_by, action.action_by]){User.find(action.action_by)}.full_name }), class: "chosen-select", id: "live_search_select_activity_history_user", include_blank: "All"
+    .col-md-6.hide.activity_radio_wrapper
+      = label_tag "by activity"
+      = select_tag "activity_history_select_activity", options_for_select(@user_ticket_actions.collect{|action| action.task_action.action_description}), class: "chosen-select", id: "live_search_select_activity_history_activity", include_blank: "All"
+  .row#activity_history_template.small_scale_margin-top1.small_scale_margin-bottom1
+    .col-md-12.padding0.fancy_scroll_bar.activity_history_live_search_list{style: "max-height: 466px; overflow: auto;"}
       - @user_ticket_actions.each do |action|
         - if action.persisted?
           .panel-group
@@ -15,7 +26,9 @@
                     Date Time:
                     = action.action_at.strftime "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}"
                   .col-md-3
-                    %p By: #{Rails.cache.fetch([:action_by, action.action_by]){User.find(action.action_by)}.full_name}
+                    %p
+                      By:
+                      %span.user_name #{Rails.cache.fetch([:action_by, action.action_by]){User.find(action.action_by)}.full_name}
 
                   .col-md-2
                     %p Re-Open: #{action.re_open_index > 0 ? 'Yes ('+action.re_open_index.to_s+')' : 'No'}
