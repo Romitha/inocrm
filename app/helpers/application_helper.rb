@@ -805,12 +805,12 @@ module ApplicationHelper
       # parts_issued_count += @ticket.ticket_on_loan_spare_parts.to_a.sum{|onloan_spare_part| (onloan_spare_part.spare_part_status_action.code == 'ISS') ? 1 : 0 }
 
       h_pending_estimation = "[ #{pending_estimation_count} Estimations Pending]" if pending_estimation_count > 0
-      h_pending_mf_parts = "[ #{parameter_holder[:pending_mf_parts_count]} MF Parts Pending]" if parameter_holder[:pending_mf_parts_count] > 0
-      h_pending_st_parts = "[ #{parameter_holder[:pending_st_sparts_count]} ST Parts Pending]" if parameter_holder[:pending_st_sparts_count] > 0
-      h_pending_onloan_parts = "[ #{parameter_holder[:pending_onloan_parts_count]} Onloan Parts Pending]" if parameter_holder[:pending_onloan_parts_count] > 0
+      h_pending_mf_parts = "[ #{parameter_holder[:pending_mf_parts_count]} MF Parts Pending]" if parameter_holder[:pending_mf_parts_count].to_i > 0
+      h_pending_st_parts = "[ #{parameter_holder[:pending_st_sparts_count]} ST Parts Pending]" if parameter_holder[:pending_st_sparts_count].to_i > 0
+      h_pending_onloan_parts = "[ #{parameter_holder[:pending_onloan_parts_count]} Onloan Parts Pending]" if parameter_holder[:pending_onloan_parts_count].to_i > 0
       h_pending_unit_collect = "[ Unit Recieve Pending ]" if pending_unit_collect
-      h_mf_parts_collected = "[ #{parameter_holder[:mf_parts_collected_count]} MF Parts Collected]" if parameter_holder[:mf_parts_collected_count] > 0
-      h_parts_issued = "[ #{parameter_holder[:parts_issued_count]} Parts Issued]" if parameter_holder[:parts_issued_count] > 0
+      h_mf_parts_collected = "[ #{parameter_holder[:mf_parts_collected_count]} MF Parts Collected]" if parameter_holder[:mf_parts_collected_count].to_i > 0
+      h_parts_issued = "[ #{parameter_holder[:parts_issued_count]} Parts Issued]" if parameter_holder[:parts_issued_count].to_i > 0
 
 
       color_code = case
