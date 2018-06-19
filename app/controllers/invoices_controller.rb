@@ -294,7 +294,7 @@ class InvoicesController < ApplicationController
               @bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT", query: {ticket_id: @ticket.id, d1_pop_approval_pending: "N", priority: @ticket.priority, d42_assignment_required: "N", engineer_id: engineer.id , supp_engr_user: engineer.user_id, supp_hd_user: @ticket.created_by}
 
               if @bpm_response1[:status].try(:upcase) == "SUCCESS"
-                workflow_process = @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name], engineer_id: engineer.id)
+                workflow_process = @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name], engineer_id: engineer.id, re_open_index: @ticket.re_open_count)
 
                 view_context.ticket_bpm_headers @bpm_response1[:process_id], @ticket.id
 

@@ -1203,6 +1203,13 @@ class TicketWorkflowProcess < ActiveRecord::Base
   self.table_name = "spt_ticket_workflow_process"
 
   belongs_to :ticket
+
+  before_create :check_reopen_index
+
+  def check_reopen_index
+    self.re_open_index = self.ticket.re_open_count unless self.re_open_index.present?
+  end
+
 end
 
 class TicketStatusResolve < ActiveRecord::Base

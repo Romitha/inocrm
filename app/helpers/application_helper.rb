@@ -719,10 +719,11 @@ module ApplicationHelper
     WorkflowMapping
 
     @ticket = Ticket.find_by_id(ticket_id)
-    ticket_spare_parts = @ticket.ticket_spare_parts.reload
     parameter_holder = {}
 
     if process_id.present? and @ticket.present?
+
+      ticket_spare_parts = @ticket.ticket_spare_parts.reload
 
       ticket_no  = "[#{@ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG['ticket_no_format'])}]"
 

@@ -895,7 +895,7 @@ class TicketsController < ApplicationController
               @bpm_response = view_context.send_request_process_data start_process: true, process_name: "SPPT", query: {ticket_id: ticket_id, d1_pop_approval_pending: di_pop_approval_pending, priority: priority, d42_assignment_required: d42_assignment_required, engineer_id: engineer_id, supp_engr_user: engineer_id, supp_hd_user: @ticket.created_by }
 
               if @bpm_response[:status].try(:upcase) == "SUCCESS"
-                @ticket.ticket_workflow_processes.create(process_id: @bpm_response[:process_id], process_name: @bpm_response[:process_name])
+                @ticket.ticket_workflow_processes.create(process_id: @bpm_response[:process_id], process_name: @bpm_response[:process_name], re_open_index: @ticket.re_open_count)
               else
                 @bpm_process_error = true
               end
@@ -963,7 +963,7 @@ class TicketsController < ApplicationController
         @bpm_response = view_context.send_request_process_data start_process: true, process_name: "SPPT", query: {ticket_id: ticket_id, d1_pop_approval_pending: di_pop_approval_pending, priority: priority, d42_assignment_required: d42_assignment_required, engineer_id: engineer_id, supp_engr_user: engineer_id, supp_hd_user: @ticket.created_by }
 
         if @bpm_response[:status].try(:upcase) == "SUCCESS"
-          @ticket.ticket_workflow_processes.create(process_id: @bpm_response[:process_id], process_name: @bpm_response[:process_name])
+          @ticket.ticket_workflow_processes.create(process_id: @bpm_response[:process_id], process_name: @bpm_response[:process_name], re_open_index: @ticket.re_open_count)
         else
           @bpm_process_error = true
         end
@@ -4454,7 +4454,7 @@ class TicketsController < ApplicationController
       @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
       if @bpm_response1[:status].try(:upcase) == "SUCCESS"
-        @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name], engineer_id: spt_ticket_spare_part.engineer_id, spare_part_id: request_spare_part_id)
+        @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name], engineer_id: spt_ticket_spare_part.engineer_id, spare_part_id: request_spare_part_id, re_open_index: @ticket.re_open_count)
         view_context.ticket_bpm_headers @bpm_response1[:process_id], @ticket.id, request_spare_part_id
       else
         @bpm_process_error = true
@@ -4863,8 +4863,11 @@ class TicketsController < ApplicationController
     else
       # redirect_to @ticket, alert: @flash_message
     end
-    redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
-    redirect_to redirect_response[:url], {redirect_response[:message_type] => "#{redirect_response[:flash_message]} - #{@flash_message}"}
+    # redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
+    # redirect_to redirect_response[:url], {redirect_response[:message_type] => "#{redirect_response[:flash_message]} - #{@flash_message}"}
+
+    redirect_to @ticket, alert: @flash_message
+
   end
 
   def update_action_taken
@@ -5064,7 +5067,7 @@ class TicketsController < ApplicationController
               @bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT", query: {ticket_id: ticket_id, d1_pop_approval_pending: di_pop_approval_pending, priority: priority, d42_assignment_required: d42_assignment_required, engineer_id: engineer_id , supp_engr_user: supp_engr_user, supp_hd_user: supp_hd_user}
 
               if @bpm_response1[:status].try(:upcase) == "SUCCESS"
-                workflow_process = @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name], engineer_id: engineer_id)
+                workflow_process = @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name], engineer_id: engineer_id, re_open_index: @ticket.re_open_count)
 
                 view_context.ticket_bpm_headers @bpm_response1[:process_id], @ticket.id
 
@@ -5438,7 +5441,7 @@ class TicketsController < ApplicationController
 
           if @bpm_response1[:status].try(:upcase) == "SUCCESS"
             est_id = estimation_required ? part_estimation_id : nil
-            @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name], engineer_id: @ticket_spare_part.engineer_id, spare_part_id: request_spare_part_id, estimation_id: est_id)
+            @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name], engineer_id: @ticket_spare_part.engineer_id, spare_part_id: request_spare_part_id, estimation_id: est_id, re_open_index: @ticket.re_open_count)
             view_context.ticket_bpm_headers @bpm_response1[:process_id], @ticket.id, request_spare_part_id
           else
             @bpm_process_error = true
@@ -5535,7 +5538,7 @@ class TicketsController < ApplicationController
 
 
         if bpm_response1[:status].try(:upcase) == "SUCCESS"
-          @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name], engineer_id: engineer_id, on_loan_spare_part_id: request_onloan_spare_part_id)
+          @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name], engineer_id: engineer_id, on_loan_spare_part_id: request_onloan_spare_part_id, re_open_index: @ticket.re_open_count)
 
           view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, "", request_onloan_spare_part_id
         else
