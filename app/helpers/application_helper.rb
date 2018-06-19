@@ -719,7 +719,7 @@ module ApplicationHelper
     WorkflowMapping
 
     @ticket = Ticket.find_by_id(ticket_id)
-    ticket_spare_parts = @ticket.ticket_spare_parts
+    ticket_spare_parts = @ticket.ticket_spare_parts.reload
     parameter_holder = {}
 
     if process_id.present? and @ticket.present?
