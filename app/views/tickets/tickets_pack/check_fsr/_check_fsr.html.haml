@@ -85,7 +85,7 @@
                 %td= tsp.ticket_spare_part_manufacture.try(:po_required) ? "Yes" : "No"
                 %td{"type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Spare Part Note", "data-content"=> simple_format(tsp.note), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right"}= truncate(tsp.note, length: 10)
 
-                %td{class: "#{'hide' if ['MPR', 'APM', 'ORD', 'CLT', 'RCS', 'STR', 'APS'].include?(spare_part.spare_part_status_action.code)}"}
+                %td{class: "#{'hide' if ['MPR', 'APM', 'ORD', 'CLT', 'RCS', 'STR', 'APS'].include?(tsp.spare_part_status_action.code)}"}
                   = check_box_tag :ticket_spare_part_ids, tsp.id, tsp.close_approved, name: "ticket_spare_part_ids[]", class: "dynamic_check"
 
       - if f.object.ticket_on_loan_spare_parts.present?
@@ -113,7 +113,7 @@
                 %td= tsp.part_returned ? 'Yes' : 'No'
                 %td= tsp.ret_part_received ? 'Yes' : 'No'
                 %td= tsp.return_part_serial_no
-                %td{class: "#{'hide' if ['STR', 'APS'].include?(spare_part.spare_part_status_action.code)}"}= check_box_tag :ticket_on_loan_spare_part_ids, tsp.id, tsp.close_approved, name: "ticket_on_loan_spare_part_ids[]", class: "dynamic_check"
+                %td{class: "#{'hide' if ['STR', 'APS'].include?(tsp.spare_part_status_action.code)}"}= check_box_tag :ticket_on_loan_spare_part_ids, tsp.id, tsp.close_approved, name: "ticket_on_loan_spare_part_ids[]", class: "dynamic_check"
       .row.col-md-12.col-xs-12
         %p FSR Information
         = f.simple_fields_for :ticket_fsrs do |ff|

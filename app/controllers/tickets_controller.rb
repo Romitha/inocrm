@@ -4143,7 +4143,7 @@ class TicketsController < ApplicationController
     TicketSparePart
     Warranty
     @call_template = params[:call_template]
-    @ticket = Ticket.find session[:ticket_id]
+    @ticket = Ticket.find params[:ticket_id]
     @user_ticket_action = @ticket.user_ticket_actions.build
     case @call_template
     when "re_assign"
