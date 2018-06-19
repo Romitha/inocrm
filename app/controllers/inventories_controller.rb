@@ -384,7 +384,7 @@ class InventoriesController < ApplicationController
         bpm_response1 = view_context.send_request_process_data start_process: true, process_name: process_name, query: query
 
         if bpm_response1[:status].try(:upcase) == "SUCCESS"
-          @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name], engineer_id: engineer_id, spare_part_id: request_spare_part_id)
+          @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name], engineer_id: engineer_id, spare_part_id: request_spare_part_id, re_open_index: @ticket.re_open_count)
           view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, request_spare_part_id
         else
           @bpm_process_error = true
@@ -503,7 +503,7 @@ class InventoriesController < ApplicationController
             bpm_response1 = view_context.send_request_process_data start_process: true, process_name: "SPPT_STORE_PART_RETURN", query: {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, request_onloan_spare_part_id: request_onloan_spare_part_id, onloan_request: onloan_request, supp_engr_user: supp_engr_user, priority: priority}
 
             if bpm_response1[:status].try(:upcase) == "SUCCESS"
-              @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name], engineer_id: engineer_id, on_loan_spare_part_id: request_onloan_spare_part_id)
+              @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name], engineer_id: engineer_id, on_loan_spare_part_id: request_onloan_spare_part_id, re_open_index: @ticket.re_open_count)
               view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, "", request_onloan_spare_part_id
             else
               @bpm_process_error = true
@@ -534,6 +534,9 @@ class InventoriesController < ApplicationController
         @flash_message = "Recieve action is Successfully done."
       end
     end
+
+    view_context.ticket_bpm_headers params[:process_id], @ticket.id, nil, request_onloan_spare_part_id
+
     redirect_to todos_url, notice: @flash_message
   end
 
@@ -743,7 +746,7 @@ class InventoriesController < ApplicationController
               bpm_response1 = view_context.send_request_process_data start_process: true, process_name: process_name, query: query
 
               if bpm_response1[:status].try(:upcase) == "SUCCESS"
-                @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name], engineer_id: engineer_id, spare_part_id: request_spare_part_id)
+                @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name], engineer_id: engineer_id, spare_part_id: request_spare_part_id, re_open_index: @ticket.re_open_count)
                 view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, request_spare_part_id
                 flash[:notice] = "Successfully part requested"
               else
@@ -1879,7 +1882,6 @@ class InventoriesController < ApplicationController
 
           bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-          view_context.ticket_bpm_headers params[:process_id], @ticket.id
 
           if bpm_response[:status].upcase == "SUCCESS"
 
@@ -1937,7 +1939,7 @@ class InventoriesController < ApplicationController
 
                   if @bpm_response1[:status].try(:upcase) == "SUCCESS"
 
-                    @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name], engineer_id: ticket_spare_part.engineer_id, spare_part_id: request_spare_part_id)
+                    @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name], engineer_id: ticket_spare_part.engineer_id, spare_part_id: request_spare_part_id, re_open_index: @ticket.re_open_count)
                     view_context.ticket_bpm_headers @bpm_response1[:process_id], @ticket.id, request_spare_part_id
                   else
                     @bpm_process_error = true
@@ -1969,6 +1971,18 @@ class InventoriesController < ApplicationController
           else
             flash[:error]= "Estimate part is updated. but Bpm error"
           end
+
+          view_context.ticket_bpm_headers params[:process_id], @ticket.id
+
+          ticket_id = @ticket.id
+          processes = TicketWorkflowProcess.where(ticket_id: ticket_id, process_name: "SPPT")
+          processes.each do |process|
+            process_id = process.process_id
+
+            view_context.ticket_bpm_headers process_id, ticket_id
+            Rails.cache.delete([:workflow_header, process_id])
+          end
+
         else
           flash[:error] = "Estimate updated. But not completed."
         end
@@ -2096,7 +2110,7 @@ class InventoriesController < ApplicationController
 
                   if @bpm_response1[:status].try(:upcase) == "SUCCESS"
 
-                    @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name], engineer_id: ticket_spare_part.engineer_id, spare_part_id: request_spare_part_id)
+                    @ticket.ticket_workflow_processes.create(process_id: @bpm_response1[:process_id], process_name: @bpm_response1[:process_name], engineer_id: ticket_spare_part.engineer_id, spare_part_id: request_spare_part_id, re_open_index: @ticket.re_open_count)
                     view_context.ticket_bpm_headers @bpm_response1[:process_id], @ticket.id, request_spare_part_id
 
                   else

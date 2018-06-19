@@ -4843,7 +4843,10 @@ class TicketsController < ApplicationController
         @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
         @ticket_engineer.update status: 3, job_terminated: true, job_completed_at: DateTime.now, job_closed_at: DateTime.now
 
-        bpm_variables = view_context.initialize_bpm_variables.merge(d4_job_complete: "Y", d8_job_finished: "Y", d11_terminate_job:  "Y", d9_qc_required:(@ticket.ticket_type.code == "IH" ? "Y" : "N"), d10_job_estimate_required_final: ((@ticket.cus_chargeable or @ticket.cus_payment_required) ? "Y" : "N"), d12_need_to_invoice: ((@ticket.cus_chargeable or @ticket.cus_payment_required) ? "Y" : "N"), d6_close_approval_required: ((@ticket.ticket_fsrs.any? or @ticket.ticket_spare_parts.any?) ? "Y" : "N"), d7_close_approval_requested: (@ticket.ticket_close_approval_requested ? "Y" : "N"))
+        #d10_job_estimate_required_final = ((@ticket.cus_chargeable or @ticket.cus_payment_required) ? "Y" : "N")
+        d10_job_estimate_required_final = "Y"
+
+        bpm_variables = view_context.initialize_bpm_variables.merge(d4_job_complete: "Y", d8_job_finished: "Y", d11_terminate_job:  "Y", d9_qc_required:(@ticket.ticket_type.code == "IH" ? "Y" : "N"), d10_job_estimate_required_final: d10_job_estimate_required_final, d12_need_to_invoice: ((@ticket.cus_chargeable or @ticket.cus_payment_required) ? "Y" : "N"), d6_close_approval_required: ((@ticket.ticket_fsrs.any? or @ticket.ticket_spare_parts.any?) ? "Y" : "N"), d7_close_approval_requested: (@ticket.ticket_close_approval_requested ? "Y" : "N"))
 
         @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
