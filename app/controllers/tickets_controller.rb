@@ -3122,6 +3122,7 @@ class TicketsController < ApplicationController
     @product = Product.find params[:product_id] if params[:product_id].present?
     continue_bpm = false
     complete_task = params[:complete_task].present? ? params[:complete_task].to_bool : true
+    @flash_message = {error: [], notice: []}
 
     if params[:from_order_template].try(:to_bool)
       @continue = true
@@ -3138,8 +3139,9 @@ class TicketsController < ApplicationController
           @ticket.ticket_product_serials.update_all(product_serial_id: @product.id)
           @ticket.update_index
           continue_bpm = true
+          @flash_message[:notice] << "Successfully saved"
         else
-          @flash_message = {error: "Unable to save. Please retry #{@product.errors.full_messages.join(', ')}"}
+          @flash_message[:error] << "Unable to save. Please retry #{@product.errors.full_messages.join(', ')}"
         end
 
       elsif params[:selected_product].present?
@@ -3152,8 +3154,9 @@ class TicketsController < ApplicationController
           @product = Product.find params[:product_id]
           @ticket.update_index
           continue_bpm = true
+          @flash_message[:notice] << "Successfully saved"
         else
-          @flash_message = {error: "Unable to save. Please retry #{@product.errors.full_messages.join(', ')}"}
+          @flash_message[:error] << "Unable to save. Some errors in saving"
         end
       end
 
@@ -3174,19 +3177,21 @@ class TicketsController < ApplicationController
           @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
           if @bpm_response[:status].upcase == "SUCCESS"
-            @flash_message = {notice: "Successfully updated"}
+            @flash_message[:notice] << "Task completed"
+          else
+            @flash_message[:error] << "Workflow error: #{@bpm_response[:status].upcase}"
           end
         end
         # WebsocketRails[:posts].trigger 'new', {task_name: "Serial no for", task_id: @ticket.id, task_verb: "updated.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
 
-        @flash_message = {notice: "Successfully updated"}
+        @flash_message[:notice] << "Action recorded"
       else
-        @flash_message = {error: "Unable to updated."}
+        @flash_message[:error] << "Unable to updated"
       end
     else
-      @flash_message = {error: "product is not updated. Bpm error"}
+      @flash_message[:error] << "product is not updated. Bpm error"
     end
-    redirect_to todos_url, @flash_message
+    redirect_to todos_url, @flash_message[:error].join(", "), @flash_message[:notice].join(", ")
   end
 
   def estimate_job
@@ -3663,6 +3668,8 @@ class TicketsController < ApplicationController
 
     srn_so_number = params[:srn_so_number]
 
+    @ticket = Ticket.find_by_id(params[:ticket_id])
+
     grn_serial_item_id = params[:grn_serial_item_id]
     grn_batch_id = params[:grn_batch_id]
     grn_item_id = params[:grn_item_id]
@@ -3981,7 +3988,7 @@ class TicketsController < ApplicationController
             end
           end
 
-          update_headers("SPPT", @ticket_spare_part.ticket)
+          update_headers("SPPT", @ticket)
 
         else
           if @iss_from_inventory_not_updated
