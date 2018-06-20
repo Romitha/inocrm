@@ -759,16 +759,19 @@ module ApplicationHelper
       not_started = "[Not Started]" if @ticket.ticket_status.code == "ASN"
 
       ticket_spare_parts.each do |spare_part|
-        unless ['CLS', 'RQT'].include?(spare_part.spare_part_status_action.code) or spare_part.received_eng
-          if spare_part.request_from == "M"
+        unless spare_part.spare_part_status_action.code == 'CLS' or spare_part.received_eng
+
+          if spare_part.request_from == "M" and ((!spare_part.cus_chargeable_part and spare_part.spare_part_status_action.manufacture_type_index >= 1) or (spare_part.cus_chargeable_part and spare_part.spare_part_status_action.manufacture_ch_type_index >= 4))
+
             parameter_holder[:pending_mf_parts_count] = parameter_holder[:pending_mf_parts_count].to_i + 1
+
           end
 
-          if spare_part.request_from == "S"
+          if spare_part.request_from == "S" and ((!spare_part.cus_chargeable_part and spare_part.spare_part_status_action.store_nc_type_index >= 1) or (spare_part.cus_chargeable_part and spare_part.spare_part_status_action.store_ch_type_index >= 4))
+
             parameter_holder[:pending_st_sparts_count] = parameter_holder[:pending_st_sparts_count].to_i + 1
+
           end
-
-
         end
 
         if ['ISS'].include? spare_part.spare_part_status_action.code
@@ -781,8 +784,8 @@ module ApplicationHelper
       end
 
       @ticket.ticket_on_loan_spare_parts.each do |onloan_spare_part|
-        unless ['CLS', 'RQT'].include?(onloan_spare_part.spare_part_status_action.code) or onloan_spare_part.received_eng
-          parameter_holder[:pending_onloan_parts_count] = parameter_holder[:pending_onloan_parts_count].to_i + 1
+        unless (onloan_spare_part.spare_part_status_action.code == 'CLS') or onloan_spare_part.received_eng
+          parameter_holder[:pending_onloan_parts_count] = parameter_holder[:pending_onloan_parts_count].to_i + 1 if (onloan_spare_part.spare_part_status_action.on_loan_type_index >= 1)
         end
         if ['ISS'].include? onloan_spare_part.spare_part_status_action.code
           parameter_holder[:parts_issued_count] = parameter_holder[:parts_issued_count].to_i + 1
@@ -792,18 +795,6 @@ module ApplicationHelper
       pending_estimation_count = @ticket.ticket_estimations.to_a.sum{|estimation| estimation.estimation_status.code == 'RQS' ? 1 : 0 }
 
       pending_unit_collect = @ticket.ticket_deliver_units.any?{|deliver_unit| !deliver_unit.delivered_to_sup }
-
-      # pending_mf_parts_count = ticket_spare_parts.to_a.sum{|spare_part| (!(spare_part.spare_part_status_action.code == 'RQT' or spare_part.spare_part_status_action.code == 'CLS' or spare_part.received_eng) and (spare_part.request_from == "M")) ? 1 : 0 }
-
-      # pending_st_sparts_count = ticket_spare_parts.to_a.sum{|spare_part| (!(spare_part.spare_part_status_action.code == 'RQT' or spare_part.spare_part_status_action.code == 'CLS' or spare_part.received_eng) and spare_part.ticket_spare_part_store.present? ) ? 1 : 0 }
-
-      # pending_onloan_parts_count = @ticket.ticket_on_loan_spare_parts.to_a.sum{|onloan_spare_part| !(onloan_spare_part.spare_part_status_action.code == 'RQT' or onloan_spare_part.spare_part_status_action.code == 'CLS' or onloan_spare_part.received_eng) ? 1 : 0 }
-
-
-      # mf_parts_collected_count = ticket_spare_parts.to_a.sum{|spare_part| (spare_part.spare_part_status_action.code == 'CLT' or spare_part.spare_part_status_action.code == 'RCS') ? 1 : 0 }
-
-      # parts_issued_count = ticket_spare_parts.to_a.sum{|spare_part| (spare_part.spare_part_status_action.code == 'ISS') ? 1 : 0 }
-      # parts_issued_count += @ticket.ticket_on_loan_spare_parts.to_a.sum{|onloan_spare_part| (onloan_spare_part.spare_part_status_action.code == 'ISS') ? 1 : 0 }
 
       h_pending_estimation = "[ #{pending_estimation_count} Estimations Pending]" if pending_estimation_count > 0
       h_pending_mf_parts = "[ #{parameter_holder[:pending_mf_parts_count]} MF Parts Pending]" if parameter_holder[:pending_mf_parts_count].to_i > 0
@@ -837,8 +828,6 @@ module ApplicationHelper
           manufacture_part = spare_part.ticket_spare_part_manufacture
           non_stock_part = spare_part.ticket_spare_part_non_stock
         end
-
-        # store_part_name = (store_part && store_part.inventory_product) ? store_part.inventory_product.try(:description))
 
         if store_part and store_part.inventory_product
           spare_part_name = "[S: #{store_part.inventory_product.description.try :truncate, 18}]"

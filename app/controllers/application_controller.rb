@@ -43,4 +43,16 @@ class ApplicationController < ActionController::Base
         authenticate_user!
       end
     end
+
+    def update_headers(process_name, ticket)
+      ticket.ticket_workflow_processes.where(process_name: process_name).each do |process|
+        process_id = process.process_id
+
+        view_context.ticket_bpm_headers process_id, ticket.id
+        Rails.cache.delete([:workflow_header, process_id])
+        
+      end
+
+    end
+
 end

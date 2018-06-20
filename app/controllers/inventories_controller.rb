@@ -1,6 +1,8 @@
 class InventoriesController < ApplicationController
   before_action :find_ticket, only: [:update_low_margin_estimate, :update_estimate_job, :update_delivery_unit]
 
+  after_action :update_bpm_header, only: [:update_part_order, :update_onloan_part_order, :update_estimation_external_customer_approval, :update_estimate_job, :update_low_margin_estimate, :update_delivery_unit, :update_estimate_the_part_internal, :update_low_margin_estimate_parts_approval]
+
   def inventory_in_modal
     Inventory
     Grn
@@ -151,13 +153,15 @@ class InventoriesController < ApplicationController
 
   def update_part_order
 
-    ticket_spare_part = TicketSparePart.find params[:ticket_spare_part_id]
+    @ticket_spare_part = TicketSparePart.find params[:ticket_spare_part_id]
+    ticket_spare_part = @ticket_spare_part
     @ticket = ticket_spare_part.ticket
     engineer_id = params[:engineer_id]
 
     ticket_spare_part.update(ticket_spare_part_params(ticket_spare_part))
 
-    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    @continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    continue = @continue
     same_page = todos_url
     goto_url = todos_url
 
@@ -292,11 +296,6 @@ class InventoriesController < ApplicationController
         end
       else
 
-        # if ticket_spare_part.ticket_spare_part_manufacture.present? and !CompanyConfig.first.sup_mf_parts_return_required and !ticket_spare_part.ticket_spare_part_manufacture.po_required
-        #   ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("CLS").id) 
-        #   ticket_spare_part.ticket_spare_part_status_actions.create(status_id: ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now) 
-        # end  
-
         flash[:error] = "spare part is updated. But not returned"
       end
 
@@ -375,7 +374,7 @@ class InventoriesController < ApplicationController
 
     end
 
-    view_context.ticket_bpm_headers params[:process_id], @ticket.id, request_spare_part_id
+    # view_context.ticket_bpm_headers params[:process_id], @ticket.id, request_spare_part_id
 
     if continue
       bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
@@ -404,12 +403,14 @@ class InventoriesController < ApplicationController
   end
 
   def update_onloan_part_order
-    ticket_on_loan_spare_part = TicketOnLoanSparePart.find params[:ticket_on_loan_spare_part_id]
+    @onloan_request_part = TicketOnLoanSparePart.find params[:ticket_on_loan_spare_part_id]
+    ticket_on_loan_spare_part = @onloan_request_part
     @ticket = ticket_on_loan_spare_part.ticket
 
     ticket_on_loan_spare_part.update ticket_on_loan_spare_part_params(ticket_on_loan_spare_part) 
 
-    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    @continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+    continue = @continue
     engineer_id = params[:engineer_id]
 
     save_ticket_on_loan_spare_part = Proc.new do |onloan_spare_part_status, action_id_no|
@@ -526,7 +527,6 @@ class InventoriesController < ApplicationController
         @flash_message = "spare part is updated. But not returned"
       end
 
-
     elsif params[:recieved]
 
       if iss
@@ -535,7 +535,7 @@ class InventoriesController < ApplicationController
       end
     end
 
-    view_context.ticket_bpm_headers params[:process_id], @ticket.id, nil, request_onloan_spare_part_id
+    # view_context.ticket_bpm_headers params[:process_id], @ticket.id, nil, request_onloan_spare_part_id
 
     redirect_to todos_url, notice: @flash_message
   end
@@ -758,6 +758,9 @@ class InventoriesController < ApplicationController
 
         end
       end
+
+      view_context.ticket_bpm_headers params[:process_id], @ticket.id
+
     end
     redirect_to todos_url
 
@@ -767,12 +770,14 @@ class InventoriesController < ApplicationController
     Ticket
 
     @estimation = TicketEstimation.find estimation_params[:id]
+    @ticket = @estimation.ticket
     updatable_estimation_params = estimation_params
     request_deliver_unit = params[:request_deliver_unit].present?
     updatable_estimation_params.merge!( status_id: EstimationStatus.find_by_code("CLS").id, cust_approved_at: DateTime.now, cust_approved_by: current_user.id )
 
     bpm_continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
     continue = params[:task_id].present? ? bpm_continue : true
+    @continue = continue
     engineer_id = params[:engineer_id]
     # bpm output variables
     bpm_variables = view_context.initialize_bpm_variables
@@ -837,8 +842,8 @@ class InventoriesController < ApplicationController
           user_ticket_action.save
         end
 
-        view_context.ticket_bpm_headers params[:process_id], @estimation.ticket_id if params[:process_id].present?
-        Rails.cache.delete([:workflow_header, params[:process_id]])        
+        # view_context.ticket_bpm_headers params[:process_id], @estimation.ticket_id
+        # Rails.cache.delete([:workflow_header, params[:process_id]])        
 
         if @estimation.cust_approved
           email_template = "EXT_ESTIMATION_CUSTOMER_APPROVED"
@@ -878,6 +883,7 @@ class InventoriesController < ApplicationController
     if params[:estimation_completed].present?
 
       continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+      @continue = continue
       d14_val = false
 
       if continue
@@ -919,7 +925,7 @@ class InventoriesController < ApplicationController
 
         bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-        view_context.ticket_bpm_headers params[:process_id], @ticket.id
+        # view_context.ticket_bpm_headers params[:process_id], @ticket.id
 
         if bpm_response[:status].upcase == "SUCCESS"
 
@@ -956,7 +962,7 @@ class InventoriesController < ApplicationController
     if params[:estimation_completed]
 
       continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
-
+      @continue = continue
       if continue
         # Set Action (41) Job Estimation Done, DB.spt_act_job_estimate. Set supp_engr_user = supp_engr_user (Input variable)
 
@@ -981,6 +987,8 @@ class InventoriesController < ApplicationController
         @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
 
         bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+
+        # view_context.ticket_bpm_headers params[:process_id], @ticket.id
 
         if bpm_response[:status].upcase == "SUCCESS"
 
@@ -1028,7 +1036,7 @@ class InventoriesController < ApplicationController
 
       if ticket_deliver_unit.collected
           continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
-
+          @continue = continue
         if continue
           # @ticket_deliver_unit.update(collected_at: DateTime.now, collected_by: current_user.id)
           ticket_deliver_unit.collected_at = DateTime.now
@@ -1068,8 +1076,8 @@ class InventoriesController < ApplicationController
     end
 
     @ticket.save!
-    view_context.ticket_bpm_headers params[:process_id], @ticket.id
-    Rails.cache.delete([:workflow_header, params[:process_id]])
+    # view_context.ticket_bpm_headers params[:process_id], @ticket.id
+    # Rails.cache.delete([:workflow_header, params[:process_id]])
 
     redirect_to todos_url, notice: "Successfully updated."
   end
@@ -1813,9 +1821,8 @@ class InventoriesController < ApplicationController
     d19_estimate_internal_below_margin = "N"
     @jump_next = params[:estimation_complete_check].to_bool if params[:estimation_complete_check].present?
 
-
     continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
-
+    @continue = continue
     if continue
 
       if estimation.estimation_status.code == 'RQS'
@@ -1972,16 +1979,9 @@ class InventoriesController < ApplicationController
             flash[:error]= "Estimate part is updated. but Bpm error"
           end
 
-          view_context.ticket_bpm_headers params[:process_id], @ticket.id
+          # view_context.ticket_bpm_headers params[:process_id], @ticket.id
 
-          ticket_id = @ticket.id
-          processes = TicketWorkflowProcess.where(ticket_id: ticket_id, process_name: "SPPT")
-          processes.each do |process|
-            process_id = process.process_id
-
-            view_context.ticket_bpm_headers process_id, ticket_id
-            Rails.cache.delete([:workflow_header, process_id])
-          end
+          update_headers("SPPT", @ticket)
 
         else
           flash[:error] = "Estimate updated. But not completed."
@@ -2006,7 +2006,7 @@ class InventoriesController < ApplicationController
     t_est_price = 0
 
     continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
-
+    @continue = continue
     if continue
 
       if estimation.estimation_status.code == 'RQS'
@@ -2122,6 +2122,9 @@ class InventoriesController < ApplicationController
 
               end
             end
+
+            # view_context.ticket_bpm_headers params[:process_id], @ticket.id
+            update_headers("SPPT", @ticket)
 
             estimation.ticket_estimation_parts.each do |p|
               ticket_spare_part = p.ticket_spare_part
@@ -2246,21 +2249,24 @@ class InventoriesController < ApplicationController
     #((((((((()))))))))
     params[:order] = "desc"
     params[:order_by_field] = :serial_no
-    #((((((((()))))))))
-
-    # @products = InventoryProduct.search(params).map { |p| {serialNo: p.serial_no, generatedItemCode: p.generated_item_code, description: p.description}}
-
-    # @products = Kaminari.paginate_array(InventoryProduct.search(params)).page(params[:page]).per(10)
     @products = InventoryProduct.search(params)
-
-
-
 
     # products = InventoryProduct.advance_search(params).hits.hits.map{|h| h["_source"]}.map { |p| {serialNo: p["serial_no"], generatedItemCode: p["generated_item_code"], description: p["description"]}}
     # render json: @products
   end
 
   private
+
+    def update_bpm_header
+      process_id = ((@bpm_response and @bpm_response[:process_id]) || params[:process_id])
+      ticket_id = ( @ticket.try(:id) || params[:ticket_id] )
+      ticket_spare_part_id = (@ticket_spare_part.try(:id) || params[:request_spare_part_id])
+      ticket_onloan_spare_part_id = (@onloan_request_part.try(:id) || params[:request_onloan_spare_part_id])
+
+      view_context.ticket_bpm_headers process_id, ticket_id, ticket_spare_part_id, ticket_onloan_spare_part_id
+      Rails.cache.delete([:workflow_header, process_id])
+
+    end
 
     def find_ticket
       @ticket = Ticket.find params[:ticket_id]

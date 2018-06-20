@@ -2125,14 +2125,7 @@ class TicketsController < ApplicationController
             Rails.cache.delete([:workflow_header, process_id])
           end
 
-          ticket_id = ticket_spare_part_manufacture.ticket_spare_part.ticket.id
-          processes = TicketWorkflowProcess.where(ticket_id: ticket_id, process_name: "SPPT")
-          processes.each do |process|
-            process_id = process.process_id
-
-            view_context.ticket_bpm_headers process_id, ticket_id
-            Rails.cache.delete([:workflow_header, process_id])
-          end
+          update_headers("SPPT", ticket_spare_part_manufacture.ticket_spare_part.ticket)
 
         end
         flash[:notice] = "Successfully updated."
@@ -3611,23 +3604,14 @@ class TicketsController < ApplicationController
     @fifo_grn_serial_items = []
 
     if @onloan_or_store.approved_inventory_product.inventory_product_info
-      # grn_item_ids = @onloan_or_store.approved_inventory_product.grn_items.search(query: "grn.store_id:#{@onloan_or_store.approved_store_id} AND inventory_not_updated:false").map{|grn_item| grn_item.id}
-
-      # grn_item_ids = GrnItem.search(query: "grn.store_id:#{@onloan_or_store.approved_store_id} AND inventory_not_updated:false AND inventory_product.id:#{@onloan_or_store.approved_inventory_product.id}").map{|grn_item| grn_item.id}
-
-      # @grn_serial_items = GrnSerialItem.search(query: "store_id:#{@onloan_or_store.approved_store_id} AND grn_item.inventory_not_updated:false AND grn_item.product_id:#{@onloan_or_store.approved_inventory_product.id} AND remaining:true")
 
       search_hash = {page: params[:page]}
       search_hash[:query] = "store_id:#{@onloan_or_store.approved_store_id} AND grn_item.inventory_not_updated:false AND grn_item.product_id:#{@onloan_or_store.approved_inventory_product.id} AND remaining:true"
 
       if @onloan_or_store.approved_inventory_product.inventory_product_info.need_serial
         @fifo_grn_serial_items = if @onloan_or_store.approved_inventory_product.fifo
-          # GrnSerialItem.includes(:inventory_serial_item).where(grn_item_id: grn_item_ids, remaining: true).sort{|p, n| p.grn_item.grn.created_at <=> n.grn_item.grn.created_at}
-          # @grn_serial_items.sort{|p, n| p.grn_item.grn.created_at <=> n.grn_item.grn.created_at}
           search_hash[:order] = "asc"
         else
-          # GrnSerialItem.includes(:inventory_serial_item).where(grn_item_id: grn_item_ids, remaining: true).sort{|p, n| n.grn_item.grn.created_at <=> p.grn_item.grn.created_at}
-          # @grn_serial_items.sort{|p, n| n.grn_item.grn.created_at <=> p.grn_item.grn.created_at}
           search_hash[:order] = "desc"
 
         end
@@ -3637,11 +3621,9 @@ class TicketsController < ApplicationController
         # @paginated_fifo_grn_serial_items = @fifo_grn_serial_items
 
       elsif @onloan_or_store.approved_inventory_product.inventory_product_info.need_batch
-        # @grn_batches = GrnBatch.where(grn_item_id: grn_item_ids).where("remaining_quantity > 0").page(params[:page]).per(10)
         @grn_batches = GrnBatch.search(query: "grn_item.grn.store_id:#{@onloan_or_store.approved_store_id} AND grn_item.inventory_not_updated:false AND grn_item.product_id:#{@onloan_or_store.approved_inventory_product.id} AND remaining_quantity:>0")
       else
 
-        # grn_items = @onloan_or_store.approved_inventory_product.grn_items.search(query: "grn.store_id:#{@onloan_or_store.approved_store_id} AND inventory_not_updated:false AND remaining_quantity:>0")
         grn_items = GrnItem.search(query: "grn.store_id:#{@onloan_or_store.approved_store_id} AND inventory_not_updated:false AND remaining_quantity:>0 AND inventory_product.id:#{@onloan_or_store.approved_inventory_product.id}")
 
         # @grns = Kaminari.paginate_array(grn_items).page(params[:page]).per(10)
@@ -3999,13 +3981,7 @@ class TicketsController < ApplicationController
             end
           end
 
-          processes = TicketWorkflowProcess.where(ticket_id: ticket_id, process_name: "SPPT")
-          processes.each do |process|
-            process_id = process.process_id
-
-            view_context.ticket_bpm_headers process_id, ticket_id
-            Rails.cache.delete([:workflow_header, process_id])
-          end
+          update_headers("SPPT", @ticket_spare_part.ticket)
 
         else
           if @iss_from_inventory_not_updated
@@ -4176,7 +4152,6 @@ class TicketsController < ApplicationController
 
       @report_bys = if @ticket.ticket_estimation_externals.present?
 
-        # @report_bys = @ticket.ticket_estimation_externals.select{|ts| ((ts.ticket_estimation.status_id == EstimationStatus.find_by_code("EST").id) or (ts.ticket_estimation.status_id == EstimationStatus.find_by_code("CLS").id) or (ts.ticket_estimation.status_id == EstimationStatus.find_by_code("APP").id)) and ((ts.ticket_estimation.cust_approved) or ( !ts.ticket_estimation.cust_approval_required)) }.map { |ts| [ts.organization.name, ts.organization.id] }
         @ticket.ticket_estimation_externals.select{ |ts| ["EST", "CLS", "APP"].include?(ts.ticket_estimation.estimation_status.code) and (ts.ticket_estimation.cust_approved or !ts.ticket_estimation.cust_approval_required ) }.map { |ts| [ts.organization.name, ts.organization.id] }
       else
         Organization.organization_suppliers.map { |o| [o.name, o.id] }
@@ -4195,8 +4170,6 @@ class TicketsController < ApplicationController
       session[:mst_inv_product_id] = nil
 
       @ticket_spare_part = @ticket.ticket_spare_parts.build
-      # @ticket_all =  = Ticket.all.where.not(session[:ticket_id])
-      # @ticket_all = Ticket.where("id != ?", session[:ticket_id])
     when "request_on_loan_spare_part"
       session[:store_id] = nil
       session[:inv_product_id] = nil
@@ -4319,11 +4292,6 @@ class TicketsController < ApplicationController
           spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("CLT").id)
           spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
 
-          #Recieve Part
-          #spt_ticket_spare_part.ticket_spare_part_manufacture.update_attributes recieved_manufacture: true
-
-          #spt_ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("RCS").id)
-          #spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
         end
 
         bpm_variables = view_context.initialize_bpm_variables.merge(d30_parts_collection_pending: d30_parts_collection_pending)
@@ -4863,8 +4831,6 @@ class TicketsController < ApplicationController
     else
       # redirect_to @ticket, alert: @flash_message
     end
-    # redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
-    # redirect_to redirect_response[:url], {redirect_response[:message_type] => "#{redirect_response[:flash_message]} - #{@flash_message}"}
 
     redirect_to @ticket, alert: @flash_message
 
@@ -4923,20 +4889,14 @@ class TicketsController < ApplicationController
           redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
           # redirect_to redirect_response[:url], redirect_response[:flash_message]
         else
-          # redirect_to "/tickets/resolution?process_id=#{params[:process_id]}&task_id=#{params[:task_id]}&owner=#{params[:owner]}&#{Rails.cache.fetch(['/tickets/resolution', params[:task_id]])[:bpm_input_variables].map{|e| e[:variable_id]+'='+e[:value]}.join('&')}", notice: "Successfully updated."
-
           redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
-          # @flash_message = "Successfully updated."
-          # redirect_to redirect_response[:url], redirect_response[:flash_message]
 
         end
       else
         @flash_message = "ticket is failed to updated. Not close approval"
-        # redirect_to "/tickets/resolution?process_id=#{params[:process_id]}&task_id=#{params[:task_id]}&owner=#{params[:owner]}&#{Rails.cache.fetch(['/tickets/resolution', params[:task_id]])[:bpm_input_variables].map{|e| e[:variable_id]+'='+e[:value]}.join('&')}", error: @flash_message
         redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
       end
     else
-      # redirect_to "/tickets/resolution?process_id=#{params[:process_id]}&task_id=#{params[:task_id]}&owner=#{params[:owner]}&#{Rails.cache.fetch(['/tickets/resolution', params[:task_id]])[:bpm_input_variables].map{|e| e[:variable_id]+'='+e[:value]}.join('&')}", error: 'There are some problem with BPM. Please re-try'
       redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
       @flash_message = 'There are some problem with BPM. Please re-try'
     end
@@ -5227,8 +5187,6 @@ class TicketsController < ApplicationController
 
         @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
-        # view_context.ticket_bpm_headers params[:process_id], @ticket.id, ""
-
         if @bpm_response[:status].upcase == "SUCCESS"
           @flash_message = "Successfully updated."
         else
@@ -5484,7 +5442,6 @@ class TicketsController < ApplicationController
 
     if @continue
       f_ticket_on_loan_spare_part_params = ticket_on_loan_spare_part_params
-      # f_ticket_on_loan_spare_part_params[:ticket_attributes][:remarks] = f_ticket_on_loan_spare_part_params[:ticket_attributes][:remarks].present? ? "#{f_ticket_on_loan_spare_part_params[:ticket_attributes][:remarks]} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@ticket.remarks}" : @ticket.remarks
       @ticket_on_loan_spare_part = TicketOnLoanSparePart.new f_ticket_on_loan_spare_part_params
       @ticket_on_loan_spare_part.note = "#{@ticket_on_loan_spare_part.note} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span>"
 
@@ -5647,14 +5604,6 @@ class TicketsController < ApplicationController
         ticket_spare_part.ticket.set_ticket_close(current_user.id)
       end
 
-
-      # @prn.inventory_prn_items.each do |prn_item|
-      #   prn_item.update closed: true if prn_item.quantity <= prn_item.inventory_po_items.sum(:quantity)
-      # end
-      # @prn.update closed: true if @prn.inventory_prn_items.all?{ |e| e.closed }
-      # if params[:spare_part].present?
-      #   @spare_part_id = TicketSparePart.find params[:spare_part]
-      # end
       flash[:notice] = "Successfully saved"
       respond_to do |format|
         format.html{ redirect_to hp_po_tickets_path }
@@ -5671,8 +5620,6 @@ class TicketsController < ApplicationController
 
   def load_serialparts
     @brand = ProductBrand.find params[:brand_id]
-    # @rpermissions = Rpermission.all.map { |rpermission| {resource: rpermission.controller_resource, name: rpermission.name, id: rpermission.id, checked: "#{'checked' if @role.rpermissions.include?(rpermission)}"} }
-    # @rserialparts = Rpermission.all.group_by{|g| g.controller_resource}.map{|k, v| {resource: k, value: v.map{|rpermission| {resource: rpermission.controller_resource, name: rpermission.name, id: rpermission.id, checked: "#{'checked' if @role.rpermissions.include?(rpermission)}"}}}}
     respond_to do |format|
       format.json
       format.html
