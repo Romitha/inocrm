@@ -42,7 +42,7 @@
               %td= p.serial_no
               %td= p.brand_name
               %td
-                .has-tooltip{title: p.category_full_name_index, data: { toggle:"tooltip", placement: "top" } }= p.category_full_name_index.truncate(12)
+                .has-tooltip{title: p.category_full_name_index, data: { toggle:"tooltip", placement: "top" } }= p.category_full_name_index.try(:truncate, 12)
               %td= p.model_no
               %td= p.product_no
               %td

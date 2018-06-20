@@ -66,7 +66,7 @@
               %td= link_to "Select", find_by_serial_tickets_path(serial_search: product.serial_no, ticket_time_now: @ticket_time_now, from: "serial_input"), remote: true, method: :post
               / -if product.ticket_contracts.none?{|c| c.dynamic_active }
     %hr
--else
+- else
   %h3 Product Details
   = simple_nested_form_for organization, url: save_cus_products_contracts_path(save_product: true), html: {class: "validate_form"}, method: :post, remote: true, multipart: true do |o|
 
