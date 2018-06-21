@@ -508,7 +508,7 @@ DEPENDENCIES
   tire!
   twitter-bootstrap-rails (= 3.2.2)
   uglifier (>= 1.3.0)
-  web-console (= 2.2.1)
+  web-console
   websocket-rails
   whenever
   wicked_pdf
