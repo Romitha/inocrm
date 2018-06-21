@@ -139,7 +139,6 @@ gem 'caracal'
 
 group :production do
   gem 'god' # sudo apt-get install god
-  gem 'web-console'
   
 end
 
