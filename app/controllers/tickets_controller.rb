@@ -1330,8 +1330,6 @@ class TicketsController < ApplicationController
       @user_assign_ticket_action = @user_ticket_action.build_user_assign_ticket_action
       @assign_regional_support_center = @user_ticket_action.assign_regional_support_centers.build
 
-      #@ticket_workfow = @ticket.ticket_workflow_processes.where process_id: params["process_id"]
-      #@re_assignment_rq_engineer =  @ticket.ticket_engineers.where(workflow_process_id: @ticket_workfow.first.try(:id)).first
       @engineer_id = params[:engineer_id]
       @re_assignment_rq_engineer = TicketEngineer.find @engineer_id if @engineer_id.present? and @engineer_id != "-"
       @re_assignment = @re_assignment_rq_engineer.present?
