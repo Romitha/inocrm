@@ -94,7 +94,5 @@ Rails.application.configure do
     :password             => "INOVA951",
   }
 
-  config.web_console.whiny_requests = false
-
 
 end
