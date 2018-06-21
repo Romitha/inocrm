@@ -3191,7 +3191,21 @@ class TicketsController < ApplicationController
     else
       @flash_message[:error] << "product is not updated. Bpm error"
     end
-    redirect_to todos_url, @flash_message[:error].join(", "), @flash_message[:notice].join(", ")
+    if @flash_message[:notice].any?
+      @flash_message = @flash_message.inject({}){|i, (k, v)| i.merge(k => v.join(", ")) }
+      @flash_message.delete(:error)
+
+    elsif @flash_message[:error].any?
+      @flash_message = @flash_message.inject({}){|i, (k, v)| i.merge(k => v.join(", ")) }
+      @flash_message.delete(:notice)
+
+    else
+      @flash_message[:error] << "Please retry."
+      @flash_message = @flash_message.inject({}){|i, (k, v)| i.merge(k => v.join(", ")) }
+      @flash_message.delete(:notice)
+
+    end
+    redirect_to todos_url, @flash_message
   end
 
   def estimate_job
