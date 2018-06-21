@@ -135,6 +135,9 @@ class User < ActiveRecord::Base
 
   def flush_cache
     Rails.cache.delete(["User", :find_by_id, id.to_i])
+    ticket_engineers.each do |ticket_engineer|
+      Rails.cache.delete([:user, :ticket_engineer, ticket_engineer.id ])
+    end
   end
 
 end
@@ -439,6 +442,10 @@ class SbuEngineer < ActiveRecord::Base
   def is_used_anywhere?
     ticket_engineers.present?
   end
+
+  def cached_ticket_engineers
+    Rails.cache.fetch([:sbu_engineer, self.id ]){ ticket_engineers }
+  end
 end
 
 class Sbu < ActiveRecord::Base
@@ -487,6 +494,8 @@ class TicketEngineer < ActiveRecord::Base
 
   scope :parent_engineers, -> {where(parent_engineer_id: nil)}
 
+  after_commit :flush_cache
+
   def sbu_name
     # user_ticket_action.user_assign_ticket_action.sbu.sbu
     sbu_engineer.try(:sbu).try(:sbu)
@@ -525,7 +534,11 @@ class TicketEngineer < ActiveRecord::Base
   end
 
   def full_name
-    user.full_name
+    Rails.cache.fetch([:user, :ticket_engineer, self.id ]){user.full_name}
+  end
+
+  def flush_cache
+    Rails.cache.delete([:sbu_engineer, sbu_id ])
   end
 
 end
