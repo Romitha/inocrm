@@ -7,7 +7,7 @@ window.Tickets =
     @initial_loaders()
     @pass_to_re_correction()
     @pass_to_re_correction_trigger()
-    @filter_sbu_engineer()
+    # @filter_sbu_engineer()
     @call_resolution_template()
     @call_alert_template()
     @call_mf_order_template()

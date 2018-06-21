@@ -79,7 +79,7 @@ gem 'bootstrap-wysihtml5-rails'
 gem 'dalli' # sudo apt-get install memcached, yum install memcached
 
 # upgraded version
-gem 'web-console', "2.2.1"#, group: :development
+gem 'web-console', group: :development
 gem 'responders'
 
 # gem "handlebars_assets"
