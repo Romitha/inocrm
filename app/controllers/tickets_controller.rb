@@ -1342,6 +1342,14 @@ class TicketsController < ApplicationController
 
     end
     respond_to do |format|
+      # dont delete. it is regional support and may be used for future purpose
+      # .regional_hiddibles.hide
+      #   .col-md-6
+      #     %strong Assign SBU
+      #     = ua.select :sbu_id, options_from_collection_for_select(Sbu.where(active: true), :id, :sbu), {include_blank: true}, id: "assign_sbu", class: "form-control"
+      #   .col-md-6
+      #     %strong Engineer
+      #     = ua.select :assign_to, option_groups_from_collection_for_select(SbuEngineer.where(active: true), :cached_ticket_engineers, :sbu, :id, :full_name), {include_blank: false}, id: "assign_to", class: "form-control"
       format.html {render "tickets/tickets_pack/assign_ticket"}
     end
   end

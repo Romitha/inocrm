@@ -179,7 +179,7 @@
           .col-md-6
             .row
               - if !need_serial and !need_batch
-                - effective_value = [stock_qty, issued_qty].min
+                - effective_value = [stock_quantity.to_f, issued_qty].min
                 .col-md-12
                   / = i.input :issued_quantity, input_html: {onclick: "Tickets.numbersonly()", class: "integer"}
                   = i.input :issued_quantity, input_html: {oninput: "Inventories.limit_input_value(this, '#{effective_value}')"}
