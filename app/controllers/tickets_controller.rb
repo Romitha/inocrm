@@ -4254,7 +4254,7 @@ class TicketsController < ApplicationController
     TicketSparePart
     Warranty
     @call_template = params[:call_template]
-    @ticket = Ticket.find(params[:ticket_id] || session[:ticket_id])
+    @ticket = Ticket.find params[:ticket_id]
     @product = @ticket.products.first
     @user_ticket_action = @ticket.user_ticket_actions.build
     @spare_part = TicketSparePart.find session[:request_spare_part_id]
