@@ -57,21 +57,21 @@
       %select{:class => "activity_id", :id => "mf_template_caller"}
         %option{:value => ""}
         - if ticket.status_hold
-          %option{:value => "un_hold", data: {task_id: params[:task_id], ticket_id: ticket.id}} Un hold
+          %option{:value => "un_hold", data: {task_id: params[:task_id], ticket_id: ticket.id, request_spare_part_id: params[:request_spare_part_id]}} Un hold
         - else
-          %option{:value => "hold", data: {task_id: params[:task_id], ticket_id: ticket.id}} Hold
+          %option{:value => "hold", data: {task_id: params[:task_id], ticket_id: ticket.id, request_spare_part_id: params[:request_spare_part_id]}} Hold
         / - if present_of_start_ticket_action and not ticket.job_finished
         - if (spare_part.status_action_id != SparePartStatusAction.find_by_code("CLS").id)
-          %option{:value => "order_parts", data: {task_id: params[:task_id], ticket_id: ticket.id}} Order Parts
+          %option{:value => "order_parts", data: {task_id: params[:task_id], ticket_id: ticket.id, request_spare_part_id: params[:request_spare_part_id]}} Order Parts
         / - if present_of_start_ticket_action and not ticket.job_finished
-        %option{:value => "warranty_extend", data: {task_id: params[:task_id], ticket_id: ticket.id}} Warranty Extend Request
+        %option{:value => "warranty_extend", data: {task_id: params[:task_id], ticket_id: ticket.id, request_spare_part_id: params[:request_spare_part_id]}} Warranty Extend Request
         / - if present_of_start_ticket_action and not ticket.job_finished
         - if (spare_part.status_action_id != SparePartStatusAction.find_by_code("CLS").id) and not spare_part.ticket_spare_part_store.present?
-          %option{:value => "request_from_store", data: {task_id: params[:task_id], ticket_id: ticket.id}} Request From Store
+          %option{:value => "request_from_store", data: {task_id: params[:task_id], ticket_id: ticket.id, request_spare_part_id: params[:request_spare_part_id]}} Request From Store
         / - if present_of_start_ticket_action and not ticket.job_finished
-        %option{:value => "terminate_order", data: {task_id: params[:task_id], ticket_id: ticket.id}} Terminate Order
+        %option{:value => "terminate_order", data: {task_id: params[:task_id], ticket_id: ticket.id, request_spare_part_id: params[:request_spare_part_id]}} Terminate Order
         / - if present_of_start_ticket_action and not ticket.job_finished
-        %option{:value => "edit_serial_no_request", data: { task_id: params[:task_id], ticket_id: ticket.id }} Edit Serial No
+        %option{:value => "edit_serial_no_request", data: { task_id: params[:task_id], ticket_id: ticket.id, request_spare_part_id: params[:request_spare_part_id] }} Edit Serial No
     .form-group
       #mf_order_templates
 

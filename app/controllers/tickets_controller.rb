@@ -4257,7 +4257,7 @@ class TicketsController < ApplicationController
     @ticket = Ticket.find params[:ticket_id]
     @product = @ticket.products.first
     @user_ticket_action = @ticket.user_ticket_actions.build
-    @spare_part = TicketSparePart.find session[:request_spare_part_id]
+    @spare_part = TicketSparePart.find params[:request_spare_part_id]
 
     case @call_template
     when "hold"
@@ -4281,8 +4281,9 @@ class TicketsController < ApplicationController
 
   def update_order_mfp_part_order
     Ticket
+    @ticket = Ticket.find(params[:ticket_id])
     spt_ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
-    @ticket = spt_ticket_spare_part.ticket
+    # @ticket = spt_ticket_spare_part.ticket
     spt_ticket_spare_part.attributes = ticket_spare_part_params(spt_ticket_spare_part)
 
     update_without_order = (params[:update_without_order].present? and params[:update_without_order].to_bool)
