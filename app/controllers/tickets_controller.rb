@@ -1379,20 +1379,21 @@ class TicketsController < ApplicationController
     @ticket.attributes = t_params
 
     user_ticket_action = @ticket.user_ticket_actions.last
-    user_ticket_action.user_assign_ticket_action.regional_support_center_job = @ticket.regional_support_job
-    h_assign_regional_support_center = user_ticket_action.assign_regional_support_centers.first
-
     user_assign_ticket_action = user_ticket_action.user_assign_ticket_action
 
-    if @continue and (@ticket.ticket_engineers.any? or user_assign_ticket_action.recorrection)
+    user_assign_ticket_action.regional_support_center_job = @ticket.regional_support_job if user_assign_ticket_action.present?
+    h_assign_regional_support_center = user_ticket_action.assign_regional_support_centers.first
 
-      if @ticket.ticket_engineers.any?
+
+    if @continue and (@ticket.ticket_engineers.any? or user_assign_ticket_action.try(:recorrection))
+
+      if @ticket.ticket_engineers.any? and user_assign_ticket_action.present?
         user_assign_ticket_action.assign_to = @ticket.ticket_engineers.first.user_id
         user_assign_ticket_action.assign_to_engineer_id = @ticket.ticket_engineers.first.id
         user_assign_ticket_action.sbu_id = @ticket.ticket_engineers.first.sbu_engineer.try(:sbu_id)
       end
 
-      user_ticket_action.assign_regional_support_centers.reload unless !user_assign_ticket_action.recorrection and user_assign_ticket_action.regional_support_center_job
+      user_ticket_action.assign_regional_support_centers.reload unless !user_assign_ticket_action.try(:recorrection) and user_assign_ticket_action.try(:regional_support_center_job)
 
       if @ticket.save
         @ticket.ticket_engineers.each do |ticket_engineer|
@@ -1403,7 +1404,7 @@ class TicketsController < ApplicationController
 
         @ticket.update status_id: TicketStatus.find_by_code("ASN").id
 
-        if !user_assign_ticket_action.recorrection and user_assign_ticket_action.regional_support_center_job
+        if !user_assign_ticket_action.try(:recorrection) and user_assign_ticket_action.try(:regional_support_center_job)
 
           regional_ticket_user_action = @ticket.user_ticket_actions.create(action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_id: TaskAction.find_by_action_no(4).id) #assign regional support center action.
           h_assign_regional_support_center.update(ticket_action_id: regional_ticket_user_action.id)
@@ -1416,8 +1417,8 @@ class TicketsController < ApplicationController
         # end
 
         # bpm output variables
-        d2_recorrection = user_assign_ticket_action.recorrection ? "Y" : "N"
-        d3_regional_support_job = user_assign_ticket_action.regional_support_center_job ? "Y" : "N"
+        d2_recorrection = user_assign_ticket_action.try(:recorrection) ? "Y" : "N"
+        d3_regional_support_job = user_assign_ticket_action.try(:regional_support_center_job) ? "Y" : "N"
         supp_hd_user = @ticket.created_by
         supp_engr_user = "-"
         engineer_id = "-"
@@ -1444,7 +1445,7 @@ class TicketsController < ApplicationController
             redirect_to @ticket and return;
           end
 
-        elsif !user_assign_ticket_action.recorrection and @ticket.ticket_engineers.empty?
+        elsif !user_assign_ticket_action.try(:recorrection) and @ticket.ticket_engineers.empty?
           flash[:error] = "Please assign a new engineer."
           redirect_to @ticket and return;
 
@@ -1457,7 +1458,7 @@ class TicketsController < ApplicationController
           error_engs = []
           email_template = EmailTemplate.find_by_code("ASSIGN_JOB")
 
-          if not(user_assign_ticket_action.recorrection or @re_assignment)
+          if not(user_assign_ticket_action.try(:recorrection) or @re_assignment)
             @ticket.ticket_engineers.each do |ticket_engineer|
               unless ticket_engineer.parent_engineer.present?
                 # bpm output variables
