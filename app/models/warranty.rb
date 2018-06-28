@@ -75,6 +75,6 @@ class ActionWarrantyExtend < ActiveRecord::Base
 
   belongs_to :reject_reason, class_name: "Reason", foreign_key: :reject_reason_id
 
-  validates :reject_reason_id, presence: true
+  # validates :reject_reason_id, presence: true
 
 end

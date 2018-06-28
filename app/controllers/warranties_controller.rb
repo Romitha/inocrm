@@ -125,7 +125,7 @@ class WarrantiesController < ApplicationController
       # Set Action (39) "Warranty Extended". DB.spt_act_warranty_extend
       user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(39).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
       user_ticket_action.build_action_warranty_extend(extended: true)
-      user_ticket_action.save
+      user_ticket_action.save!
 
       # bpm output variables
       bpm_variables = view_context.initialize_bpm_variables

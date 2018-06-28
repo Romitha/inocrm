@@ -9,7 +9,7 @@
       #tab1.tab-pane.fade.in.active
         .row.small_scale_padding-top1
           .container
-            = simple_nested_form_for organization_contact_person, url: create_organization_contact_person_organization_path(organization_id: organization_contact_person.organization.id, cp_num:"cp1"), method: :post, html: {class: "validate_form"} do |oc|
+            = simple_nested_form_for organization_contact_person, url: create_organization_contact_person_organization_path(organization_id: organization_contact_person.organization.id, cp_num:"cp1"), method: :post, html: {class: "validate_form_c"} do |oc|
               .row
                 = panels panel_type: "success", header_content: "Add Contact Person 1" do
 
@@ -61,3 +61,6 @@
 
                   / = f.submit "Add new Contact", class: "btn btn-success pull-right", id: "submit_new_contact_person"
                   = oc.submit "Save", name: "save", class: "col-md-2 btn btn-success pull-left"
+
+= javascript_tag do
+  setTimeout( function(){$(".validate_form_c").validate()}, 300);
