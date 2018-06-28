@@ -21,6 +21,14 @@ class ContactNumber < ActiveRecord::Base
     "#{organization_contact_type.try(:name)} : #{value}"
   end
 
+  def is_user?
+    c_numberable_type == "User"
+  end
+
+  def is_organization?
+    c_numberable_type == "organization"
+  end
+
 end
 
 class ContactTypeValidate < ActiveRecord::Base

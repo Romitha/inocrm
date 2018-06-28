@@ -34,9 +34,7 @@ class ContactNumbersController < ApplicationController
   end
 
   def update
-    puts "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
     puts contact_number_params
-    puts "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
     @contact_number.update(contact_number_params)
     respond_with(@contact_number)
   end
@@ -61,9 +59,8 @@ class ContactNumbersController < ApplicationController
   end
 
   def make_primary_contact_number
-    ContactNumber.where(primary_contact: true).each do |contact_number|
-      contact_number.update_attribute(:primary_contact, false)
-    end
+    @contact_number.c_numberable.contact_numbers.primary_contactnumber.update_all( primary_contact: false )
+
     @contact_number.update_attribute(:primary_contact, true)
 
     respond_to do |format|
