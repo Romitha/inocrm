@@ -8,6 +8,10 @@
       = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
 
     = f.simple_fields_for "user_ticket_actions_attributes[]", @user_ticket_action  do |uf|
+      / = uf.input :action_id, input_html: {value: TaskAction.find_by_action_no(32).id}
+      / = uf.input :action_at, input_html: {value: DateTime.now}
+      / = uf.input :action_by, input_html: {value: current_user.id}
+      / = uf.input :re_open_index, input_html: {value: @ticket.re_open_count}
       = uf.simple_fields_for :action_warranty_extend do |aw|
         = aw.input :reject_note, label: "Request note"
     = f.submit "Save", class: "btn btn-success", data: {disable_with: "Please wait..."}
