@@ -4373,7 +4373,7 @@ class TicketsController < ApplicationController
       # end
 
       @ticket.user_ticket_actions.select{|u| u.new_record? }.each do |uta|
-        uta.attributes = {action_id: TaskAction.find_by_action_no(32).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count}
+        uta.attributes = uta.attributes.merge({action_id: TaskAction.find_by_action_no(32).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count})
       end
 
       @ticket.save!
