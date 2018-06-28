@@ -1,5 +1,5 @@
 - if @display_form_for_pop
-  $("#form_frame").html("#{j render 'warranty_form', warranty: @warranty, display_form_for_pop: @display_form_for_pop}");
+  $("#form_frame").html("#{j render 'warranty_form', warranty: @warranty, display_form_for_pop: @display_form_for_pop, product_id: @product.id}");
   $("#new_warranty_link").addClass("hide");
   Warranties.update_datepicker();
   Warranties.disabled_datepicker();
