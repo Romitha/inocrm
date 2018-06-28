@@ -86,7 +86,7 @@
         //Deduction
         %td= number_to_currency ticket.final_invoice.total_deduction, delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
 
-        //Advance Payment Recieved
+        //Advance Payment Received
         %td= number_to_currency ticket.final_invoice.total_advance_recieved, delimiter: ",", unit: ticket.ticket_currency.code, format: "%u %n"
 
         //Net Payment

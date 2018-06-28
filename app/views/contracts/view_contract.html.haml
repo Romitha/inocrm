@@ -116,7 +116,7 @@
       /   - ttl_amunt_sum = @contract_products.to_a.sum{|e| e.amount}
       /   - ttl_disc_sum = @contract_products.to_a.sum{|e| e.discount_amount}
       /   %font{:color => "red", :size => "2"}
-      /     %dt Total Recieved Amount:
+      /     %dt Total Received Amount:
       /     %dd= number_with_precision (ttl_amunt_sum - ttl_disc_sum), precision: 2
       /     %br
       /     %dt Balance Amount:
@@ -183,7 +183,7 @@
       %br
 
       %font{:color => "red", :size => "2"}
-        %dt Total Recieved Amount:
+        %dt Total Received Amount:
         %dd= number_with_precision ttl_recived_amount, precision: 2
         %br
         %dt Balance Amount:
@@ -293,7 +293,7 @@
         %thead
           %tr
             %th No
-            %th Date Recieved
+            %th Date Received
             %th Amount
             %th Installment
             %th Invoice No

@@ -4354,17 +4354,29 @@ class TicketsController < ApplicationController
   def update_order_mfp_wrrnty_extnd_rqst
     Ticket
     spt_ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
-    @ticket = spt_ticket_spare_part.ticket
+    # @ticket = spt_ticket_spare_part.ticket
+    @ticket = Ticket.find(params[:ticket_id])
+
+    @ticket.attributes = ticket_params
 
     @continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
 
     if @continue and (spt_ticket_spare_part.status_action_id != SparePartStatusAction.find_by_code("CLS").id)
 
       # Set Action (32) Request To Warranty Extend, DB.spt_act_warranty_extend.
-      user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(32).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
-      user_ticket_action.build_action_warranty_extend
-      user_ticket_action.save
+      # user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(32).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+      # if user_ticket_action.present?
+      #   user_ticket_action.attributes = user_ticket_action.attributes.merge({action_id: TaskAction.find_by_action_no(32).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count})
+      #   # user_ticket_action.build_action_warranty_extend
+      #   # user_ticket_action.save!
+      #   @ticket.save!
+      # end
 
+      @ticket.user_ticket_actions.select{|u| u.new_record? }.each do |uta|
+        uta.attributes = {action_id: TaskAction.find_by_action_no(32).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count}
+      end
+
+      @ticket.save!
 
       # bpm output variables
       bpm_variables = view_context.initialize_bpm_variables.merge(d26_serial_no_change_warranty_extend_requested: "Y", d27_warranty_extend_requested: "Y")

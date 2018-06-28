@@ -531,7 +531,7 @@ class InventoriesController < ApplicationController
 
       if iss
         save_ticket_on_loan_spare_part["RCE", 51] #Receive On-Loan Part by eng
-        @flash_message = "Recieve action is Successfully done."
+        @flash_message = "Receive action is Successfully done."
       end
     end
 

@@ -2,7 +2,7 @@
 
 - countable_array = [Rails.cache.fetch([:po_item_ids, session[:grn_arrived_time].to_i]).to_a, Rails.cache.fetch([:inventory_product_ids, session[:grn_arrived_time].to_i]).to_a, Rails.cache.fetch([:srr_item_source_ids, session[:grn_arrived_time].to_i]).to_a].map{|e| e if e.any? }.compact.first
 
-%h4 Recieved Quantities
+%h4 Received Quantities
 %table.table.table-bordered
   %thead
     %tr
@@ -10,7 +10,7 @@
       %th model no
       %th Serial no
       %th Description
-      %th Recieved Quantity
+      %th Received Quantity
   %tbody
     - countable_array.each do |el_id|
       - grn_item = Rails.cache.fetch([:grn_item, el_id, session[:grn_arrived_time].to_i ])

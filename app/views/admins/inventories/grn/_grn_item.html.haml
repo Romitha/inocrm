@@ -61,7 +61,7 @@
 
   - if !need_serial and need_batch
     %h4
-      Recieved Quantities
+      Received Quantities
       %span.label.label-success
         = Rails.cache.fetch([:grn_item, cache_id, session[:grn_arrived_time].to_i ]).grn_batches.to_a.sum{|e| e.recieved_quantity}
     %fieldset
@@ -116,7 +116,7 @@
 
   - if need_serial and !need_batch
     %h4
-      Recieved Quantities
+      Received Quantities
       .label.label-success
         = Rails.cache.fetch([:grn_item, cache_id, session[:grn_arrived_time].to_i ]).grn_serial_items.to_a.count + @bulk_upload_serials.count
 
@@ -225,7 +225,7 @@
 
   - if !(need_serial or need_batch)
     %h4
-      Recieved Quantities
+      Received Quantities
       .label.label-success
         = Rails.cache.fetch([:grn_item, cache_id, session[:grn_arrived_time].to_i ]).recieved_quantity
 

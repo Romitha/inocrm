@@ -636,7 +636,7 @@ module ApplicationHelper
       currency_1 = ticket_invoice_advance_payment.ticket_payment_received.currency.code
       
       item_index += 1
-      description = "Advanced Payment Recieved on : #{ticket_invoice_advance_payment.ticket_payment_received.received_at.strftime(INOCRM_CONFIG['long_date_format'])}"
+      description = "Advanced Payment Received on : #{ticket_invoice_advance_payment.ticket_payment_received.received_at.strftime(INOCRM_CONFIG['long_date_format'])}"
       unit_price = -ticket_invoice_advance_payment.ticket_payment_received.amount.to_f
       totalprice = unit_price
       total_advance_recieved += totalprice
@@ -800,7 +800,7 @@ module ApplicationHelper
       h_pending_mf_parts = "[ #{parameter_holder[:pending_mf_parts_count]} MF Parts Pending]" if parameter_holder[:pending_mf_parts_count].to_i > 0
       h_pending_st_parts = "[ #{parameter_holder[:pending_st_sparts_count]} ST Parts Pending]" if parameter_holder[:pending_st_sparts_count].to_i > 0
       h_pending_onloan_parts = "[ #{parameter_holder[:pending_onloan_parts_count]} Onloan Parts Pending]" if parameter_holder[:pending_onloan_parts_count].to_i > 0
-      h_pending_unit_collect = "[ Unit Recieve Pending ]" if pending_unit_collect
+      h_pending_unit_collect = "[ Unit Receive Pending ]" if pending_unit_collect
       h_mf_parts_collected = "[ #{parameter_holder[:mf_parts_collected_count]} MF Parts Collected]" if parameter_holder[:mf_parts_collected_count].to_i > 0
       h_parts_issued = "[ #{parameter_holder[:parts_issued_count]} Parts Issued]" if parameter_holder[:parts_issued_count].to_i > 0
 
@@ -839,7 +839,7 @@ module ApplicationHelper
           end
 
         elsif manufacture_part
-          spare_part_name = "[M: #{spare_part.spare_part_description.truncate(18)}]"
+          spare_part_name = "[M: #{spare_part.spare_part_no}-#{spare_part.spare_part_description.truncate(18)} Evn No:#{manufacture_part.event_no}]"
           if ["ORD", "CLT", "RCS"].include?(spare_part.spare_part_status_action.code)
             part_next_status = SparePartStatusAction.find_by_manufacture_type_index(spare_part.spare_part_status_action.manufacture_type_index + 1)
 
@@ -863,7 +863,7 @@ module ApplicationHelper
         end
 
         if spare_part
-          spare_part_name = "[#{spare_part.spare_part_no}-#{spare_part.spare_part_description.truncate(18)}]"
+          #spare_part_name = "[#{spare_part.spare_part_no}-#{spare_part.spare_part_description.truncate(18)}]"
           @h3 = "color:#{h3_color_code}|#{@h3_sub}#{ticket_no}#{customer_name}#{spare_part_name}#{terminated}#{re_open}#{product_brand}#{job_type}#{ticket_type}#{regional}#{repair_type}#{hold}"
         else
           @h3 = ""

@@ -46,7 +46,7 @@
             - ttl_ddct = @ticket.final_invoice.total_deduction
             - invoice_amount = (ttl_amnt - ttl_ddct)
             = number_with_precision invoice_amount, precision: 2
-        %dt Total Amount Recieved:
+        %dt Total Amount Received:
         %dd.text-right
           - if @ticket.final_invoice.present?
             - total_amount_recieved = @ticket.ticket_payment_receiveds.sum(:amount).to_f
