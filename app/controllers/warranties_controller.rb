@@ -53,7 +53,7 @@ class WarrantiesController < ApplicationController
         # @ticket.warranty_type_id = @warranty.warranty_type.id
         Rails.cache.write([:new_ticket, request.remote_ip.to_s, @ticket_time_now], @ticket)
 
-        @select_for_pop = true if params[:function_param] == 'select_for_pop'
+        @select_for_pop = (params[:function_param] == 'select_for_pop')
         @flash_message = {notice: "Successfully updated"}
       else
         if params[:function_param] == 'select_for_pop'

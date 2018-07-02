@@ -1,4 +1,4 @@
-= select_tag "extend_warranty_select", options_for_select({"Warranty extended" => :warranty_extended, "Reject warranty extended" => :r_warranty_extended}), include_blank: true, data: {task_id: params[:task_id]}
+= select_tag "extend_warranty_select", options_for_select({"Warranty extended" => :warranty_extended, "Reject warranty extended" => :r_warranty_extended}), include_blank: true, data: {task_id: params[:task_id], ticket_id: params[:ticket_id]}
 
 #extend_warranty_frame
 #warranty_grid
