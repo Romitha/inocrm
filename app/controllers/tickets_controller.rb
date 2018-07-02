@@ -100,17 +100,24 @@ class TicketsController < ApplicationController
       if @product.persisted?
         @product_brand = @product.product_brand
         @product_category = @product.product_category
-        ticket_attr = (Rails.cache.fetch([:ticket_initiated_attributes, @ticket_time_now]) || {})
-        Rails.cache.write([:ticket_initiated_attributes, @ticket_time_now], ticket_attr.merge({sla_id: (@product_category.sla_id || @product_brand.sla_id)}))
+
+        if params[:by_back].present?
+          @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now])
+        else
+          ticket_attr = (Rails.cache.fetch([:ticket_initiated_attributes, @ticket_time_now]) || {})
+          Rails.cache.write([:ticket_initiated_attributes, @ticket_time_now], ticket_attr.merge({sla_id: (@product_category.sla_id || @product_brand.sla_id)}))
+          @ticket = Ticket.new(Rails.cache.fetch([:ticket_initiated_attributes, @ticket_time_now]))
+        end
 
         # session[:ticket_initiated_attributes].merge!({sla_id: (@product_category.sla_id || @product_brand.sla_id)})
 
         session[:product_id] = @product.id
 
         # @ticket = (Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now]) || Ticket.new(session[:ticket_initiated_attributes]))
-        @ticket = (Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now]) || Ticket.new(Rails.cache.fetch([:ticket_initiated_attributes, @ticket_time_now])))
-
-        @ticket.contract_id = @contract.try(:id)
+        if @contract.present?
+          @ticket.contract_id = @contract.try(:id)
+          @ticket.sla_id = @contract.sla_id
+        end
 
         # @ticket.ticket_accessories.uniq!{|ac| ac.id}
         @customer = @product.tickets.last.try(:customer)

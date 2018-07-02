@@ -114,7 +114,7 @@
 - else
   .row
     .col-md-12
-      = link_to "Back", find_by_serial_tickets_path(serial_search: product.serial_no, contract_id: ticket.contract_id, ticket_time_now: @ticket_time_now), remote: true, method: :post, data: {disable_with: "Please wait..."}
+      = link_to "Back", find_by_serial_tickets_path(serial_search: product.serial_no, contract_id: ticket.contract_id, ticket_time_now: @ticket_time_now, by_back: true), remote: true, method: :post, data: {disable_with: "Please wait..."}
 
       / "customer_id"=>"", "organization_id"=>"11", "function_param"=>"create"
       - if existing_customer && existing_customer.organization.present?
