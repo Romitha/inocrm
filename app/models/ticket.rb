@@ -1203,10 +1203,10 @@ class TicketWorkflowProcess < ActiveRecord::Base
   self.table_name = "spt_ticket_workflow_process"
 
   belongs_to :ticket
-  belongs_to :ticket_engineer
-  belongs_to :ticket_estimation
-  belongs_to :ticket_spare_part
-  belongs_to :ticket_on_loan_spare_part
+  belongs_to :ticket_engineer, foreign_key: :engineer_id
+  belongs_to :ticket_estimation, foreign_key: :estimation_id
+  belongs_to :ticket_spare_part, foreign_key: :spare_part_id
+  belongs_to :ticket_on_loan_spare_part, foreign_key: :on_loan_spare_part_id
 
   before_create :check_reopen_index
 

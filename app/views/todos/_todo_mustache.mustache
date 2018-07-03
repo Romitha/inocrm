@@ -9,6 +9,7 @@
           %td Ticket No:
           %td {{ticket_no}}
     {{/ticket}}
+
   .col-md-3
     {{#ticket_engineer}}
     {{header}}
@@ -18,6 +19,7 @@
           %td Full Name:
           %td {{full_name}}
     {{/ticket_engineer}} 
+
   .col-md-3
     {{#ticket_spare_part}}
     {{header}}
@@ -27,6 +29,7 @@
           %td Spare Part No:
           %td {{spare_part_no}}
     {{/ticket_spare_part}}
+
   .col-md-3
     {{#ticket_on_loan_spare_part}}
     {{header}}
@@ -36,6 +39,7 @@
           %td Request At:
           %td {{requested_at}}
     {{/ticket_on_loan_spare_part}}
+
   .col-md-3
     {{#ticket_estimation}}
     {{header}}
@@ -45,5 +49,6 @@
           %td Estimation At:
           %td {{estimation_at}}
     {{/ticket_estimation}}
+
   {{/response_array}}
 

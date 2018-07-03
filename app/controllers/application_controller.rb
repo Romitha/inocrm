@@ -63,11 +63,17 @@ class ApplicationController < ActionController::Base
 
       @processes.each do |process|
         response = {}
-        response[:ticket] = {header: "Ticket Info", ticket_no: process.ticket.ticket_no} if process.ticket.present?
-        response[:ticket_engineer] = {header: "Engineer Info", full_name: process.ticket_engineer.ticket_no} if process.ticket_engineer.present?
+
+        response[:ticket] = {header: "Ticket Info", ticket_no: process.ticket.support_ticket_no} if process.ticket.present?
+
+        response[:ticket_engineer] = {header: "Engineer Info", full_name: process.ticket_engineer.full_name} if process.ticket_engineer.present?
+
         response[:ticket_spare_part] = {header: "Spare Part Info", spare_part_no: process.ticket_spare_part.spare_part_no, faulty_ct_no: process.ticket_spare_part.faulty_ct_no, faulty_serial_no: process.ticket_spare_part.faulty_serial_no, } if process.ticket_spare_part.present?
+
         response[:ticket_on_loan_spare_part] = {header: "On Loan Info", requested_at: process.ticket_on_loan_spare_part.spare_part_no, requested_by: process.ticket_on_loan_spare_part.requested_user } if process.ticket_on_loan_spare_part.present?
+
         response[:ticket_estimation] = {header: "Estimation Info", estimation_at: process.ticket_estimation.estimated_at.strftime("%d/ %m/%Y at %H:%M:%S"), estimated_by: process.ticket_estimation.estimated_by_user.try(:full_name) } if process.ticket_estimation.present?
+
         response_hash << response
 
       end
