@@ -107,6 +107,8 @@ class TicketsController < ApplicationController
           ticket_attr = (Rails.cache.fetch([:ticket_initiated_attributes, @ticket_time_now]) || {})
           Rails.cache.write([:ticket_initiated_attributes, @ticket_time_now], ticket_attr.merge({sla_id: (@product.sla_id || @product_category.sla_id || @product_brand.sla_id)}))
           @ticket = Ticket.new(Rails.cache.fetch([:ticket_initiated_attributes, @ticket_time_now]))
+
+          Rails.cache.write([:new_ticket, request.remote_ip.to_s, @ticket_time_now], @ticket)
         end
 
         # session[:ticket_initiated_attributes].merge!({sla_id: (@product_category.sla_id || @product_brand.sla_id)})
@@ -133,6 +135,71 @@ class TicketsController < ApplicationController
       end
       respond_to do |format|
         format.js
+      end
+
+    end
+  end
+
+  def create
+    # Rails.cache.write(:ticket_params, ticket_params)
+    # session[:time_now] ||= Time.now.strftime("%H%M%S")
+    @new_ticket = (Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now]) || Ticket.new)
+    @new_ticket.ticket_accessories.clear
+    @new_ticket.attributes = ticket_params
+
+    Rails.cache.write([:new_ticket, request.remote_ip.to_s, @ticket_time_now], @new_ticket)
+
+    @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now])
+
+    Warranty
+    respond_to do |format|
+
+      if @new_ticket.valid?
+        # session[:ticket_initiated_attributes] = {}
+        Rails.cache.write([:ticket_initiated_attributes, @ticket_time_now], {})
+
+        @notice = "Great! new ticket is initiated."
+        Rails.cache.write([:new_ticket, request.remote_ip.to_s, @ticket_time_now], @new_ticket)
+        User
+        ContactNumber
+
+        @existing_customer = if @new_ticket.ticket_contract.present?
+          organization = @new_ticket.ticket_contract.organization
+          address = (organization.addresses.primary_address.first || organization.addresses.first)
+
+          if organization.customers.any?
+            organization.customers.first
+
+          elsif address.present?
+            organization.customers.create(title_id: organization.title_id, name: organization.name, address1: address.address1, address2: address.address2, address3: address.address3, address4: address.city, district_id: address.district_id)
+
+          end
+
+        elsif @product.owner_customer.present?
+          organization = @product.owner_customer
+          address = (organization.addresses.primary_address.first || organization.addresses.first)
+
+          if organization.customers.any?
+            organization.customers.first
+
+          elsif address.present?
+            organization.customers.create(title_id: organization.title_id, name: organization.name, address1: address.address1, address2: address.address2, address3: address.address3, address4: address.city, district_id: address.district_id)
+
+          end
+
+        else
+          (Customer.find_by_id(session[:customer_id]) || @product.tickets.last.try(:customer))
+
+        end
+
+        Rails.cache.fetch([:existing_customer, request.remote_ip.to_s, @ticket_time_now]){ @existing_customer }
+        @new_customer = Customer.new
+        @new_customer.contact_type_values.build([{contact_type_id: 2}, {contact_type_id: 4}])
+        format.js {render :new_customer}
+      else
+        # File.open(Rails.root.join("bug_file.txt"), "a"){|file| file.write("inspectable: #{inspectable}\n"); file.close}
+
+        format.js {render js: "alert('Please enter valid and required information.'); Tickets.remove_ajax_loader();"}
       end
 
     end
@@ -184,7 +251,7 @@ class TicketsController < ApplicationController
             # session[:ticket_initiated_attributes].merge!({sla_id: (@product_category.sla_id || @product_brand.sla_id)})
 
             ticket_attr = Rails.cache.fetch([:ticket_initiated_attributes, @ticket_time_now ])
-            Rails.cache.write([:ticket_initiated_attributes, @ticket_time_now ], ticket_attr.merge({sla_id: (@product_category.sla_id || @product_brand.sla_id)}))
+            Rails.cache.write([:ticket_initiated_attributes, @ticket_time_now ], ticket_attr.merge({sla_id: (@new_product.sla_id || @product_category.sla_id || @product_brand.sla_id)}))
 
             @product = @new_product
             # @ticket = @product.tickets.build session[:ticket_initiated_attributes]
@@ -320,71 +387,6 @@ class TicketsController < ApplicationController
     end
     respond_to do |format|
       format.js
-    end
-  end
-
-  def create
-    # Rails.cache.write(:ticket_params, ticket_params)
-    # session[:time_now] ||= Time.now.strftime("%H%M%S")
-    @new_ticket = (Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now]) || Ticket.new)
-    @new_ticket.ticket_accessories.clear
-    @new_ticket.attributes = ticket_params
-
-    Rails.cache.write([:new_ticket, request.remote_ip.to_s, @ticket_time_now], @new_ticket)
-
-    @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now])
-
-    Warranty
-    respond_to do |format|
-
-      if @new_ticket.valid?
-        # session[:ticket_initiated_attributes] = {}
-        Rails.cache.write([:ticket_initiated_attributes, @ticket_time_now], {})
-
-        @notice = "Great! new ticket is initiated."
-        Rails.cache.write([:new_ticket, request.remote_ip.to_s, @ticket_time_now], @new_ticket)
-        User
-        ContactNumber
-
-        @existing_customer = if @new_ticket.ticket_contract.present?
-          organization = @new_ticket.ticket_contract.organization
-          address = (organization.addresses.primary_address.first || organization.addresses.first)
-
-          if organization.customers.any?
-            organization.customers.first
-
-          elsif address.present?
-            organization.customers.create(title_id: organization.title_id, name: organization.name, address1: address.address1, address2: address.address2, address3: address.address3, address4: address.city, district_id: address.district_id)
-
-          end
-
-        elsif @product.owner_customer.present?
-          organization = @product.owner_customer
-          address = (organization.addresses.primary_address.first || organization.addresses.first)
-
-          if organization.customers.any?
-            organization.customers.first
-
-          elsif address.present?
-            organization.customers.create(title_id: organization.title_id, name: organization.name, address1: address.address1, address2: address.address2, address3: address.address3, address4: address.city, district_id: address.district_id)
-
-          end
-
-        else
-          (Customer.find_by_id(session[:customer_id]) || @product.tickets.last.try(:customer))
-
-        end
-
-        Rails.cache.fetch([:existing_customer, request.remote_ip.to_s, @ticket_time_now]){ @existing_customer }
-        @new_customer = Customer.new
-        @new_customer.contact_type_values.build([{contact_type_id: 2}, {contact_type_id: 4}])
-        format.js {render :new_customer}
-      else
-        # File.open(Rails.root.join("bug_file.txt"), "a"){|file| file.write("inspectable: #{inspectable}\n"); file.close}
-
-        format.js {render js: "alert('Please enter valid and required information.'); Tickets.remove_ajax_loader();"}
-      end
-
     end
   end
 
@@ -824,7 +826,9 @@ class TicketsController < ApplicationController
     else
       @status_resolve_id = TicketStatusResolve.find_by_code("NAP").try(:id)
     end
-
+    puts "*****************************88"
+    puts @ticket.sla_id
+    puts "*****************************88"
     @repair_type_id = TicketRepairType.find_by_code("IN").try :id
     @manufacture_currency_id = @product.product_brand.currency.id
     @ticket.attributes = ticket_params.merge({created_by: current_user.id, slatime: @ticket.sla_time.try(:sla_time), status_resolve_id: @status_resolve_id, repair_type_id: @repair_type_id, manufacture_currency_id: @manufacture_currency_id, ticket_print_count: 0, ticket_complete_print_count: 0})
@@ -832,6 +836,9 @@ class TicketsController < ApplicationController
     ge_q_and_answers = @ticket.ge_q_and_answers.to_a
     @ticket.q_and_answers.clear
     @ticket.ge_q_and_answers.clear
+    puts "*****************************88"
+    puts @ticket.sla_id
+    puts "*****************************88"
 
     @continue = false
     warranty_constraint = true

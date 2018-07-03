@@ -5,7 +5,6 @@
 
 - pr_q_and_answers = []
 - ge_q_and_answers = []
-
 - if !ticket.q_and_answers.any?{|q_and_answer| q_and_answer.q_and_a.task_action.action_no == action_no}
   - ticket.problem_category.q_and_as.includes(:task_action).where(mst_spt_action: {action_no: action_no}).each do |q_and_a|
     - pr_q_and_answers << ticket.q_and_answers.build(problematic_question_id: q_and_a.id)
