@@ -105,7 +105,7 @@ class TicketsController < ApplicationController
           @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now])
         else
           ticket_attr = (Rails.cache.fetch([:ticket_initiated_attributes, @ticket_time_now]) || {})
-          Rails.cache.write([:ticket_initiated_attributes, @ticket_time_now], ticket_attr.merge({sla_id: (@product_category.sla_id || @product_brand.sla_id)}))
+          Rails.cache.write([:ticket_initiated_attributes, @ticket_time_now], ticket_attr.merge({sla_id: (@product.sla_id || @product_category.sla_id || @product_brand.sla_id)}))
           @ticket = Ticket.new(Rails.cache.fetch([:ticket_initiated_attributes, @ticket_time_now]))
         end
 
@@ -113,7 +113,6 @@ class TicketsController < ApplicationController
 
         session[:product_id] = @product.id
 
-        # @ticket = (Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now]) || Ticket.new(session[:ticket_initiated_attributes]))
         if @contract.present?
           @ticket.contract_id = @contract.try(:id)
           @ticket.sla_id = @contract.sla_id
@@ -334,11 +333,6 @@ class TicketsController < ApplicationController
     Rails.cache.write([:new_ticket, request.remote_ip.to_s, @ticket_time_now], @new_ticket)
 
     @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now])
-
-    # @product = Product.find params[:product_id]
-    @product_brand = @product.product_brand
-    @product_category = @product.product_category
-    @new_ticket.sla_id = (@product_category.sla_id || @product_brand.sla_id)
 
     Warranty
     respond_to do |format|
@@ -822,7 +816,7 @@ class TicketsController < ApplicationController
 
     # reference: http://ruby-concurrency.github.io/concurrent-ruby/Concurrent/ReentrantReadWriteLock.html
 
-    if params[:first_resolution]
+    if params[:first_resolution].present?
       @status_close_id = TicketStatus.find_by_code("CLS").id
       @ticket.status_id = @status_close_id
       @ticket.attributes = ticket_params.merge({ticket_closed_at: DateTime.now, open_time_duration: 0, open_time_duration_sla: 0, sla_finished_at: DateTime.now})
@@ -846,8 +840,8 @@ class TicketsController < ApplicationController
       warranty_constraint = @product.warranties.select{|w| w.warranty_type_id == @ticket.warranty_type_id and (w.start_at.to_date..w.end_at.to_date).include?(Date.today)}.present?
     end
 
-    @bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: 1, variable_id: "ticket_id"
-    if !@bpm_response[:status].present? or @bpm_response[:status].upcase == "ERROR"
+    @bpm_response = view_context.send_request_process_data process_history: true, process_instance_id: 1, variable_id: "ticket_id" unless params[:first_resolution].present?
+    if @bpm_response.present? and (!@bpm_response[:status].present? or @bpm_response[:status].upcase == "ERROR")
       render js: "alert('BPM error. Please continue after rectify BPM.');"
     elsif not warranty_constraint
       render js: "alert('There are no present #{@ticket.warranty_type.name} for the product to initiate particular warranty related ticket.')"
@@ -886,7 +880,6 @@ class TicketsController < ApplicationController
             session[:customer_id] = nil
             session[:serial_no] = nil
             session[:warranty_id] = nil
-            # session[:ticket_initiated_attributes] = {}
             Rails.cache.delete([:ticket_initiated_attributes, @ticket_time_now])
 
             session[:time_now]= nil

@@ -55,9 +55,9 @@
       .col-md-6
         .strong= qa.object.q_and_a.question
         - if qa.object.q_and_a.answer_type == "YN"
-          = qa.input :answer, as: :radio_buttons, collection: ["Yes", "No"], include_blank: false, wrapper: :for_radio_button, required: qa.object.q_and_a.compulsory, input_html: {rows: 1}, input_html: {name: "ticket[q_and_answers_attributes][#{index}][answer]"}
+          = qa.input :answer, as: :radio_buttons, collection: ["Yes", "No"], include_blank: false, wrapper: :for_radio_button, required: qa.object.q_and_a.compulsory, input_html: {rows: 1, name: "ticket[q_and_answers_attributes][#{index}][answer]"}
         - elsif qa.object.q_and_a.answer_type == "TX"
           = qa.input :answer, required: qa.object.q_and_a.compulsory, input_html: {rows: 1}
   .row
     .col-md-12
-      = f.submit "#{current_page?(controller: 'warranties', action: 'new') ? 'Next' : 'Save'}", class: "btn btn-sm btn-success", data: { disable_with: "Please wait..." }, class: "btn btn-success small_scale_margin-left3", "id"=>"save_next"
+      = f.submit "#{current_page?(controller: 'warranties', action: 'new') ? 'Next' : 'Save'}", data: { disable_with: "Please wait..." }, class: "btn-sm btn-success small_scale_margin-left3", "id"=>"save_next"

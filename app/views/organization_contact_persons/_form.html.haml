@@ -9,13 +9,13 @@
       #tab1.tab-pane.fade.in.active
         .row.small_scale_padding-top1
           .container
-            = simple_nested_form_for organization_contact_person, url: create_organization_contact_person_organization_path(organization_id: organization_contact_person.organization.id, cp_num:"cp1"), method: :post, html: {class: "validate_form_c"} do |oc|
+            = simple_nested_form_for organization_contact_person, url: create_organization_contact_person_organization_path(organization_id: organization_contact_person.organization.id, cp_num:"cp1"), method: :post, html: {class: "validate_form_c1"} do |oc|
               .row
                 = panels panel_type: "success", header_content: "Add Contact Person 1" do
 
-                  = oc.association :mst_title, collection: MstTitle.where(active: true),required: true, include_blank: false, label:"Title", wrapper_html: {class: "col-md-4"}, input_html: {class: "chosen-select"}
+                  = oc.association :mst_title, collection: MstTitle.where(active: true), required: true, include_blank: false, label:"Title", wrapper_html: {class: "col-md-4"}
                   .col-md-2
-                  = oc.association :contact_person_type, required: true, include_blank: false, wrapper_html: {class: "col-md-4"}, input_html: {class: "chosen-select"}
+                  = oc.association :contact_person_type, required: true, include_blank: false, wrapper_html: {class: "col-md-4"}
 
                   = oc.input :name, wrapper_html: {class: "col-md-6"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Person Name"}, required: true, include_blank: false
 
@@ -37,13 +37,13 @@
       #tab2.tab-pane.fade
         .row.small_scale_padding-top1
           .container
-            = simple_nested_form_for organization_contact_person, url: create_organization_contact_person_organization_path(organization_id: organization_contact_person.organization.id, cp_num:"cp2"), method: :post, html: {class: "validate_form"} do |oc|
+            = simple_nested_form_for organization_contact_person, url: create_organization_contact_person_organization_path(organization_id: organization_contact_person.organization.id, cp_num:"cp2"), method: :post, html: {class: "validate_form_c2"} do |oc|
               .row
                 = panels panel_type: "success", header_content: "Add Contact Person 2" do
 
-                  = oc.association :mst_title,collection: MstTitle.where(active: true), required: true, include_blank: false, label:"Title", wrapper_html: {class: "col-md-4"}, input_html: {class: "chosen-select"}
+                  = oc.association :mst_title,collection: MstTitle.where(active: true), required: true, include_blank: false, label:"Title", wrapper_html: {class: "col-md-4"}
                   .col-md-2
-                  = oc.association :contact_person_type, required: true, include_blank: false, wrapper_html: {class: "col-md-4"}, input_html: {class: "chosen-select"}
+                  = oc.association :contact_person_type, required: true, include_blank: false, wrapper_html: {class: "col-md-4"}
 
                   = oc.input :name, wrapper_html: {class: "col-md-6"}, input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Person Name"}, required: true
 
@@ -63,4 +63,4 @@
                   = oc.submit "Save", name: "save", class: "col-md-2 btn btn-success pull-left"
 
 = javascript_tag do
-  setTimeout( function(){$(".validate_form_c").validate()}, 300);
+  setTimeout( function(){$(".validate_form_c1").validate(); $(".validate_form_c2").validate();}, 300);

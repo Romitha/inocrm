@@ -5,7 +5,6 @@
     = contact_type_value.value
     %br/
 
-
 - priority = link_to "#", class: "inline_edit", data: {type: "select", source: INOCRM_CONFIG["priority"].collect{ |key,value| {value: value, text: key} }, resource: "ticket", name: "priority", url: ticket_update_tickets_path, "original-title" => "Update priority"} do
   = INOCRM_CONFIG["priority"].key(ticket.priority.to_i)
 
