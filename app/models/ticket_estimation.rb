@@ -20,6 +20,7 @@ class TicketEstimation < ActiveRecord::Base
 
   belongs_to :estimation_status, foreign_key: :status_id
   belongs_to :currency, foreign_key: :currency_id
+  belongs_to :estimated_by_user, class_name: "User", foreign_key: :estimated_by
 
   has_many :customer_quotation_estimations, foreign_key: :estimation_id
   has_many :customer_quotations, through: :customer_quotation_estimations

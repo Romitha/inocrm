@@ -50,9 +50,29 @@ class ApplicationController < ActionController::Base
 
         view_context.ticket_bpm_headers process_id, ticket.id
         Rails.cache.delete([:workflow_header, process_id])
-        
+
       end
 
+    end
+
+    def load_more_todo(process_id, *args)
+      args_hash = args.extract_options!
+      response_hash = []
+      final_query_hash = {process_id: process_id, ticket_id: args_hash[:ticket_id], engineer_id: args_hash[:engineer_id], spare_part_id: args_hash[:spare_part_id], onloan_spare_part_id: args_hash[:onloan_spare_part_id], estimation_id: args_hash[:estimation_id]}.reject{|k, v| !v.present? }
+      @processes = TicketWorkflowProcess.where(final_query_hash)
+
+      @processes.each do |process|
+        response = {}
+        response[:ticket] = {header: "Ticket Info", ticket_no: process.ticket.ticket_no} if process.ticket.present?
+        response[:ticket_engineer] = {header: "Engineer Info", full_name: process.ticket_engineer.ticket_no} if process.ticket_engineer.present?
+        response[:ticket_spare_part] = {header: "Spare Part Info", spare_part_no: process.ticket_spare_part.spare_part_no, faulty_ct_no: process.ticket_spare_part.faulty_ct_no, faulty_serial_no: process.ticket_spare_part.faulty_serial_no, } if process.ticket_spare_part.present?
+        response[:ticket_on_loan_spare_part] = {header: "On Loan Info", requested_at: process.ticket_on_loan_spare_part.spare_part_no, requested_by: process.ticket_on_loan_spare_part.requested_user } if process.ticket_on_loan_spare_part.present?
+        response[:ticket_estimation] = {header: "Estimation Info", estimation_at: process.ticket_estimation.estimated_at.strftime("%d/ %m/%Y at %H:%M:%S"), estimated_by: process.ticket_estimation.estimated_by_user.try(:full_name) } if process.ticket_estimation.present?
+        response_hash << response
+
+      end
+
+      return response_hash
     end
 
 end

@@ -1203,6 +1203,10 @@ class TicketWorkflowProcess < ActiveRecord::Base
   self.table_name = "spt_ticket_workflow_process"
 
   belongs_to :ticket
+  belongs_to :ticket_engineer
+  belongs_to :ticket_estimation
+  belongs_to :ticket_spare_part
+  belongs_to :ticket_on_loan_spare_part
 
   before_create :check_reopen_index
 

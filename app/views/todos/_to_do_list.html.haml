@@ -7,16 +7,19 @@
   - assigned_color = formatted_elementes.split(",").present? ? formatted_elementes.split(",").map{|e| f = e.split(":"); f.empty? ? ["color", "success"] : f.length > 1 ? f : [f.first, "success"] }.to_h["color"] : assigned_color
 
 
-= link_to to_do_call_todos_path(url: formatted_workflow_mapping[:url], input_variables: formatted_workflow_mapping[:input_variables], task_id: formatted_workflow_mapping[:task_content]["id"], process_instance_id: formatted_workflow_mapping[:task_content]["process_instance_id"], owner: formatted_workflow_mapping[:task_content]["actual_owner"]), class: "to_do_list_link" do
-
-  .col-md-12.small_scale_padding-top1.small_scale_padding-bottom1.small_scale_padding-left0.small_scale_padding-right0{class: "text-#{level[assigned_color]} bg-#{level[assigned_color]}", :style => "margin-top: 5px;", data: {toggle: "tooltip", placement: "right"}, title: "#{INOCRM_CONFIG["priority"].key formatted_workflow_mapping[:task_content]["priority"].to_i}"}
-    .col-md-3
-      .fixed.small_scale_padding-top2{style: "font-size: 10px;"}
-        .strong.col-md-6= formatted_workflow_mapping[:task_content]["created_on"].to_time.strftime(INOCRM_CONFIG['short_date_format'])
-        %em.col-md-6= formatted_workflow_mapping[:task_content]["created_on"].to_time.strftime("%H:%M %p")
-    .col-md-8.text_header.strong
-      %strong.first_header_title
-        = formatted_workflow_mapping[:first_header_title]
-      = splitted_header ? splitted_header.last : formatted_workflow_mapping[:second_header_title]
-    .col-md-1.text-right
-      %span.badge= INOCRM_CONFIG["priority"].key formatted_workflow_mapping[:task_content]["priority"].to_i
+.panel{class: "panel-#{level[assigned_color]}"}
+  .panel-heading
+    .panel-title
+      .row
+        .col-md-1
+          .row
+            .strong.col-md-12{style: "font-size: 10px;"}= formatted_workflow_mapping[:task_content]["created_on"].to_time.strftime(INOCRM_CONFIG['short_date_format'])
+            %em.col-md-12{style: "font-size: 10px;"}= formatted_workflow_mapping[:task_content]["created_on"].to_time.strftime("%H:%M %p")
+        .col-md-1
+          = link_to "More", "", class: "btn btn-link", onclick: "Todos.load_more(this); return false;", data: {process_id: formatted_workflow_mapping[:task_content]["process_instance_id"] }
+        .col-md-9
+          = link_to to_do_call_todos_path(url: formatted_workflow_mapping[:url], input_variables: formatted_workflow_mapping[:input_variables], task_id: formatted_workflow_mapping[:task_content]["id"], process_instance_id: formatted_workflow_mapping[:task_content]["process_instance_id"], owner: formatted_workflow_mapping[:task_content]["actual_owner"]) do
+            = formatted_workflow_mapping[:first_header_title]
+        .col-md-1.text-right
+          %span.badge= INOCRM_CONFIG["priority"].key formatted_workflow_mapping[:task_content]["priority"].to_i
+  .panel-body.hide

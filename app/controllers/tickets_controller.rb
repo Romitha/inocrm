@@ -828,9 +828,6 @@ class TicketsController < ApplicationController
     else
       @status_resolve_id = TicketStatusResolve.find_by_code("NAP").try(:id)
     end
-    puts "*****************************88"
-    puts @ticket.sla_id
-    puts "*****************************88"
     @repair_type_id = TicketRepairType.find_by_code("IN").try :id
     @manufacture_currency_id = @product.product_brand.currency.id
     @ticket.attributes = ticket_params.merge({created_by: current_user.id, slatime: @ticket.sla_time.try(:sla_time), status_resolve_id: @status_resolve_id, repair_type_id: @repair_type_id, manufacture_currency_id: @manufacture_currency_id, ticket_print_count: 0, ticket_complete_print_count: 0})
@@ -838,9 +835,6 @@ class TicketsController < ApplicationController
     ge_q_and_answers = @ticket.ge_q_and_answers.to_a
     @ticket.q_and_answers.clear
     @ticket.ge_q_and_answers.clear
-    puts "*****************************88"
-    puts @ticket.sla_id
-    puts "*****************************88"
 
     @continue = false
     warranty_constraint = true

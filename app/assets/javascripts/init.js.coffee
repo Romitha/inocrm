@@ -12,4 +12,5 @@ $ ->
   Lives.setup()
   Invoices.setup()
   Searches.setup()
+  Todos.setup()
   return

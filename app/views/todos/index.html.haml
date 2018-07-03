@@ -26,31 +26,31 @@
     = tab_nav_tab({}, tab_hash)
     .tab-content
       = tab_content active_class: "active", tabpointer: "user_details" do
-        .product
-          - if formatted_workflow_mapping_for_user.is_a?(Array)
-            - formatted_workflow_mapping_for_user.sort{|pf, lf| lf[:task_content]["created_on"].to_time <=> pf[:task_content]["created_on"].to_time}.each do |formatted_workflow_mapping|
-              = render "to_do_list", formatted_workflow_mapping: formatted_workflow_mapping
+        - if formatted_workflow_mapping_for_user.is_a?(Array)
+          - formatted_workflow_mapping_for_user.sort{|pf, lf| lf[:task_content]["created_on"].to_time <=> pf[:task_content]["created_on"].to_time}.each do |formatted_workflow_mapping|
+            = render "to_do_list", formatted_workflow_mapping: formatted_workflow_mapping
 
       - formatted_workflow_mapping_for_role.each do |k, v|
         = tab_content tabpointer: "role_#{k}" do
-          .product
-            - if v[:role_content].is_a?(Array)
+          - if v[:role_content].is_a?(Array)
 
-              %div{id: "todo_search_initialization_#{k}"}
-                = select_tag "first_header_title", options_from_collection_for_select(BpmModuleRole.find_by_code(k).workflow_mappings, "first_header_title", "first_header_title"), class: "search chosen-select small_scale_margin-top1 small_scale_margin-bottom1", id: "live_seach_select_to_do_#{k}", include_blank: "All"
+            %div{id: "todo_search_initialization_#{k}"}
+              = select_tag "first_header_title", options_from_collection_for_select(BpmModuleRole.find_by_code(k).workflow_mappings, "first_header_title", "first_header_title"), class: "search chosen-select small_scale_margin-top1 small_scale_margin-bottom1", id: "live_seach_select_to_do_#{k}", include_blank: "All"
 
+              .todo_list_search
+                - v[:role_content].sort{|pf, lf| lf[:task_content]["created_on"].to_time <=> pf[:task_content]["created_on"].to_time}.each do |formatted_workflow_mapping|
+                  = render "to_do_list", formatted_workflow_mapping: formatted_workflow_mapping
 
-                .todo_list_search
-                  - v[:role_content].sort{|pf, lf| lf[:task_content]["created_on"].to_time <=> pf[:task_content]["created_on"].to_time}.each do |formatted_workflow_mapping|
-                    = render "to_do_list", formatted_workflow_mapping: formatted_workflow_mapping
+              = javascript_tag defer: 'defer' do
+                setTimeout(function(){
+                $(function(){
+                var options = {valueNames: [ 'first_header_title' ], listClass: "todo_list_search", searchClass: "search" };
+                var organizationList = new List("todo_search_initialization_#{k}", options);
+                $("#live_seach_select_to_do_#{k}").change(function(){
+                organizationList.search($(":selected", this).val());
+                });
+                });
+                }, 300);
 
-                = javascript_tag defer: 'defer' do
-                  setTimeout(function(){
-                  $(function(){
-                  var options = {valueNames: [ 'first_header_title' ], listClass: "todo_list_search", searchClass: "search" };
-                  var organizationList = new List("todo_search_initialization_#{k}", options);
-                  $("#live_seach_select_to_do_#{k}").change(function(){
-                  organizationList.search($(":selected", this).val());
-                  });
-                  });
-                  }, 300);
+%script{type: "text/html", id: "load_for_todo_mustache"}
+  = render 'todo_mustache'
