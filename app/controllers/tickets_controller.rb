@@ -205,19 +205,6 @@ class TicketsController < ApplicationController
     end
   end
 
-  def update_product
-    Ticket
-    product = Product.find params[:product_id]
-    respond_to do |format|
-      if product.update product_params
-        product.update_index
-        format.json { render json: product }
-      else
-        format.json { render json: product.errors }
-      end
-    end
-  end
-
   def create_product
     Ticket
     ContactNumber
@@ -257,6 +244,8 @@ class TicketsController < ApplicationController
             # @ticket = @product.tickets.build session[:ticket_initiated_attributes]
             @ticket = @product.tickets.build Rails.cache.fetch([:ticket_initiated_attributes, @ticket_time_now])
 
+            Rails.cache.write([:new_ticket, request.remote_ip.to_s, @ticket_time_now], @ticket)
+
             @histories = Kaminari.paginate_array(@product.tickets)
             Rails.cache.write([:histories, session[:product_id]], Kaminari.paginate_array(@product.tickets))
             @histories = Rails.cache.read([:histories, session[:product_id]]).page(params[:page]).per(3)
@@ -265,6 +254,19 @@ class TicketsController < ApplicationController
             format.js {render :new_product}
           end
         end
+      end
+    end
+  end
+
+  def update_product
+    Ticket
+    product = Product.find params[:product_id]
+    respond_to do |format|
+      if product.update product_params
+        product.update_index
+        format.json { render json: product }
+      else
+        format.json { render json: product.errors }
       end
     end
   end
