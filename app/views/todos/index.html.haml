@@ -21,7 +21,7 @@
       %p Sort by
       = select(:todolist, :sorted, options_for_select([["Date", "1"], ["Priority", "2"], ["Module", "3"]]))
 
-#table
+#to_do_tab
   = tab_panel do
     = tab_nav_tab({}, tab_hash)
     .tab-content

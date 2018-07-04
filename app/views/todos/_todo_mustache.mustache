@@ -30,33 +30,78 @@
 
   .col-md-3
     {{#ticket_spare_part}}
-    {{header}}
-    %table.table
-      %tbody
-        %tr
-          %td Spare Part No:
-          %td {{spare_part_no}}
+    .panel.panel-info
+      .panel-heading
+        .panel-title
+          {{header}}
+      .panel-body
+        %table.table
+          %tbody
+            %tr
+              %td Spare Part No:
+              %td {{spare_part_no}}
     {{/ticket_spare_part}}
 
   .col-md-3
     {{#ticket_on_loan_spare_part}}
-    {{header}}
-    %table.table
-      %tbody
-        %tr
-          %td Request At:
-          %td {{requested_at}}
+    .panel.panel-info
+      .panel-heading
+        .panel-title
+          {{header}}
+      .panel-body
+        %table.table
+          %tbody
+            %tr
+              %td Request At:
+              %td {{requested_at}}
     {{/ticket_on_loan_spare_part}}
 
   .col-md-3
     {{#ticket_estimation}}
-    {{header}}
-    %table.table
-      %tbody
-        %tr
-          %td Estimation At:
-          %td {{estimation_at}}
+    .panel.panel-info
+      .panel-heading
+        .panel-title
+          {{header}}
+      .panel-body
+        %table.table
+          %tbody
+            %tr
+              %td Estimation At:
+              %td {{estimation_at}}
     {{/ticket_estimation}}
 
-  {{/response_array}}
+  .col-md-12
+    {{#main_info}}
+    .panel.panel-info
+      .panel-heading
+        .panel-title
+          {{header}}
+      .panel-body
+        %table.table
+          %thead
+            %tr
+              %th Ticket No
+              %th{colspan: 5} Product Info
+              %th{colspan: 2} Customer Info
+              %th{colspan: 2} Contact Person Info
+          %tbody
+            %tr
+              %td {{ticket_no}}
+              {{#product_info}}
+              %td {{brand}}
+              %td {{category}}
+              %td {{model_number}}
+              %td {{product_number}}
+              %td {{serial_no}}
+              {{/product_info}}
+              {{#customer_info}}
+              %td {{customer_name}}
+              %td {{address}}
+              {{/customer_info}}
+              {{#contact_person_info}}
+              %td {{name}}
+              %td {{contact_infos}}
+              {{/contact_person_info}}
+    {{/main_info}}
 
+  {{/response_array}}

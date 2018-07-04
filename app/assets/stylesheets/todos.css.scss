@@ -7,3 +7,11 @@
     box-shadow:         3px 3px 4px 0px rgba(50, 50, 50, 0.74);
   }
 }
+
+#to_do_tab {
+  .panel-primary {
+    a {
+      color: white;
+    }
+  }
+}
