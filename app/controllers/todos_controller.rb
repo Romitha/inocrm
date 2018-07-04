@@ -54,13 +54,19 @@ class TodosController < ApplicationController
   end
 
   def todo_more
+    @bpm_input_variables = {}
     task_id = params[:task_id]
     url = params[:url]
+    process_id = params[:process_id]
+    input_variables = params[:input_variables]
     if Rails.cache.fetch([url, task_id]).present?
-      
+      @bpm_input_variables = Rails.cache.fetch([url, task_id])[:bpm_input_variables].inject({}){|i, k| i.merge(k[0], k[1])}
     else
+      input_variables.split(",").each do |input_variable|
+        @bpm_input_variables[input_variable.to_sym] = view_context.send_request_process_data(process_history: true, process_instance_id: process_id, variable_id: input_variable)[:value]
+      end
     end
-    render json: {response_array: load_more_todo(params[:process_id], ticket_id: params[:ticket_id], engineer_id: params[:engineer_id], spare_part_id: params[:spare_part_id], onloan_spare_part_id: params[:onloan_spare_part_id], estimation_id: params[:estimation_id])}
+    render json: {response_array: load_more_todo( process_id, @bpm_input_variables.reject{|k, v| ["supp_engr_user", "deliver_unit_id", "supp_hd_user"].include?(k)} )}
   end
 
   def to_do_call
@@ -83,7 +89,7 @@ class TodosController < ApplicationController
       session[:process_id] = process_instance_id
       session[:task_id] = task_id
       session[:owner] = owner
-      # session[:bpm_input_variables] = @bpm_input_variables.map{|e| [e[:variable_id], e[:value]]}
+
       session[:engineer_id] = @bpm_input_variables.map{|e| [e[:variable_id], e[:value]]}.detect{ |v| v.first == "engineer_id"}.try(:last)
 
       session[:cache_key] = [url, task_id]

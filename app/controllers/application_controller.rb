@@ -58,7 +58,7 @@ class ApplicationController < ActionController::Base
     def load_more_todo(process_id, *args)
       args_hash = args.extract_options!
       response_hash = []
-      final_query_hash = {process_id: process_id, ticket_id: args_hash[:ticket_id], engineer_id: args_hash[:engineer_id], spare_part_id: args_hash[:spare_part_id], onloan_spare_part_id: args_hash[:onloan_spare_part_id], estimation_id: args_hash[:estimation_id]}.reject{|k, v| !v.present? }
+      final_query_hash = {process_id: process_id, ticket_id: args_hash[:ticket_id], engineer_id: args_hash[:engineer_id], spare_part_id: args_hash[:request_spare_part_id], onloan_spare_part_id: args_hash[:request_onloan_spare_part_id], estimation_id: args_hash[:part_estimation_id]}.reject{|k, v| !v.present? }
       @processes = TicketWorkflowProcess.where(final_query_hash)
 
       @processes.each do |process|
