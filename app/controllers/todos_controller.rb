@@ -54,6 +54,12 @@ class TodosController < ApplicationController
   end
 
   def todo_more
+    task_id = params[:task_id]
+    url = params[:url]
+    if Rails.cache.fetch([url, task_id]).present?
+      
+    else
+    end
     render json: {response_array: load_more_todo(params[:process_id], ticket_id: params[:ticket_id], engineer_id: params[:engineer_id], spare_part_id: params[:spare_part_id], onloan_spare_part_id: params[:onloan_spare_part_id], estimation_id: params[:estimation_id])}
   end
 

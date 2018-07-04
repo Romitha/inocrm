@@ -2,22 +2,30 @@
   {{#response_array}}
   .col-md-3
     {{#ticket}}
-    {{header}}
-    %table.table
-      %tbody
-        %tr
-          %td Ticket No:
-          %td {{ticket_no}}
+    .panel.panel-info
+      .panel-heading
+        .panel-title
+          {{header}}
+      .panel-body
+        %table.table
+          %tbody
+            %tr
+              %td Ticket No:
+              %td {{ticket_no}}
     {{/ticket}}
 
   .col-md-3
     {{#ticket_engineer}}
-    {{header}}
-    %table.table
-      %tbody
-        %tr
-          %td Full Name:
-          %td {{full_name}}
+    .panel.panel-info
+      .panel-heading
+        .panel-title
+          {{header}}
+      .panel-body
+        %table.table
+          %tbody
+            %tr
+              %td Full Name:
+              %td {{full_name}}
     {{/ticket_engineer}} 
 
   .col-md-3

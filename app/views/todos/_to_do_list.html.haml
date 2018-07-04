@@ -17,7 +17,9 @@
           = link_to "More", "", class: "btn btn-link", onclick: "Todos.load_more(this); return false;", data: {process_id: formatted_workflow_mapping[:task_content]["process_instance_id"] }
         .col-md-9
           = link_to to_do_call_todos_path(url: formatted_workflow_mapping[:url], input_variables: formatted_workflow_mapping[:input_variables], task_id: formatted_workflow_mapping[:task_content]["id"], process_instance_id: formatted_workflow_mapping[:task_content]["process_instance_id"], owner: formatted_workflow_mapping[:task_content]["actual_owner"]) do
-            %span.first_header_title= formatted_workflow_mapping[:first_header_title]
+            %strong
+              %span.first_header_title= formatted_workflow_mapping[:first_header_title]
+              %span= splitted_header ? splitted_header.last : formatted_workflow_mapping[:second_header_title]
         .col-md-1.text-right
           %span.badge= INOCRM_CONFIG["priority"].key formatted_workflow_mapping[:task_content]["priority"].to_i
   .panel-body.hide
