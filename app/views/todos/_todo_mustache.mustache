@@ -84,6 +84,17 @@
               %th{colspan: 5} Product Info
               %th{colspan: 2} Customer Info
               %th{colspan: 2} Contact Person Info
+            %tr
+              %th
+              %th Brand
+              %th Category
+              %th Model No
+              %th Product No
+              %th Serial No
+              %th Name
+              %th Address
+              %th Name
+              %th Contact Info
           %tbody
             %tr
               %td {{ticket_no}}
@@ -100,7 +111,10 @@
               {{/customer_info}}
               {{#contact_person_info}}
               %td {{name}}
-              %td {{contact_infos}}
+              %td
+                {{#contact_infos}}
+                {{.}}</br>
+                {{/contact_infos}}
               {{/contact_person_info}}
     {{/main_info}}
 
