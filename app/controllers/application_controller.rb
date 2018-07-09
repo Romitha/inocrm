@@ -56,6 +56,7 @@ class ApplicationController < ActionController::Base
     end
 
     def load_more_todo(process_id, *args)
+      Ticket
       args_hash = args.extract_options!
       # response_hash = []
       final_query_hash = {process_id: process_id, ticket_id: args_hash[:ticket_id], engineer_id: args_hash[:engineer_id], spare_part_id: args_hash[:request_spare_part_id], onloan_spare_part_id: args_hash[:request_onloan_spare_part_id], estimation_id: args_hash[:part_estimation_id]}.reject{|k, v| !v.present? }
@@ -81,8 +82,8 @@ class ApplicationController < ActionController::Base
 
       response = {}
 
-      case process.class
-      when TicketWorkflowProcess
+      case process.class.to_s
+      when "TicketWorkflowProcess"
         response[:main_info] = {header: "Main Information", ticket_no: process.ticket.support_ticket_no, product_info: {brand: process.ticket.products.last.brand_name, category: process.ticket.products.last.category_full_name("|"), model_number: process.ticket.products.last.model_no, product_number: process.ticket.products.last.product_no, serial_no: process.ticket.products.last.serial_no, name: process.ticket.products.last.name}, customer_info: {customer_name: process.ticket.customer.full_name, address: process.ticket.customer.full_address}, contact_person_info: {name: process.ticket.send("contact_person#{process.ticket.inform_cp}").full_name, contact_infos: process.ticket.send("contact_person#{process.ticket.inform_cp}").contact_person_contact_types.map(&:contact_info)}}
       end
 
