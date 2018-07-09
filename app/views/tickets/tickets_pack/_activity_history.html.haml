@@ -48,7 +48,7 @@
                         Recorrection: No
                     .col-md-3
                       -if action.user_assign_ticket_action.recorrection == true
-                        Regional Support Center Job: Yes
+                        Regional Support Center Job: No
                       -else
                         Regional Support Center Job: No
 
@@ -537,6 +537,9 @@
                       Reject Reason: #{action.action_warranty_extend.try(:reject_reason).try(:reason)}
                     .col-md-4
                       Reject Note: #{action.action_warranty_extend.try(:note)}
+                  .row
+                    .col-md-4
+                      Request Note: action.action_warranty_extend.:reject_note
 
               -if action.action_id == 33 and action.request_spare_part
                 .panel-body 
@@ -687,7 +690,7 @@
                     .col-md-4
                       Reject Reason: #{action.action_warranty_extend.try(:reject_reason).try(:reason)}
                     .col-md-4
-                      Reject Note: #{action.action_warranty_extend.try(:note)}
+                      Reject Note: action.action_warranty_extend.reject_note
 
               -if action.action_id == 41
                 .panel-body 
