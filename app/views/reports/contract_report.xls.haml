@@ -59,7 +59,7 @@
         %td= contract.status_name
         %td= standard_currency_format(contract.product_amount)
         %td= contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f}
-        %td= number_with_precision pending_amount, precision: 2
+        %td= number_with_precision contract.view_context.standard_currency_format(pending_amount), precision: 2
     %tr
       %td
         %strong Total
