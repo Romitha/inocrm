@@ -81,8 +81,8 @@ class ApplicationController < ActionController::Base
 
       response = {}
 
-      case process.process_name
-      when "SPPT"
+      case process.class
+      when TicketWorkflowProcess
         response[:main_info] = {header: "Main Information", ticket_no: process.ticket.support_ticket_no, product_info: {brand: process.ticket.products.last.brand_name, category: process.ticket.products.last.category_full_name("|"), model_number: process.ticket.products.last.model_no, product_number: process.ticket.products.last.product_no, serial_no: process.ticket.products.last.serial_no, name: process.ticket.products.last.name}, customer_info: {customer_name: process.ticket.customer.full_name, address: process.ticket.customer.full_address}, contact_person_info: {name: process.ticket.send("contact_person#{process.ticket.inform_cp}").full_name, contact_infos: process.ticket.send("contact_person#{process.ticket.inform_cp}").contact_person_contact_types.map(&:contact_info)}}
       end
 

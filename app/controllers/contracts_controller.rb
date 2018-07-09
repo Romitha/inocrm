@@ -172,7 +172,7 @@ class ContractsController < ApplicationController
     Ticket
     @organization = Organization.find(params[:organization_id])
 
-  # cached_contract = Rails.cache.fetch([:new_product_with_pop_doc_url1, request.remote_ip])
+    # cached_contract = Rails.cache.fetch([:new_product_with_pop_doc_url1, request.remote_ip])
     if params[:contract_id].present?
       @contract = TicketContract.find params[:contract_id]
       
@@ -246,6 +246,11 @@ class ContractsController < ApplicationController
     #   product.create_product_owner_history(@organization.id, current_user.id, "Added in contract", 0)
 
     # end
+
+    respond_to do |format|
+      format.html { redirect_to contracts_path, notice: "Successfully saved."}
+      format.js { render "save" }
+    end
 
   end
 

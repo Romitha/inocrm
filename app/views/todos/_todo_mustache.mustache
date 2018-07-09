@@ -77,11 +77,11 @@
         .panel-title
           {{header}}
       .panel-body
-        %table.table
+        %table.table.table-bordered
           %thead
             %tr
               %th Ticket No
-              %th{colspan: 5} Product Info
+              %th{colspan: 6} Product Info
               %th{colspan: 2} Customer Info
               %th{colspan: 2} Contact Person Info
             %tr
@@ -91,6 +91,7 @@
               %th Model No
               %th Product No
               %th Serial No
+              %th Name
               %th Name
               %th Address
               %th Name
@@ -104,6 +105,7 @@
               %td {{model_number}}
               %td {{product_number}}
               %td {{serial_no}}
+              %td {{name}}
               {{/product_info}}
               {{#customer_info}}
               %td {{customer_name}}
