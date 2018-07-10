@@ -6,8 +6,8 @@ window.Todos =
     _this = $(e)
     $.get("/todos/todo_more", {process_id: _this.data("process-id"), input_variables: _this.data("input-variables")}, (data)->
       $(".todo_loaded_mustache").remove()
-      $(".panel-body").toggleClass("hide")
-      _this.parents(".panel").eq(0).find(".panel-body").removeClass("hide").html Mustache.to_html($('#load_for_todo_mustache').html(), data)
+      $(".panel-body").addClass("hide")
+      _this.parents(".panel").eq(0).find(".panel-body").toggleClass("hide").html Mustache.to_html($('#load_for_todo_mustache').html(), data)
     ).fail( ->
       alert("System is too busy. Please try again.")
     )
