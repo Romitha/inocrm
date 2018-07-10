@@ -50,7 +50,7 @@
           %dt Condition:
           %dd= @inventory_serial_item.product_condition.condition
           %dt More
-          %dd{ "class"=> "has-popover", "data-toggle"=> "popover", "title"=> "More Details", "data-content"=> yield(:more_details), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "bottom" } >>
+          %dd{ "class"=> "has-popover", "data-toggle"=> "popover", "title"=> "More Details", "data-content"=> "#{yield(:more_details)}", "data-html" => "true", "data-trigger" => "hover", "data-placement" => "bottom" } >>
       .col-md-6
         %dl.dl-horizontal
           %dt Main Item Code:

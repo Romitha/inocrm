@@ -109,24 +109,6 @@
           %dt Remarks
           %dd= serial_part.remarks
 
-        / - content_for :main_part_more_info do
-        /   .col-md-12
-        /     %strong Batch No:
-        /     = serial_part.inventory_serial_item.try(:inventory_batch).try(:batch_no)
-        /   .col-md-12
-        /     %strong Lot No:
-        /     = serial_part.inventory_serial_item.try(:inventory_batch).try(:lot_no)
-        /   .col-md-12
-        /     %strong= "scavenge" if serial_part.scavenge
-        /   .col-md-12
-        /     %strong= "damage" if serial_part.damage
-        /   .col-md-12
-        /     %strong Remarks:
-        /     = serial_part.remarks
-        / %button{ type: "button", data: {html: "true", trigger: "focus", toggle: "popover", content: yield(:main_part_more_info)}, title: "More info", class: "has-popover btn btn-link"}
-        /   More
-        / .row
-
     .col-md-6
       %h4{class: "#{'hide' unless serial_part}"} Main Unit of the Part
       %dl.dl-horizontal

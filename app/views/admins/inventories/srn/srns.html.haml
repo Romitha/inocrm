@@ -72,7 +72,7 @@
 
             %tr{class: "#{'danger' if srn_item.closed}", title: "#{'Closed' if srn_item.closed}"}
               - if srn_item.issue_terminated?
-                %td{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "data-content"=> yield(:serial_item_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "top" }
+                %td{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "data-content"=> "#{yield(:serial_item_more)}", "data-html" => "true", "data-trigger" => "hover", "data-placement" => "top" }
                   = (index+1)
               - else
                 %td= (index+1)

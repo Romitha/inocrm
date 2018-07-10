@@ -230,7 +230,7 @@
         %strong Remarks:
         #{simple_format inventory_serial_part.remarks}
       .row
-        .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Serial Item id: #{inventory_serial_part.serial_item_id}", "data-content"=> yield(:inventory_serial_part_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "top" }
+        .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Serial Item id: #{inventory_serial_part.serial_item_id}", "data-content"=> "#{yield(:inventory_serial_part_more)}", "data-html" => "true", "data-trigger" => "hover", "data-placement" => "top" }
           - if params[:page]
             = (index+1) + 10*(params[:page].to_i-1)
           - else

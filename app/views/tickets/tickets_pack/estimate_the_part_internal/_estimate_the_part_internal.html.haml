@@ -102,7 +102,7 @@
                         %dd
                           = part_store_or_non_stock.main_inventory_product and part_store_or_non_stock.main_inventory_product.inventories.find_by_store_id(part_store_or_non_stock.store_id).try(:available_quantity)
 
-                .col-md-10{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Part of main method", "data-content"=> yield(:part_of_main_product), "data-html" => "true", "data-trigger" => "click", "data-placement" => "right" } Part of main product
+                .col-md-10{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Part of main method", "data-content"=> "#{yield(:part_of_main_product)}", "data-html" => "true", "data-trigger" => "click", "data-placement" => "right" } Part of main product
 
             .col-md-6
               #paginate_grns

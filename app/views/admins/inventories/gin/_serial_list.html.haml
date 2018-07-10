@@ -92,7 +92,7 @@
                         %strong Remarks:
                         #{grn_serial_item.inventory_serial_item.remarks}
                   .row
-                    .col-md-2{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Item code:", "data-content"=> yield(:serial_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }
+                    .col-md-2{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Item code:", "data-content"=> "#{yield(:serial_more)}", "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }
                       = counter += 1
                     .col-md-2{title: grn_item.created_at.try(:strftime, INOCRM_CONFIG["short_date_format"])}
                       .grn_no= grn_item.grn.grn_no.to_s.rjust(5, INOCRM_CONFIG["inventory_grn_no_format"])

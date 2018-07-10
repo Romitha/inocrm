@@ -43,7 +43,7 @@
           %dd= pr.inventories.map { |i| i.stock_quantity if i.store_id.to_i == @store.id }.compact.join(", ")
 
     .row
-      .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Name: #{pr.name}", "data-content"=> yield(:customer_supplier_p_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }= index+1
+      .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Name: #{pr.name}", "data-content"=> "#{yield(:customer_supplier_p_more)}", "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }= index+1
       .col-md-2= pr.name
       .col-md-2
         %ul.padding0

@@ -138,7 +138,7 @@
           %strong Remarks:
           #{simple_format inventory_serial_item.remarks}
         .row
-          .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Serial No: #{inventory_serial_item.serial_no}", "data-content"=> yield(:grn_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "bottom" }
+          .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Serial No: #{inventory_serial_item.serial_no}", "data-content"=> "#{yield(:grn_more)}", "data-html" => "true", "data-trigger" => "hover", "data-placement" => "bottom" }
             - if params[:page]
               = (index+1) + 10*(params[:page].to_i-1)
             - else

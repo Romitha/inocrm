@@ -21,7 +21,7 @@
           %strong Customer
           = srn_item.srn.so_customer.try(:name)
 
-    .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Item code:", "data-content"=> yield(:srn_info_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }
+    .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Item code:", "data-content"=> "#{yield(:srn_info_more)}", "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }
       - if params[:page]
         = (index+1)+ 10*(params[:page].to_i-1)
       - else

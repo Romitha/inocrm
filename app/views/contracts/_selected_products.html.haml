@@ -43,7 +43,7 @@
                 %strong Model No :
                 #{p.model_no}           
           %tr
-            %td{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "#{p.serial_no}", "data-content"=> yield(:products_brief), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }
+            %td{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "#{p.serial_no}", "data-content"=> "#{yield(:products_brief)}", "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }
               - if params[:page]
                 = (index+1)+ 10*(params[:page].to_i-1)
               - else
