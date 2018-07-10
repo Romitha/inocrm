@@ -2935,6 +2935,7 @@ class TicketsController < ApplicationController
 
     render "tickets/tickets_pack/customer_inquire/customer_inquire"
   end
+
   def onloan_return_pending_parts
     authorize! :onloan_return_pending_parts, Ticket
     Product
@@ -2946,6 +2947,7 @@ class TicketsController < ApplicationController
     @return_parts = TicketOnLoanSparePart.search(params)
     render "onloan_returns/onloan_return_pending_parts"
   end
+
   def delete_add_edit_contract
     Ticket
     User
