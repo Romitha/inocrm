@@ -41,7 +41,7 @@
     %strong Remarks:
     #{simple_format grn_batch.inventory_batch.remarks}
   .row
-    .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Batch No: #{grn_batch.inventory_batch.try(:batch_no)}", "data-content"=> yield(:grn_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "bottom" }
+    .col-md-1{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Batch No: #{grn_batch.inventory_batch.try(:batch_no)}", "data-content"=> "#{yield(:grn_more)}", "data-html" => "true", "data-trigger" => "hover", "data-placement" => "bottom" }
       - if params[:page]
         = (index+1) + 10*(params[:page].to_i-1)
       - else

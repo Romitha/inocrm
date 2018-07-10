@@ -35,7 +35,7 @@
           #{simple_format pr.description}
 
         %tr
-          %td{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Serial No: #{pr.generated_item_code}", "data-content"=> yield(:inventory_p_more), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }= index+1
+          %td{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Serial No: #{pr.generated_item_code}", "data-content"=> "#{yield(:inventory_p_more)}", "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }= index+1
           %td= pr.description
           %td= pr.category3_name
           %td= pr.generated_serial_no

@@ -9,8 +9,10 @@ window.Todos =
         $(".todo_loaded_mustache").remove()
         $(".panel-body").addClass("hide")
         _this.parents(".panel").eq(0).find(".panel-body").removeClass("hide").html Mustache.to_html($('#load_for_todo_mustache').html(), data)
+        _this.text("Close")
       ).fail( ->
         alert("System has some error. Please try again.")
       )
     else
       _this.parents(".panel").eq(0).find(".panel-body").addClass("hide")
+      _this.text("More")

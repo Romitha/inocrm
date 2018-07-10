@@ -31,7 +31,7 @@
             %strong No Of Products:
             #{con.num_of_products}
       %tr{style: "background-color: #{con.status_color}; font-weight: bold;"}
-        %td{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Contract No: #{con.contract_no}", "data-content"=> yield(:contracts_brief), "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }
+        %td{ "type"=> "button", "class"=> "btn btn-link has-popover", "data-toggle"=> "popover", "title"=> "Contract No: #{con.contract_no}", "data-content"=> "#{yield(:contracts_brief)}", "data-html" => "true", "data-trigger" => "hover", "data-placement" => "right" }
           - if params[:page]
             = (index+1)+ 10*(params[:page].to_i-1)
           - else
