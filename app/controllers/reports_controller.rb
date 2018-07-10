@@ -457,14 +457,15 @@ class ReportsController < ApplicationController
       params[:query] = refined_search
 
       after_contract_products = []
-      before_contract_products = Product.search(params)
+      @products = Product.search(params)
 
-      @products = before_contract_products.results
+      # @products = before_contract_products.results
 
       not_need_index = []
 
       @products.each do |product|
-        need_index_boolean = (product.updated_at.to_datetime == Product.find(product.id).updated_at.to_datetime)
+        database_product = Product.find_by_id(product.id)
+        need_index_boolean = (database_product.present? and (product.updated_at.to_datetime == database_product.updated_at.to_datetime))
         not_need_index << {id: product.id, not_need_index: need_index_boolean} unless need_index_boolean
       end
 
@@ -472,9 +473,6 @@ class ReportsController < ApplicationController
         t_ids = []
         not_need_index.uniq{|n| n[:id]}.each do |n_index|
           t_ids << n_index[:id]
-          # if !n_index[:not_need_index]
-          #   # Ticket.find(n_index[:id]).update_index
-          # end
         end
         Product.index.import Product.where(id: t_ids) if t_ids.present?
       end
