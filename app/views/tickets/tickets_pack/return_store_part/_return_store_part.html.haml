@@ -53,7 +53,7 @@
       = spare_part.spare_part_status_use.name
     - if spare_part.spare_part_status_use.code == "UUS"
       .col-md-3 Unused Reason
-      %strong= spare_part.unused_reason.reason
+      %strong= spare_part.unused_reason.try(:reason)
 %hr
 .row
   .col-md-12
