@@ -1462,8 +1462,12 @@ class TicketsController < ApplicationController
           email_template = EmailTemplate.find_by_code("ASSIGN_JOB")
 
           if not(user_assign_ticket_action.try(:recorrection) or @re_assignment)
+            owner_engineer_id = nil
             @ticket.ticket_engineers.each do |ticket_engineer|
               unless ticket_engineer.parent_engineer.present?
+
+                owner_engineer_id = ticket_engineer.id unless owner_engineer_id.present?
+
                 # bpm output variables
                 ticket_id = @ticket.id
                 di_pop_approval_pending = "N"
@@ -1504,6 +1508,9 @@ class TicketsController < ApplicationController
 
               end
             end
+
+            @ticket.update owner_engineer_id: owner_engineer_id if owner_engineer_id.present? and !@ticket.owner_engineer_id.present?
+
           elsif @re_assignment
             email_to = @ticket_engineer.user.email
             if email_template.try(:active)
