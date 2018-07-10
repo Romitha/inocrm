@@ -44,9 +44,9 @@
       .col-md-1= part_history.ticket_status
       .col-md-1= part_history.spare_part_no
       .col-md-2= part_history.spare_part_description
-      .col-md-1= part_history.try(:ticket_spare_part_manufacture).try(:event_no)
-      .col-md-1= part_history.spare_part_status_use.name
-      .col-md-1= part_history.spare_part_status_action.name
+      .col-md-1= part_history.ticket_spare_part_manufacture.try(:event_no)
+      .col-md-1= part_history.spare_part_status_use.try(:name)
+      .col-md-1= part_history.spare_part_status_action.try(:name)
 
       
       

@@ -5,7 +5,7 @@
   - formatted_elementes = splitted_header.count > 1 ? splitted_header.first : ""
   - assigned_color = formatted_elementes.split(",").present? ? formatted_elementes.split(",").map{|e| f = e.split(":"); f.empty? ? ["color", "success"] : f.length > 1 ? f : [f.first, "success"] }.to_h["color"] : assigned_color
 
-.panel{class: "panel-#{level[assigned_color]}"}
+.panel.small_scale_margin-bottom1{class: "panel-#{level[assigned_color]}"}
   .panel-heading
     .panel-title
       .row
@@ -18,9 +18,8 @@
             = link_to "More", "", class: "btn btn-link", onclick: "Todos.load_more(this); return false;", data: {process_id: formatted_workflow_mapping[:task_content]["process_instance_id"], input_variables: formatted_workflow_mapping[:input_variables] }
         .col-md-9
           = link_to to_do_call_todos_path(url: formatted_workflow_mapping[:url], input_variables: formatted_workflow_mapping[:input_variables], task_id: formatted_workflow_mapping[:task_content]["id"], process_instance_id: formatted_workflow_mapping[:task_content]["process_instance_id"], owner: formatted_workflow_mapping[:task_content]["actual_owner"]) do
-            %strong
-              %span.first_header_title= formatted_workflow_mapping[:first_header_title]
-              %span= splitted_header ? splitted_header.last : formatted_workflow_mapping[:second_header_title]
+            %span.first_header_title= formatted_workflow_mapping[:first_header_title]
+            %span= splitted_header ? splitted_header.last : formatted_workflow_mapping[:second_header_title]
         .col-md-1.text-right
           %span.badge= INOCRM_CONFIG["priority"].key formatted_workflow_mapping[:task_content]["priority"].to_i
   .panel-body.hide

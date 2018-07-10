@@ -505,8 +505,6 @@
                       Spare Part No: #{action.request_spare_part.ticket_spare_part.spare_part_no}
                     .col-md-4
                       Spare Part Description: #{action.request_spare_part.ticket_spare_part.spare_part_description}
-                    / .col-md-4
-                    /   Note: #{simple_format action.request_spare_part.ticket_spare_part.note}
                   .row
                     .col-md-4
                       -if action.request_spare_part.ticket_spare_part.cus_chargeable_part == true
@@ -529,17 +527,14 @@
                 .panel-body
                   .row
                     .col-md-4
-                      - if action.action_warranty_extend.extended == true
-                        Extended: Yes
-                      - else
-                        Extended: No
+                      Extended: #{boolean_in_word action.action_warranty_extend.extended, "Yes", "No"}
                     .col-md-4
-                      Reject Reason: #{action.action_warranty_extend.try(:reject_reason).try(:reason)}
+                      Reject Reason: #{action.action_warranty_extend.reject_reason.try(:reason)}
                     .col-md-4
                       Reject Note: #{action.action_warranty_extend.try(:note)}
                   .row
                     .col-md-4
-                      Request Note: action.action_warranty_extend.:reject_note
+                      Request Note: action.action_warranty_extend.reject_note
 
               -if action.action_id == 33 and action.request_spare_part
                 .panel-body 
