@@ -47,13 +47,13 @@
           = table_header ["Name", "VAT", "Industry type"]
           = table_body ["#{customer.organization.name}", "#{customer.organization.account.vat_number}", customer.organization.industry_type.try(:name)]
 
-- unless ticket.ticket_contract.present?
+- unless (ticket.ticket_contract.present? or product.owner_customer.present?)
   %strong.name_validate Customer
   = label_tag "Select Customer", class: "small_scale_margin-right1 small_scale_margin-left2" do
-    = radio_button_tag "customer_select", "select", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('select', '#{product.id}', '#{@ticket_time_now}'); false;", required:true
+    = radio_button_tag "customer_select", "select", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('select', '#{product.id}', '#{@ticket_time_now}'); false;", required: true
     Select
   = label_tag "New Customer" do
-    = radio_button_tag "customer_select", "create", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('create', '#{product.id}', '#{@ticket_time_now}'); false;", required:true
+    = radio_button_tag "customer_select", "create", false, class: "radio_for_customer_select", onchange: "Tickets.customer_select('create', '#{product.id}', '#{@ticket_time_now}'); false;", required: true
     New
 
   %hr

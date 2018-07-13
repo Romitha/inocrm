@@ -1,5 +1,5 @@
 .row
-  = paginate customers, remote: true, method: :post, params: {product_id: @product.id, ticket_time_now: @ticket_time_now} if customers.present?
+  / = paginate customers, remote: true, method: :post, params: {product_id: @product.id, ticket_time_now: @ticket_time_now} if customers.present?
 
   .table-responsive.col-md-8.table-stiped.table
     %table.table
@@ -8,25 +8,32 @@
           %th
             Name
           %th
-            Address
+            Cotact Person Type
           %th
-            Contacts
-          / %th
-          /   Ticket
+            Email
+          %th
+            Mobile
+          %th
+            Fixed Line
+          %th
+            Designation
           %th
             Function
       %tbody
-        - customers.each do |customer|
-          %tr
-            %td
-              = customer.name
-            %td
-              - customer.addresses.each do |address|
-                - if address.primary_address
-                  = address.full_address
-            %td
-              - customer.contact_numbers.each do |c_value|
-                - if c_value.primary_contact
-                  = c_value.contact_info
-            %td
-              = link_to "select", "#", onclick: "Tickets.assign_contact_person('#{customer.id}', '#{submitted_contact_person}', '#{@product.id}', '#{@ticket_time_now}','initiate_contact_person'); false;"
+        - if product_owner.present?
+          - product_owner.organization_contact_persons.each do |contact_person|
+            %tr
+              %td
+                = contact_person.full_name
+              %td
+                = contact_person.contact_type_name
+              %td
+                = contact_person.email
+              %td
+                = contact_person.mobile
+              %td
+                = contact_person.telephone
+              %td
+                = contact_person.designation
+              %td
+                = link_to "select", "#", onclick: "Tickets.assign_contact_person('#{contact_person.id}', '#{submitted_contact_person}', '#{@product.id}', '#{@ticket_time_now}','initiate_contact_person'); false;"

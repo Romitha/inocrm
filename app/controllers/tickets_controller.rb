@@ -425,11 +425,11 @@ class TicketsController < ApplicationController
             # @product.update(owner_customer_id: organization.id)
             @product.create_product_owner_history(organization.id, current_user.id, "Added in ticket", 1)
             @ticket.customer_id = @new_customer.id
-            contact_person1 = @product.owner_customer.organization_contact_persons.contact_persons1.first
-            contact_person2 = @product.owner_customer.organization_contact_persons.contact_persons2.first
-            @ticket.contact_person1_id = (contact_person1 and contact_person1.report_persons.first.try(:id))
-            @ticket.contact_person2_id = (contact_person2 and contact_person2.report_persons.first.try(:id))
-            @ticket.reporter_id = @ticket.contact_person1_id
+            contact_person1 = organization.organization_contact_persons.contact_persons1.first
+            contact_person2 = organization.organization_contact_persons.contact_persons2.first
+            # @ticket.contact_person1_id = (contact_person1 and contact_person1.report_persons.first.try(:id))
+            # @ticket.contact_person2_id = (contact_person2 and contact_person2.report_persons.first.try(:id))
+            # @ticket.reporter_id = @ticket.contact_person1_id
 
             contact_type_values = []
 
@@ -509,26 +509,27 @@ class TicketsController < ApplicationController
     User
     ContactNumber
     Warranty
-    # @product = Product.find (params[:product_id] || session[:product_id])
+
     case params[:data_param]
     when "select_contact_person1"
       @contact_persons = []
-      @customers = []
 
       @submit_contact_person = "submit_contact_person1"
+      @submitted_contact_person = 1
+      
     when "select_contact_person2"
       @contact_persons = []
-      @customers = []
 
       @submit_contact_person = "submit_contact_person2"
+      @submitted_contact_person = 2
     when "select_report_person"
       @contact_persons = []
-      @customers = []
 
       @submit_contact_person = "submit_report_person"
+      @submitted_contact_person = 3
     when "initiate_contact_person"
-      # @contact_person_for_customer = params[:contact_person_id].present? ? Customer.find(params[:contact_person_id]) : Customer.new
-      @contact_person_for_customer = params[:contact_person_id].present? ? Organization.find(params[:contact_person_id]) : Customer.new
+      # @contact_person_for_customer = params[:contact_person_id].present? ? Organization.find(params[:contact_person_id]) : Customer.new
+      @contact_person_for_customer = params[:contact_person_id].present? ? OrganizationContactPerson.find(params[:contact_person_id]) : OrganizationContactPerson.new
       @contact_person_attribs = {title_id: @contact_person_for_customer.title_id, name: @contact_person_for_customer.name}
       # @c_p_c_t_attribs = @contact_person_for_customer.contact_type_values.map{|c_t_v| {contact_type_id: c_t_v.contact_type_id, value: c_t_v.value}}
       @c_p_c_t_attribs = []
@@ -536,20 +537,45 @@ class TicketsController < ApplicationController
       @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now])
       if params[:contact_person] == "1"
         @build_contact_person = @ticket.build_contact_person1(@contact_person_attribs)
+        {email: "E-Mail", mobile: "Mobile", telephone: "Telephone"}.each do |key, value|
+          if @contact_person_for_customer.send(key).present?
+            built_c1_type = @build_contact_person.contact_person_contact_types.build
+            built_c1_type.send("contact_type_id=", ContactType.find_by_name(value).try(:id))
+            built_c1_type.send("value=", @contact_person_for_customer.send(key))
+          end
+
+        end
+
         @contact_person_frame = "#contact_persons_form1"
         @submitted_contact_person = "one"
       elsif params[:contact_person] == "2"
         @build_contact_person = @ticket.build_contact_person2(@contact_person_attribs)
+        {email: "E-Mail", mobile: "Mobile", telephone: "Telephone"}.each do |key, value|
+          if @contact_person_for_customer.send(key).present?
+            built_c1_type = @build_contact_person.contact_person_contact_types.build
+            built_c1_type.send("contact_type_id=", ContactType.find_by_name(value).try(:id))
+            built_c1_type.send("value=", @contact_person_for_customer.send(key))
+          end
+
+        end
+
         @contact_person_frame = "#contact_persons_form2"
         @submitted_contact_person = "two"
       elsif params[:contact_person] == "3"
         @build_contact_person = @ticket.build_report_person(@contact_person_attribs)
+        {email: "E-Mail", mobile: "Mobile", telephone: "Telephone"}.each do |key, value|
+          if @contact_person_for_customer.send(key).present?
+            built_c1_type = @build_contact_person.contact_person_contact_types.build
+            built_c1_type.send("contact_type_id=", ContactType.find_by_name(value).try(:id))
+            built_c1_type.send("value=", @contact_person_for_customer.send(key))
+          end
+
+        end
         @contact_person_frame = "#report_persons_form"
         @submitted_contact_person = "three"
       end
-      @contact_person_for_customer.new_record? ? @build_contact_person.contact_person_contact_types.build([{contact_type_id: 2}, {contact_type_id: 3}]) : @build_contact_person.contact_person_contact_types.build(@c_p_c_t_attribs)
+      # @contact_person_for_customer.new_record? ? @build_contact_person.contact_person_contact_types.build([{contact_type_id: 2}, {contact_type_id: 3}]) : @build_contact_person.contact_person_contact_types.build(@c_p_c_t_attribs)
 
-      # @header = "Contact Person"
     when "edit_create_contact_person"
       @ticket = Ticket.find_by_id(session[:ticket_id])
       if params[:contact_person] == "1"
@@ -623,10 +649,10 @@ class TicketsController < ApplicationController
         @contact_persons = ContactPerson1.search(query: search_contact_person, page: params[:page])
 
       end
-      search_contact_person = [params[:search_contact_person]]
+      # search_contact_person = [params[:search_contact_person]]
 
-      search_contact_person << "accounts_dealer_types.dealer_code:CUS OR accounts_dealer_types.dealer_code:INDCUS"
-      @customers = Organization.search(query: search_contact_person.map { |s| s if s.present? }.compact.join(" AND "), page: params[:page])
+      # search_contact_person << "accounts_dealer_types.dealer_code:CUS OR accounts_dealer_types.dealer_code:INDCUS"
+      # @customers = Organization.search(query: search_contact_person.map { |s| s if s.present? }.compact.join(" AND "), page: params[:page])
 
     end
 

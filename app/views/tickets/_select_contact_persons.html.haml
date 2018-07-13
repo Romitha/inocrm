@@ -4,17 +4,6 @@
     %span{"aria-hidden" => "true"} &times;
   = @header
 .modal-body
-  .row
-    .col-lg-12
-      #select_contact_persons
-        = form_tag create_contact_persons_tickets_path, method: :post, remote: true do
-          = hidden_field_tag :product_id, @product.id
-          = hidden_field_tag :ticket_time_now, @ticket_time_now
-          .input-group
-            = text_field_tag "search_contact_person", nil, class: "form-control", placeholder: "search contact person by name or contact value"
-            %span.input-group-btn
-              = submit_tag "Search", name: submit_contact_person, class: "btn btn-default"
-  %br/
   %ul#myTab.nav.nav-tabs{:role => "tablist"}
     %li.active{:role => "presentation"}
       %a{"aria-controls" => "contact_person_tab", "data-toggle" => "tab", :href => "#contact_person_tab", :role => "tab"} Contact Person
@@ -24,9 +13,21 @@
   .tab-content
 
     #contact_person_tab.tab-pane.active{:role => "tabpanel"}
-      = render "users/contact_persons", contact_persons: contact_persons, product_id: @product.id
+      .row
+        .col-lg-12
+          #select_contact_persons.small_scale_margin-top1
+            = form_tag create_contact_persons_tickets_path, method: :post, remote: true do
+              = hidden_field_tag :product_id, @product.id
+              = hidden_field_tag :ticket_time_now, @ticket_time_now
+              .input-group
+                = text_field_tag "search_contact_person", nil, class: "form-control", placeholder: "search contact person by name or contact value"
+                %span.input-group-btn
+                  = submit_tag "Search", name: submit_contact_person, class: "btn btn-default"
+      .contact_person_tab
+        = render "users/contact_persons", contact_persons: contact_persons, product_id: @product.id
+
     #customer_tab.tab-pane{:role => "tabpanel"}
-      = render "users/customers", customers: customers, product_id: @product.id
+      = render "users/customers", product_owner: @product.owner_customer, product_id: @product.id, submitted_contact_person: submitted_contact_person
 
 .modal-footer
   %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
