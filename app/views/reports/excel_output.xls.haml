@@ -41,63 +41,29 @@
       %th Total Amount
       %th Final Resolution
   %tbody
-    //0.0.0.0:3000/reports/excel_output.xls
     - @ticket.each do |ticket|
       %tr
-        %td= ticket.customer.name
+        %td= ticket.customer.full_name
+        %td= boolean_in_word ticket.customer.organization.present?, "Corporate", "Walking"
+        %td{style: "text-align: left;"}= ticket.customer.full_address
+        %td= ticket.customer.try(:district).try(:name)
+        - ticket.customer.contact_type_values.each do |contact|
+          %td
+            - if contact.contact_type_id == 3
+              #{contact.value}
+          %td
+            - if contact.contact_type_id == 2
+              #{contact.value}
         %td
-          - if ticket.customer.organization
-            Corporate
-          - else
-            Walking
-        %td{style: "text-align: left;"}
-          / #{ticket.customer.address1},#{ticket.customer.try(:address2)},#{ticket.customer.try(:address3)},#{ticket.customer.try(:address4)}
-          - if ticket.customer.address1.present?
-            #{ticket.customer.address1}
-          - if ticket.customer.address2.present?
-            , #{ticket.customer.address2}
-          - if ticket.customer.address3.present?
-            , #{ticket.customer.address3}
-          - if ticket.customer.address4.present?
-            , #{ticket.customer.address4}
+          = ticket.products.map { |p| p.brand_name }.join(", ")
         %td
-          = ticket.customer.try(:district).try(:name)
+          = ticket.products.map { |p| p.category_full_name_index }.join(", ")
         %td
-          - ticket.customer.contact_type_values.each do |mobile|
-            - if  mobile.contact_type_id == 2
-              #{mobile.value}
-            - else
-              - if mobile.contact_type_id == 3
-                #{mobile.value}
+          = ticket.products.map { |p| p.model_no }.join(", ")
         %td
-          - ticket.customer.contact_type_values.each do |email|
-            - if email.contact_type_id == 1
-              #{email.value}
+          = ticket.products.map { |p| p.product_no }.join(", ")
         %td
-          - if ticket.products
-            = ticket.products.map { |p| p.brand_name }.join(", ")
-            / - ticket.products.each do |product|
-            /   = product.try(:brand_name)
-        %td
-          // Category
-          - if ticket.products
-            = ticket.products.map { |p| p.category_full_name_index }.join(", ")
-        %td
-          - if ticket.products
-            = ticket.products.map { |p| p.model_no }.join(", ")
-            / - ticket.products.pluck(:model_no).join(", ")
-            / - ticket.products.each do |product|
-            /   = product.try(:model_no)
-        %td
-          // Product Number
-          - if ticket.products
-            = ticket.products.map { |p| p.product_no }.join(", ")
-            / - ticket.products.pluck(:product_no).join(", ")
-        %td
-          // Product Serial No
-          - if ticket.products
-            = ticket.products.map { |p| p.serial_no }.join(", ")
-            / - ticket.products.pluck(:serial_no).join(", ")
+          = ticket.products.map { |p| p.serial_no }.join(", ")
             
         %td
           // SLA
@@ -106,33 +72,29 @@
           // Job Number (Partner)
           = ticket.support_ticket_no
         %td
-          // CASE ID / HP Advisory
           = ticket.hp_cases.map { |h| h.case_id }.join(", ")
-          / - ticket.hp_cases.pluck(:case_id).join(", ")
 
         %td
-          // Log Date & Time
           = ticket.logged_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
         %td
-          // Engrs Assign Date & Time
           - if  ticket.owner_engineer.present?
-            = ticket.try(:owner_engineer).try(:created_at).to_date.strftime(INOCRM_CONFIG["short_date_format"])
+            = ticket.owner_engineer.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
         %td
           // Start Date & Time
           - if ticket.job_started_at.present?
-            = ticket.try(:job_started_at).to_date.strftime(INOCRM_CONFIG["short_date_format"])
+            = ticket.job_started_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
         %td
           // Start Action
-          = ticket.try(:ticket_start_action).try(:action)
+          = ticket.ticket_start_action.try(:action)
         %td
           // Problem Description
-          = ticket.try(:problem_description)
+          = ticket.problem_description
         %td
           // Support Group (SBU)
-          = ticket.try(:owner_engineer).try(:sbu_name)
+          = ticket.owner_engineer.try(:sbu_name)
         %td
           // Engineer Name (Last)
-          = ticket.try(:owner_engineer).try(:full_name)
+          = ticket.owner_engineer.try(:full_name)
 
         - spare_part_count.times.each do |e|
           - sp = ticket.ticket_spare_parts.to_a[e]
@@ -145,15 +107,12 @@
               = sp.spare_part_description
             %td
               // 1st event No.
-              = sp.request_from == 'M' ? ticket.ticket_spare_parts.first.ticket_spare_part_manufacture.try(:event_no) : ""
+              = sp.request_from == 'M' ? sp.ticket_spare_part_manufacture.try(:event_no) : ""
             %td
               // 1st Item Code
-              = sp.try(:inventory_product_generated_serial_item)
+              = sp.inventory_product_generated_serial_item
           - else
-            %td
-            %td
-            %td
-            %td
+            %td{colspan: 4}
 
         %td
           // Engrs Finished Date & Time
@@ -168,7 +127,7 @@
           - if ticket.status_hold
 
             // Hold Reason
-            = ticket.try(:reason).try(:reason)
+            = ticket.reason.try(:reason)
         %td
           // Re-Open Count
           = ticket.re_open_count
@@ -181,13 +140,13 @@
           - ded_amount = 0.00
           - ans = 0.00
 
-          - tot_amount = ticket.try(:final_invoice).try(:total_amount).try(:to_f)
-          - ded_amount = ticket.try(:final_invoice).try(:total_deduction).try(:to_f)
-          - if ticket.try(:final_invoice).try(:total_amount) and ticket.try(:final_invoice).try(:total_deduction)
+          - tot_amount = ticket.final_invoice.try(:total_amount).try(:to_f)
+          - ded_amount = ticket.final_invoice.try(:total_deduction).try(:to_f)
+          - if ticket.tryfinal_invoice.try(:total_amount) and ticket.final_invoice.try(:total_deduction)
             - ans = tot_amount - ded_amount
             = number_with_precision ans, precision: 2
           - else
             = number_with_precision 0, precision: 2
         %td
           // Final Resolution
-          = ticket.try(:resolution_summary)
+          = ticket.resolution_summary
