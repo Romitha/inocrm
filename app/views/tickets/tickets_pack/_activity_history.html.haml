@@ -524,17 +524,18 @@
                         Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
 
               -if action.action_id == 32 and action.action_warranty_extend
+                - action_warranty_extend = action.action_warranty_extend
                 .panel-body
                   .row
                     .col-md-4
                       Extended: #{boolean_in_word action.action_warranty_extend.extended, "Yes", "No"}
                     .col-md-4
-                      Reject Reason: #{action.action_warranty_extend.reject_reason.try(:reason)}
+                      Reject Reason: #{action_warranty_extend.reject_reason.try(:reason)}
                     .col-md-4
-                      Reject Note: #{action.action_warranty_extend.try(:note)}
+                      Reject Note: #{action_warranty_extend.try(:note)}
                   .row
                     .col-md-4
-                      Request Note: action.action_warranty_extend.reject_note
+                      Request Note: action_warranty_extend.reject_note
 
               -if action.action_id == 33 and action.request_spare_part
                 .panel-body 
@@ -674,18 +675,16 @@
                       Reject Note: #{action.action_warranty_extend.try(:note)}
 
               -if action.action_id == 40 and action.action_warranty_extend
+                - action_warranty_extend = action.action_warranty_extend
                 .panel-body 
                   .row
                     .col-md-4
-                      - if action.action_warranty_extend.extended == true
-                        Extended: Yes
-                      - else
-                        Extended: No
+                      = boolean_in_word action_warranty_extend.extended, "Yes", "No"
 
                     .col-md-4
-                      Reject Reason: #{action.action_warranty_extend.try(:reject_reason).try(:reason)}
+                      Reject Reason: #{action_warranty_extend.reject_reason.try(:reason)}
                     .col-md-4
-                      Reject Note: action.action_warranty_extend.reject_note
+                      Reject Note: action_warranty_extend.reject_note
 
               -if action.action_id == 41
                 .panel-body 
