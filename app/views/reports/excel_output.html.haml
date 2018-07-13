@@ -1,16 +1,9 @@
-/ = link_to excel_output_reports_path, "role" => "button",class: "btn btn-default btn-lg btn-block grid_button" do
-/   %i.fa.fa-sitemap
-/   Report
 .row
   .col-md-12
     %fieldset
       %legend Search Ticket
       #search_frame
         = form_tag excel_output_reports_path, method: :get, class: "form-horizontal" do
-          / .row
-          /   .col-md-4.brand
-          /     = label_tag "Store"
-          /     = select_tag :store_id, options_from_collection_for_select(Organization.stores, :id, :name, params[:store_id]), include_blank: true, class: "form-control"
           .row.small_scale_margin-top1
             .col-md-4
               = text_field_tag "range_from", params[:range_from], class: "form-control datepicker", placeholder: "Select From date"
@@ -21,9 +14,6 @@
               = text_field_tag "l_range_from", params[:l_range_from], class: "form-control datepicker", placeholder: "Select From logged date"
             .col-md-4
               = text_field_tag "l_range_to", params[:l_range_to], class: "form-control datepicker", placeholder: "Select To logged date"
-            / .col-md-4
-            /   = label_tag "Non Contract"
-            /   = check_box_tag "search_ticket[ticket_contract]", true
           .row.small_scale_margin-top1
             .col-md-3
               = label_tag "Brand"
@@ -44,12 +34,9 @@
             .col-md-4.small_scale_margin-top2
               = label_tag "Chargeable"
               = check_box_tag "search_ticket[cus_chargeable]", true
-              / = check_box_tag "search_ticket[cus_chargeable]", class: "form-control"
-              / = check_box_tag 'search_ticket[cus_chargeable]', 'search_ticket[cus_chargeable]', false
           .row.small_scale_margin-top1
             .col-md-4.small_scale_margin-top1
               = text_field_tag "search_ticket[products.serial_no]", nil, :placeholder => "Serial No", class: "form-control"
-              / = text_field_tag "model_no", :id, :name, (params[:search_ticket] and params[:search_inventory]["products.model_no"]), class: "form-control datepicker", placeholder: "Model No"
             .col-md-4.small_scale_margin-top1
               = text_field_tag "search_ticket[ticket_spare_parts.spare_part_no]", nil, :placeholder => "Spare Part No", class: "form-control"
             .col-md-4.small_scale_margin-top1
@@ -73,7 +60,6 @@
               = select_tag "search_ticket[customer.organization.id]", options_from_collection_for_select(Organization.customers, :id, :name), include_blank: true, class: "form-control"
               %br/
               = label_tag "Customer (Not Registered)"
-              / = select_tag "search_ticket[customer.name]", options_from_collection_for_select(Customer.all, :name, :name), include_blank: true, class: "form-control"
               = text_field_tag "search_ticket[customer.name]", nil, :placeholder => "Customer", class: "form-control"
             .col-md-4.small_scale_margin-top1
               = label_tag "District"

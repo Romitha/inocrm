@@ -149,8 +149,6 @@ class TicketsController < ApplicationController
 
     Rails.cache.write([:new_ticket, request.remote_ip.to_s, @ticket_time_now], @new_ticket)
 
-    @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now])
-
     Warranty
     respond_to do |format|
 
@@ -163,7 +161,11 @@ class TicketsController < ApplicationController
         User
         ContactNumber
 
-        @existing_customer = if @new_ticket.ticket_contract.present?
+        @ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now])
+
+        @existing_customer = if @ticket.customer.present?
+          @ticket.customer
+        elsif @new_ticket.ticket_contract.present?
           organization = @new_ticket.ticket_contract.organization
           address = (organization.addresses.primary_address.first || organization.addresses.first)
 
