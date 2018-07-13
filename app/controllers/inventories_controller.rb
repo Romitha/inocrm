@@ -227,7 +227,9 @@ class InventoriesController < ApplicationController
         if continue
           if (manufacture_warranty or manufacture_chargeable) and (rce or rpr)
 
-            ticket_spare_part.update_attributes(
+            ticket_spare_part.unused_reason = Reason.find_by_spare_part_unused(true) if ticket_spare_part.spare_part_status_use.try(:code) == "UUS" and !ticket_spare_part.unused_reason_id.present?
+
+            ticket_spare_part.update(
               part_returned: true,
               part_returned_at: DateTime.now,
               part_returned_by: current_user.id,
@@ -1979,7 +1981,12 @@ class InventoriesController < ApplicationController
             flash[:error]= "Estimate part is updated. but Bpm error"
           end
 
-          # view_context.ticket_bpm_headers params[:process_id], @ticket.id
+          if !estimation_closed and d19_estimate_internal_below_margin == "Y"
+              estimation.ticket_estimation_parts.each do |p|
+                ticket_spare_part = p.ticket_spare_part
+                view_context.ticket_bpm_headers params[:process_id], @ticket.id, ticket_spare_part.id
+              end
+          end
 
           update_headers("SPPT", @ticket)
 
