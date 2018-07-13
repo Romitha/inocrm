@@ -58,25 +58,25 @@
     = paginate @return_parts, remote: false, method: :get
     %tbody
       - @return_parts.each_with_index do |part, index|
-          %tr
-            - if part.issued and part.part_returned
-              %td
-                - if params[:page]
-                  = (index+1)+ 10*(params[:page].to_i-1)
-                - else
-                  = (index+1)
-              %td= part.formatted_issued_at
-              %td= part.issued_user
-              %td= part.store_name
-              %td= part.inventory_product.try(:generated_item_code)
-              %td= part.inventory_product.try(:description)
-              %td= part.requested_quantity
-              %td= part.ticket_no
-              %td= part.ticket_spare_part.try(:spare_part_no)
-              %td= part.ticket_spare_part.try(:spare_part_description)
-              %td= part.requested_user
-              %td= part.part_status
-              %td= part.rejected_reason
+        %tr
+          - if part.issued and part.part_returned
+            %td
+              - if params[:page]
+                = (index+1)+ 10*(params[:page].to_i-1)
+              - else
+                = (index+1)
+            %td= part.formatted_issued_at
+            %td= part.issued_user
+            %td= part.store_name
+            %td= part.inventory_product.try(:generated_item_code)
+            %td= part.inventory_product.try(:description)
+            %td= part.requested_quantity
+            %td= part.ticket_no
+            %td= part.ticket_spare_part.try(:spare_part_no)
+            %td= part.ticket_spare_part.try(:spare_part_description)
+            %td= part.requested_user
+            %td= part.part_status
+            %td= part.rejected_reason
 
-              %td
-                = link_to "View Ticket", ticket_path(part.ticket_id), target: "_blank", remote: false
+            %td
+              = link_to "View Ticket", ticket_path(part.ticket_id), target: "_blank", remote: false
