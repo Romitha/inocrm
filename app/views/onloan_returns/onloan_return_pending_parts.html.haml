@@ -59,7 +59,7 @@
     %tbody
       - @return_parts.each_with_index do |part, index|
         %tr
-          - if part.issued and part.part_returned
+          - if part.issued and !part.part_returned
             %td
               - if params[:page]
                 = (index+1)+ 10*(params[:page].to_i-1)
