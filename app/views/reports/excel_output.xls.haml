@@ -33,8 +33,6 @@
       %th Engrs Finished Date & Time
       %th Call Status
       %th Hold
-
-
       %th Hold Reason
       %th Re-Open Count
       %th Chargeable
@@ -47,6 +45,9 @@
         %td= boolean_in_word ticket.customer.organization.present?, "Corporate", "Walking"
         %td{style: "text-align: left;"}= ticket.customer.full_address
         %td= ticket.customer.try(:district).try(:name)
+        - if ticket.customer.contact_type_values.blank?
+          - 2.times.each do |count|
+            %td
         - ticket.customer.contact_type_values.each do |contact|
           %td
             - if contact.contact_type_id == 3
@@ -112,7 +113,8 @@
               // 1st Item Code
               = sp.inventory_product_generated_serial_item
           - else
-            %td{colspan: 4}
+            - 4.times.each do |count|
+              %td
 
         %td
           // Engrs Finished Date & Time
@@ -125,8 +127,6 @@
           = boolean_in_word ticket.status_hold, "Yes", "No"
         %td
           - if ticket.status_hold
-
-            // Hold Reason
             = ticket.reason.try(:reason)
         %td
           // Re-Open Count

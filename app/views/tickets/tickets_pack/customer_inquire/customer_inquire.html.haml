@@ -63,7 +63,7 @@
 
     = link_to ticket, target: "_blank" do
       .col-md-1= ticket.support_ticket_no
-    .col-md-1.has-tooltip{title: ticket.customer.try(:name), data: { toggle:"tooltip", placement: "top" } }= ticket.customer.try(:name).truncate(12)
+    .col-md-1.has-tooltip{title: ticket.customer.full_name, data: { toggle:"tooltip", placement: "top" } }= ticket.customer.full_name
     .col-md-1= ticket.products.first.try(:serial_no)
     .col-md-1= ticket.products.first.try(:brand_name)
     .col-md-1.has-tooltip{title: ticket.products.first.try(:category_full_name_index), data: { toggle:"tooltip", placement: "top" } }= ticket.products.first.try(:category_full_name_index).try(:truncate, 12)
