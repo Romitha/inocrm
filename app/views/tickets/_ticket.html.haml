@@ -17,9 +17,9 @@
       %dd= ticket.problem_description
       %br
       %dt Customer
-      %dd #{ticket.customer and ticket.customer.mst_title.title} #{ticket.customer and ticket.customer.name.capitalize }
+      %dd #{ticket.customer.full_name}
       %dt Contact person1
-      %dd #{ticket.contact_person1 and ticket.contact_person1.mst_title.title} #{ticket.contact_person1 and ticket.contact_person1.name.capitalize}
+      %dd #{ticket.contact_person1.full_name}
       %dt Contact person2
       %dd #{ticket.contact_person2 and ticket.contact_person2.mst_title.title} #{ticket.contact_person2 and ticket.contact_person2.name.capitalize}
       %dt Report person

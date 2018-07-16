@@ -29,10 +29,10 @@
       - else
         - num= num+1
         = (num)
-    .col-md-2= delivered_item.try(:organization).name
+    .col-md-2= delivered_item.organization.try(:name)
     .col-md-1= delivered_item.ticket.support_ticket_no
     .col-md-1= delivered_item.ticket.ticket_product_serial_no
-    .col-md-2= delivered_item.user.full_name
+    .col-md-2= delivered_item.user.try(:full_name)
     .col-md-1= delivered_item.delivered_to_sup_at.strftime(INOCRM_CONFIG["short_date_format"])
     .col-md-2= delivered_item.ticket.warranty_type_name
 
