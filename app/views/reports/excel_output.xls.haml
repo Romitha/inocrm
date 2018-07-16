@@ -6,6 +6,7 @@
       %th Customer Type (Corporate/Walking)
       %th Customer Address
       %th District
+
       %th Customer Email
       %th Customer Contact No
       %th Product Brand
@@ -40,31 +41,41 @@
       %th Final Resolution
   %tbody
     - @ticket.each do |ticket|
+      - product = ticket.products.first
       %tr
         %td= ticket.customer.full_name
         %td= boolean_in_word ticket.customer.organization.present?, "Corporate", "Walking"
         %td{style: "text-align: left;"}= ticket.customer.full_address
         %td= ticket.customer.try(:district).try(:name)
-        - if ticket.customer.contact_type_values.blank?
+
+        - if ticket.customer.contact_type_values.select{|ct| [2, 3].include?(ct.contact_type_id) }.blank?
           - 2.times.each do |count|
             %td
-        - ticket.customer.contact_type_values.each do |contact|
-          %td
-            - if contact.contact_type_id == 3
-              #{contact.value}
-          %td
-            - if contact.contact_type_id == 2
-              #{contact.value}
+        - else
+          - ticket.customer.contact_type_values.select{|ct| [2, 3].include?(ct.contact_type_id) }.each do |contact|
+            %td
+              = contact.contact_type.inspect
+              - if contact.contact_type_id == 3
+                = contact.value
+              - else
+                no
+            %td
+              - if contact.contact_type_id == 2
+                = contact.value
+              - else
+                no
+            - break
+
         %td
-          = ticket.products.map { |p| p.brand_name }.join(", ")
+          = product.brand_name
         %td
-          = ticket.products.map { |p| p.category_full_name_index }.join(", ")
+          = product.category_full_name_index
         %td
-          = ticket.products.map { |p| p.model_no }.join(", ")
+          = product.model_no
         %td
-          = ticket.products.map { |p| p.product_no }.join(", ")
+          = product.product_no
         %td
-          = ticket.products.map { |p| p.serial_no }.join(", ")
+          = product.serial_no
             
         %td
           // SLA
@@ -79,11 +90,11 @@
           = ticket.logged_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
         %td
           - if  ticket.owner_engineer.present?
-            = ticket.owner_engineer.created_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+            = ticket.owner_engineer.created_at.to_date.strftime("#{INOCRM_CONFIG["short_date_format"]} #{INOCRM_CONFIG['time_format']}")
         %td
           // Start Date & Time
           - if ticket.job_started_at.present?
-            = ticket.job_started_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+            = ticket.job_started_at.to_date.strftime("#{INOCRM_CONFIG["short_date_format"]} #{INOCRM_CONFIG['time_format']}")
         %td
           // Start Action
           = ticket.ticket_start_action.try(:action)
