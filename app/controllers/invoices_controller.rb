@@ -586,7 +586,9 @@ class InvoicesController < ApplicationController
     user_ticket_action.build_act_quotation(customer_quotation_id: @customer_quotation.id)
     user_ticket_action.save
 
-    redirect_to todos_url, notice: "Successfully updated."
+    redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
+
+    redirect_to redirect_response[:url], notice: [redirect_response[:flash_message], @flash_message].join(", ")
 
   end
 
@@ -760,17 +762,20 @@ class InvoicesController < ApplicationController
         bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
         if bpm_response[:status].upcase == "SUCCESS"
-          flash[:notice] = "Successfully updated"
+          @flash_message = "Successfully updated"
         else
-          flash[:error] = "Ticket and invoice is updated. but Bpm error"
+          @flash_message = "Ticket and invoice is updated. but Bpm error"
         end
       else
-        flash[:error] = "Bpm error."
+        @flash_message = "Bpm error."
       end
     else
-      flash[:error] = "Invoice or Terminate job is empty."
+      @flash_message = "Invoice or Terminate job is empty."
     end
-    redirect_to todos_url
+
+    redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
+
+    redirect_to redirect_response[:url], notice: [redirect_response[:flash_message], @flash_message].join(", ")
 
   end
 

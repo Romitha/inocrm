@@ -217,7 +217,7 @@ class InventoriesController < ApplicationController
           ticket_spare_part.ticket_spare_part_manufacture.update po_required: false
         end
 
-        flash[:notice] = "Termination is successfully done."
+        @flash_message = "Termination is successfully done."
         goto_url = same_page
       end
     
@@ -298,7 +298,7 @@ class InventoriesController < ApplicationController
         end
       else
 
-        flash[:error] = "spare part is updated. But not returned"
+        flash[:@flash_message] = "spare part is updated. But not returned"
       end
 
     elsif params[:store_request]
@@ -330,7 +330,7 @@ class InventoriesController < ApplicationController
         end
 
       else
-        flash[:error] = "Bpm error. ticket is not updated"
+        @flash_message = "Bpm error. ticket is not updated"
       end    
 
     elsif params[:recieved]
@@ -362,7 +362,7 @@ class InventoriesController < ApplicationController
         end
 
       else
-        flash[:error] = "Bpm error. ticket is not updated"
+        @flash_message = "Bpm error. ticket is not updated"
       end    
 
     elsif params[:non_stock_complete]
@@ -370,7 +370,7 @@ class InventoriesController < ApplicationController
 
         save_ticket_spare_part["CLS", 79] 
 
-        flash[:notice] = "successfully completed."
+        @flash_message = "successfully completed."
         goto_url = same_page
       end
 
@@ -393,15 +393,18 @@ class InventoriesController < ApplicationController
       end
 
       if bpm_response[:status].upcase == "SUCCESS"
-        flash[:notice] = "Successfully updated."
+        @flash_message = "Successfully updated."
       else
-        flash[:error] = "spare part is updated. but Bpm error"
+        @flash_message = "spare part is updated. but Bpm error"
       end
       
-      flash[:error] = "#{@flash_message} Unable to start new process." if @bpm_process_error
+      @flash_message = "#{@flash_message} Unable to start new process." if @bpm_process_error
     end
 
-    redirect_to goto_url
+    redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
+
+    redirect_to redirect_response[:url], notice: [redirect_response[:flash_message], @flash_message].join(", ")
+
   end
 
   def update_onloan_part_order
@@ -537,9 +540,10 @@ class InventoriesController < ApplicationController
       end
     end
 
-    # view_context.ticket_bpm_headers params[:process_id], @ticket.id, nil, request_onloan_spare_part_id
+    redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
 
-    redirect_to todos_url, notice: @flash_message
+    redirect_to redirect_response[:url], notice: [redirect_response[:flash_message], @flash_message].join(", ")
+
   end
 
   def load_estimation
@@ -619,9 +623,9 @@ class InventoriesController < ApplicationController
             bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
             if bpm_response[:status].upcase == "SUCCESS"
-              flash[:notice] = "Successfully updated"
+              @flash_message = "Successfully updated"
             else
-              flash[:error] = "ticket is updated. but Bpm error"
+              @flash_message = "ticket is updated. but Bpm error"
             end
           end
 
@@ -665,10 +669,10 @@ class InventoriesController < ApplicationController
           end
         end
 
-        flash[:notice] = "Successfully updated"
+        @flash_message = "Successfully updated"
 
       else
-        flash[:error] = "Sorry! unable to update"
+        @flash_message = "Sorry! unable to update"
 
       end
       if request_spare_part
@@ -676,7 +680,7 @@ class InventoriesController < ApplicationController
           action_id = ''
 
           if ticket_estimation_part.ticket_spare_part.part_terminated
-            flash[:notice] = "Part Terminated"
+            @flash_message = "Part Terminated"
           else
             # bpm output variables
             bpm_variables = view_context.initialize_bpm_variables

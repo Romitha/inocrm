@@ -54,16 +54,11 @@
         - else
           - ticket.customer.contact_type_values.select{|ct| [2, 3].include?(ct.contact_type_id) }.each do |contact|
             %td
-              = contact.contact_type.inspect
               - if contact.contact_type_id == 3
                 = contact.value
-              - else
-                no
             %td
               - if contact.contact_type_id == 2
                 = contact.value
-              - else
-                no
             - break
 
         %td
@@ -78,75 +73,58 @@
           = product.serial_no
             
         %td
-          // SLA
           = ticket.sla_description
         %td
-          // Job Number (Partner)
           = ticket.support_ticket_no
         %td
           = ticket.hp_cases.map { |h| h.case_id }.join(", ")
 
         %td
-          = ticket.logged_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+          = ticket.logged_at.to_date.strftime("#{INOCRM_CONFIG["short_date_format"]} #{INOCRM_CONFIG['time_format']}")
         %td
           - if  ticket.owner_engineer.present?
             = ticket.owner_engineer.created_at.to_date.strftime("#{INOCRM_CONFIG["short_date_format"]} #{INOCRM_CONFIG['time_format']}")
         %td
-          // Start Date & Time
           - if ticket.job_started_at.present?
             = ticket.job_started_at.to_date.strftime("#{INOCRM_CONFIG["short_date_format"]} #{INOCRM_CONFIG['time_format']}")
         %td
-          // Start Action
           = ticket.ticket_start_action.try(:action)
         %td
-          // Problem Description
           = ticket.problem_description
         %td
-          // Support Group (SBU)
           = ticket.owner_engineer.try(:sbu_name)
         %td
-          // Engineer Name (Last)
           = ticket.owner_engineer.try(:full_name)
 
         - spare_part_count.times.each do |e|
           - sp = ticket.ticket_spare_parts.to_a[e]
           - if sp.present?
             %td
-              // 1st Part NumberIn Use
               = sp.spare_part_no
             %td
-              // 1st Part Description
               = sp.spare_part_description
             %td
-              // 1st event No.
               = sp.request_from == 'M' ? sp.ticket_spare_part_manufacture.try(:event_no) : ""
             %td
-              // 1st Item Code
               = sp.inventory_product_generated_serial_item
           - else
             - 4.times.each do |count|
               %td
 
         %td
-          // Engrs Finished Date & Time
           = ticket.try(:job_finished_at).try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
         %td
-          // Call Status
           = ticket.ticket_status_name
         %td
-          // Hold
           = boolean_in_word ticket.status_hold, "Yes", "No"
         %td
           - if ticket.status_hold
             = ticket.reason.try(:reason)
         %td
-          // Re-Open Count
           = ticket.re_open_count
         %td
-          // Chargeable
           = boolean_in_word ticket.cus_chargeable, "Yes", "No"
         %td
-          // Total Amount
           - tot_amount = 0.00
           - ded_amount = 0.00
           - ans = 0.00
@@ -159,5 +137,4 @@
           - else
             = number_with_precision 0, precision: 2
         %td
-          // Final Resolution
           = ticket.resolution_summary
