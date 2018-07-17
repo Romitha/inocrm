@@ -2141,7 +2141,11 @@ class TicketsController < ApplicationController
     else
       @flash_message = @flash_message
     end
-    redirect_to @ticket, notice: @flash_message
+
+    redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
+
+    redirect_to redirect_response[:url], notice: [redirect_response[:flash_message], @flash_message].join(", ")
+
   end
 
   def update_collect_parts
@@ -4663,13 +4667,16 @@ class TicketsController < ApplicationController
         @ticket_engineer = TicketEngineer.find params[:engineer_id]
         @ticket_engineer.update job_started_at: DateTime.now if !@ticket_engineer.job_started_at.present?
 
-        redirect_to todos_url, notice: "Ticket Warranty Type and Customer Chargeable Updated."
+        @flash_message = "Ticket Warranty Type and Customer Chargeable Updated."
       else
-        redirect_to todos_url, notice: "Ticket Warranty Type and Customer Chargeable faild to Updated."
+        @flash_message = "Ticket Warranty Type and Customer Chargeable faild to Updated."
       end
     else
-      redirect_to todos_url, alert: "Selected warranty is not presently applicable to ticket."
+      @flash_message = "Selected warranty is not presently applicable to ticket."
     end
+
+    redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
+    redirect_to redirect_response[:url], {redirect_response[:message_type] => "#{redirect_response[:flash_message]} - #{@flash_message}"}
 
   end
 
@@ -4679,10 +4686,14 @@ class TicketsController < ApplicationController
       user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(73).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id)
       user_ticket_action.build_action_warranty_repair_type(ticket_repair_type_id: @ticket.repair_type_id)
 
-      redirect_to ticket_url(@ticket), notice: "ticket repair type is updated." if @ticket.save
+      @flash_message = "ticket repair type is updated." if @ticket.save
     else
-      redirect_to ticket_url(@ticket), notice: "ticket repair type is faild to updated."
+      @flash_message = "ticket repair type is faild to updated."
     end
+
+    redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
+    redirect_to redirect_response[:url], {redirect_response[:message_type] => "#{redirect_response[:flash_message]} - #{@flash_message}"}
+
   end
 
   def update_re_assign
@@ -4749,11 +4760,15 @@ class TicketsController < ApplicationController
       end
 
       WebsocketRails[:posts].trigger 'new', {task_name: "Hold for ticket", task_id: @ticket.id, task_verb: "updated.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
-      redirect_to @ticket, notice: "Ticket is successfully updated."
+      @flash_message = "Ticket is successfully updated."
 
     else
-      redirect_to @ticket, alert: "Ticket is failed to update."
+      @flash_message = "Ticket is failed to update."
     end
+
+    redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
+    redirect_to redirect_response[:url], {redirect_response[:message_type] => "#{redirect_response[:flash_message]} - #{@flash_message}"}
+
   end
 
   def update_un_hold
@@ -4780,10 +4795,14 @@ class TicketsController < ApplicationController
 
       WebsocketRails[:posts].trigger 'new', {task_name: "Un hold for ticket", task_id: @ticket.id, task_verb: "updated.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
 
-      redirect_to @ticket, notice: "Ticket is successfully updated."
+      @flash_message = "Ticket is successfully updated."
     else
-      redirect_to @ticket, alert: "Ticket is failed to update."
+      @flash_message = "Ticket is failed to update."
     end
+
+    redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
+    redirect_to redirect_response[:url], {redirect_response[:message_type] => "#{redirect_response[:flash_message]} - #{@flash_message}"}
+
   end
 
   def update_create_fsr
@@ -4861,6 +4880,7 @@ class TicketsController < ApplicationController
     redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
 
     redirect_to redirect_response[:url], notice: [redirect_response[:flash_message], @flash_message].join(", ")
+
   end
 
   def update_terminate_job
@@ -4922,7 +4942,9 @@ class TicketsController < ApplicationController
       # redirect_to @ticket, alert: @flash_message
     end
 
-    redirect_to @ticket, alert: @flash_message
+    redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
+
+    redirect_to redirect_response[:url], notice: [redirect_response[:flash_message], @flash_message].join(", ")
 
   end
 
@@ -4975,7 +4997,7 @@ class TicketsController < ApplicationController
             @flash_message = "ticket is updated. but Bpm error"
           end
 
-          # redirect_to todos_url, notice: @flash_message
+          # @flash_message = @flash_message
           redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
           # redirect_to redirect_response[:url], redirect_response[:flash_message]
         else
@@ -5289,7 +5311,10 @@ class TicketsController < ApplicationController
     else
       @flash_message = @flash_message
     end
-    redirect_to @ticket, notice: @flash_message
+
+    redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
+
+    redirect_to redirect_response[:url], notice: [redirect_response[:flash_message], @flash_message].join(", ")
   end
 
   def update_recieve_unit
@@ -5313,7 +5338,10 @@ class TicketsController < ApplicationController
     else
       @flash_message = "Un successfully updated."
     end
-    redirect_to @ticket, notice: @flash_message
+
+    redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
+
+    redirect_to redirect_response[:url], notice: [redirect_response[:flash_message], @flash_message].join(", ")
   end
 
   def update_job_estimation_request #External Job
@@ -5606,7 +5634,11 @@ class TicketsController < ApplicationController
     else
       @flash_message = @flash_message
     end
-    redirect_to @ticket, notice: @flash_message
+
+    redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
+
+    redirect_to redirect_response[:url], notice: [redirect_response[:flash_message], @flash_message].join(", ")
+
   end
 
   def hp_po

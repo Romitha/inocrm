@@ -750,9 +750,9 @@ class InventoriesController < ApplicationController
               if bpm_response1[:status].try(:upcase) == "SUCCESS"
                 @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name], engineer_id: engineer_id, spare_part_id: request_spare_part_id, re_open_index: @ticket.re_open_count)
                 view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, request_spare_part_id
-                flash[:notice] = "Successfully part requested"
+                @flash_message = "Successfully part requested"
               else
-                flash[:error] = "Sorry! unable to requeted the part"
+                @flash_message = "Sorry! unable to requeted the part"
               end
             end
 
@@ -764,7 +764,11 @@ class InventoriesController < ApplicationController
       view_context.ticket_bpm_headers params[:process_id], @ticket.id
 
     end
-    redirect_to todos_url
+
+    redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
+
+    redirect_to redirect_response[:url], notice: [redirect_response[:flash_message], @flash_message].join(", ")
+
 
   end
 
@@ -865,7 +869,11 @@ class InventoriesController < ApplicationController
     else
       @flash_message = {error: "Bpm error. ticket is not updated"}
     end
-    redirect_to todos_url, @flash_message
+
+    redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
+
+    redirect_to redirect_response[:url], notice: [redirect_response[:flash_message], @flash_message].join(", ")
+
   end
 
   def update_estimate_job
@@ -946,7 +954,11 @@ class InventoriesController < ApplicationController
         @flash_message = "Bpm error. ticket is not updated"
       end
     end
-    redirect_to todos_url, notice: "Successfully updated."
+
+    redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
+
+    redirect_to redirect_response[:url], notice: [redirect_response[:flash_message], @flash_message].join(", ")
+
   end
 
   def update_low_margin_estimate
@@ -1005,7 +1017,11 @@ class InventoriesController < ApplicationController
         end
       end
     end
-    redirect_to todos_url, notice: "Successfully updated."
+
+    redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
+
+    redirect_to redirect_response[:url], notice: [redirect_response[:flash_message], @flash_message].join(", ")
+
   end
 
   def update_delivery_unit
@@ -1159,7 +1175,7 @@ class InventoriesController < ApplicationController
 
     if continue
       if @allready_received
-      flash[:error] = "Part allready returned."
+        @flash_message = "Part allready returned."
       else
 
         if params[:reject_reason] # Reject the request
@@ -1229,9 +1245,9 @@ class InventoriesController < ApplicationController
               end
             end
 
-            flash[:notice] = "Successfully updated."
+            @flash_message = "Successfully updated."
           else
-            flash[:error] = "ticket is updated. but Bpm error"
+            @flash_message = "ticket is updated. but Bpm error"
           end
 
         else
@@ -1798,18 +1814,21 @@ class InventoriesController < ApplicationController
             bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
             if bpm_response[:status].upcase == "SUCCESS"
-              flash[:notice] = "Successfully updated."
+              @flash_message = "Successfully updated."
             else
-              flash[:error] = "ticket is updated. but Bpm error"
+              @flash_message = "ticket is updated. but Bpm error"
             end
 
           end
         end
       end
     else
-      flash[:notice] = "ticket is not updated. Bpm error"
+      @flash_message = "ticket is not updated. Bpm error"
     end
-    redirect_to todos_url
+
+    redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
+
+    redirect_to redirect_response[:url], notice: [redirect_response[:flash_message], @flash_message].join(", ")
 
   end
 
@@ -1834,7 +1853,7 @@ class InventoriesController < ApplicationController
           estimation.update status_id: EstimationStatus.find_by_code("CLS").id
           estimation_closed = true
           @jump_next = true
-          flash[:notice]= "Requested Part is terminated."
+          @flash_message = "Requested Part is terminated."
         else
           estimation.update estimation_params
 
@@ -1856,11 +1875,11 @@ class InventoriesController < ApplicationController
 
             d19_estimate_internal_below_margin = (((t_est_price - t_cost_price)*100/t_cost_price) < CompanyConfig.first.try(:sup_internal_part_profit_margin).to_f) ? "Y" : "N"  if CompanyConfig.first.try(:sup_internal_part_profit_margin).to_f > 0
 
-            d19_estimate_internal_below_margin = "Y" if CompanyConfig.first.try(:sup_ch_estimation_need_approval)
           else
             estimation.update_attribute(:cust_approval_required, false)
-            d19_estimate_internal_below_margin = "Y" if CompanyConfig.first.try(:sup_nc_estimation_need_approval)
           end
+
+          d19_estimate_internal_below_margin = "Y" if CompanyConfig.first.try(:sup_nc_estimation_need_approval)
 
           if @jump_next
             if d19_estimate_internal_below_margin == "N"
@@ -1873,7 +1892,7 @@ class InventoriesController < ApplicationController
               estimation.update status_id: EstimationStatus.find_by_code('EST').id            
             end
             
-            estimation.update(approval_required: (d19_estimate_internal_below_margin == "Y" ? true : false), estimated_at: DateTime.now, estimated_by: current_user.id)
+            estimation.update(approval_required: (d19_estimate_internal_below_margin == "Y"), estimated_at: DateTime.now, estimated_by: current_user.id)
 
             #Set Action (74) part estimation completed, DB.spt_act_request_spare_part
             user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(74).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
@@ -1972,37 +1991,48 @@ class InventoriesController < ApplicationController
             end
 
             if all_success
-              flash[:notice]= "Successfully updated"
+              @flash_message = "Successfully updated"
             else
-              flash[:error]= "Estimate part is updated. but Bpm error for parts ( #{error_parts.join(', ')} )"
+              @flash_message = "Estimate part is updated. but Bpm error for parts ( #{error_parts.join(', ')} )"
             end
 
           else
-            flash[:error]= "Estimate part is updated. but Bpm error"
+            @flash_message = "Estimate part is updated. but Bpm error"
           end
 
-          if !estimation_closed and d19_estimate_internal_below_margin == "Y"
+          File.open(Rails.root.join("error.txt"), "w") do |io|
+            io.append(d19_estimate_internal_below_margin)
+            if d19_estimate_internal_below_margin == "Y"
               estimation.ticket_estimation_parts.each do |p|
+                io.append("****************************")
+                io.append(@inventory_serial_item.inspect)
+                io.append(params[:process_id])
                 ticket_spare_part = p.ticket_spare_part
                 view_context.ticket_bpm_headers params[:process_id], @ticket.id, ticket_spare_part.id
               end
+            end
+            io.close
           end
 
           update_headers("SPPT", @ticket)
 
         else
-          flash[:error] = "Estimate updated. But not completed."
+          @flash_message  = "Estimate updated. But not completed."
         end
 
       else
         bpm_variables = view_context.initialize_bpm_variables
         bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
-        flash[:error] = "Already estimated."
+        @flash_message  = "Already estimated."
       end
     else
-      flash[:error]= "Unable to update. Bpm error"
+      @flash_message = "Unable to update. Bpm error"
     end
-    redirect_to todos_url
+
+    redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
+
+    redirect_to redirect_response[:url], notice: [redirect_response[:flash_message], @flash_message].join(", ")
+
   end
 
   def update_low_margin_estimate_parts_approval
