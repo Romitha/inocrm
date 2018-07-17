@@ -75,8 +75,6 @@
     .form-group
       #mf_order_templates
 
-/ = Rails.cache.fetch(["/tickets/order_manufacture_parts", params[:task_id]]).inspect
-
 #ticket1_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "ticket1_modal", "aria-hidden" => true}
   .modal-dialog.modal-lg
     .modal-content

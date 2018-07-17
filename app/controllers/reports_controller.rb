@@ -307,16 +307,6 @@ class ReportsController < ApplicationController
       params[:sort_by] = true
       params[:query] = refined_search
 
-      # @customer_name = Organization.find_by_id(params[:search_contracts]["ticket_contract.organization.id"]).try(:name)
-      # @service_provider = Organization.find_by_id(params[:search_contracts]["ticket_contract.owner_organization.id"]).try(:name)
-      # @account_manager = params[:search_contracts]["ticket_contract.organization.account.get_account_manager"]
-      # @season = params[:search_contracts]["ticket_contract.season"]
-      # @date_from = params[:ticket_contract_contract_start_at]
-      # @date_to = params[:ticket_contract_contract_end_at]
-      # @brand_name = params[:search_contracts]["ticket_contract.brand_name"]
-      # @category_name = ProductCategory.find_by_id(params[:search_contracts]["ticket_contract.category_cat_id"]).try(:name)
-      # @contract_type = TicketContractType.find_by_id(params[:search_contracts]["ticket_contract.ticket_contract_type.id"]).try(:name)
-      # @currnecy = TicketCurrency.find_by_id(params[:search_contracts]["ticket_contract.ticket_currency.id"]).try(:code)
       after_contract_products = []
       before_contract_products = Ticket.search(params)
       if params[:ticket_contract_contract_start_at].present? and params[:ticket_contract_contract_end_at].present?
@@ -384,16 +374,6 @@ class ReportsController < ApplicationController
       params[:sort_by] = true
       params[:query] = refined_search
       params[:non_report] = true
-      # @customer_name = Organization.find_by_id(params[:search_contracts]["ticket_contract.organization.id"]).try(:name)
-      # @service_provider = Organization.find_by_id(params[:search_contracts]["ticket_contract.owner_organization.id"]).try(:name)
-      # @account_manager = params[:search_contracts]["ticket_contract.organization.account.get_account_manager"]
-      # @season = params[:search_contracts]["ticket_contract.season"]
-      # @date_from = params[:ticket_contract_contract_start_at]
-      # @date_to = params[:ticket_contract_contract_end_at]
-      # @brand_name = params[:search_contracts]["ticket_contract.brand_name"]
-      # @category_name = ProductCategory.find_by_id(params[:search_contracts]["ticket_contract.category_cat_id"]).try(:name)
-      # @contract_type = TicketContractType.find_by_id(params[:search_contracts]["ticket_contract.ticket_contract_type.id"]).try(:name)
-      # @currnecy = TicketCurrency.find_by_id(params[:search_contracts]["ticket_contract.ticket_currency.id"]).try(:code)
       after_contract_products = []
       before_contract_products = Ticket.search(params)
       if params[:ticket_contract_contract_start_at].present? and params[:ticket_contract_contract_end_at].present?
@@ -931,7 +911,7 @@ class ReportsController < ApplicationController
       # refined_search_ticket = [refined_search_ticket, "logged_at:[#{params[:l_range_from].present? ? params[:l_range_from] : (Date.today - 3.months) } TO #{params[:l_range_to].present? ? params[:l_range_to] : Date.today }]"]
       # refined_search_ticket << " AND logged_at:[* TO #{Date.today}]"
 
-      request.format = "xls"
+      request.format = "csv"
     end
     params[:per_page] = 10000
     params[:query] = refined_search_ticket
@@ -941,7 +921,7 @@ class ReportsController < ApplicationController
     # @ticket = Ticket.search()
     respond_to do |format|
       if params[:search].present?
-        format.xls
+        format.csv
       else
         format.html
       end
