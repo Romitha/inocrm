@@ -2001,11 +2001,11 @@ class InventoriesController < ApplicationController
           end
 
           File.open(Rails.root.join("error.txt"), "w") do |io|
-            io << d19_estimate_internal_below_margin
+            io << "#{d19_estimate_internal_below_margin}\n"
             if d19_estimate_internal_below_margin == "Y"
               estimation.ticket_estimation_parts.each do |p|
-                io << "****************************"
-                io << @inventory_serial_item.inspect
+                io << "****************************\n"
+                io << p.inspect
                 io << params[:process_id]
                 ticket_spare_part = p.ticket_spare_part
                 view_context.ticket_bpm_headers params[:process_id], @ticket.id, ticket_spare_part.id
