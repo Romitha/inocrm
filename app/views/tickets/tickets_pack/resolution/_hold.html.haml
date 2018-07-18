@@ -2,7 +2,7 @@
 
 - from_template = (uri.path == "/tickets/call_mf_order_template" ? "/tickets/order_manufacture_parts" : uri.path == "/tickets/call_resolution_template" ? "/tickets/resolution" : "")
 
-- uri_path = ["/tickets/resolution", "/tickets/order_manufacture_parts"].include?(uri.path) ? uri.path : from_order_template.present? ? from_order_template : "/#{params[:controller].split('/').last}/#{params[:action]}"
+- uri_path = ["/tickets/resolution", "/tickets/order_manufacture_parts"].include?(uri.path) ? uri.path : from_template.present? ? from_template : "/#{params[:controller].split('/').last}/#{params[:action]}"
 
 %fieldset
   %legend Hold
