@@ -39,7 +39,7 @@
           %td= part_history.spare_part_no
           %td= part_history.spare_part_description
           %td= part_history.requested_at.strftime(INOCRM_CONFIG["short_date_format"])
-          %td= part_history.requested_by
+          %td= User.cached_find_by_id(part_history.requested_by).full_name
           %td= part_history.try(:ticket_spare_part_manufacture).try(:event_no)
           %td= part_history.spare_part_status_use.name
           %td= part_history.spare_part_status_action.name
