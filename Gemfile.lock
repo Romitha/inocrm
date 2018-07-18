@@ -55,6 +55,14 @@ GEM
       sshkit (>= 1.6.1, != 1.7.0)
     ansi (1.5.0)
     arel (6.0.4)
+    axlsx (3.0.0.pre)
+      htmlentities (~> 4.3, >= 4.3.4)
+      mimemagic (~> 0.3)
+      nokogiri (~> 1.8, >= 1.8.2)
+      rubyzip (~> 1.2, >= 1.2.1)
+    axlsx_rails (0.1.5)
+      axlsx
+      rails (>= 3.1)
     backburner (1.4.1)
       beaneater (~> 1.0)
       concurrent-ruby (~> 1.0.1)
@@ -215,6 +223,7 @@ GEM
       haml (>= 4.0, < 6)
       nokogiri (>= 1.6.0)
       ruby_parser (~> 3.5)
+    htmlentities (4.3.4)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
     httpi (2.4.3)
@@ -264,6 +273,7 @@ GEM
     migration_comments (0.4.1)
       activerecord (>= 4.2.0)
     mime-types (2.99.3)
+    mimemagic (0.3.2)
     mini_magick (4.8.0)
     mini_mime (1.0.0)
     mini_portile2 (2.3.0)
@@ -281,7 +291,7 @@ GEM
       net-ssh (>= 2.6.5)
     net-ssh (4.2.0)
     netrc (0.11.0)
-    nokogiri (1.8.2)
+    nokogiri (1.8.4)
       mini_portile2 (~> 2.3.0)
     orm_adapter (0.5.0)
     public_suffix (3.0.2)
@@ -449,6 +459,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  axlsx (~> 3.0.0.pre)
+  axlsx_rails
   backburner
   bootstrap-datepicker-rails
   bootstrap-editable-rails
