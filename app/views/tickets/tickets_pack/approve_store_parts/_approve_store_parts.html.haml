@@ -201,7 +201,6 @@
       .row
         - if @onloan_request
           .col-md-6
-            / = sto.input :approved, as: :radio_buttons, collection: {"Approve" => "true", "Reject" => "false"}, input_html: {class: "request_approved", name: "ticket[ticket_on_loan_spare_parts_attributes][#{sto.object.id}][approved]"}, required: true
             - approved_name = spare_part.present? ? "ticket_spare_part[ticket_on_loan_spare_parts_attributes][#{sto.object.id}][approved]" : "ticket[ticket_on_loan_spare_parts_attributes][#{sto.object.id}][approved]"
             = sto.input :approved, as: :radio_buttons, collection: {"Approve" => "true", "Reject" => "false"}, input_html: {class: "request_approved", name: approved_name}, required: true
 
@@ -275,7 +274,7 @@
           = f.input :note, input_html: { value: nil}
           = simple_format f.object.note
         - else
-          = f.input :remarks, input_html: { value: nil}
+          = f.input :remarks, required: true, input_html: { value: nil}
           = simple_format f.object.remarks
 
         = f.submit "Save", class: "btn btn-success btn-sm", id: "approve_store_part"
