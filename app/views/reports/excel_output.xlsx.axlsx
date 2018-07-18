@@ -1,0 +1,80 @@
+spare_part_count = 10
+
+headers = ["Company Name", "Customer Type (Corporate/Walking)", "Customer Address", "District", 
+  "Customer Email", "Customer Contact No", "Product Brand", "Category", "Model Number", "Product Number", "Product Serial No", "SLA", "Job Number (Partner)", "CASE ID / HP Advisory", "Log Date", "Engineer Assign Date", "Start Date", "Start Action", "Problem Description", "Support Group (SBU)", "Engineer Name"]
+
+spare_part_headers = ["Part NumberIn Use", "Part Description", "Event No", "Item Code"]
+total_spare_part_headers = []
+spare_part_count.times.each{|s| spare_part_headers.each{|d| total_spare_part_headers << "#{s+1} #{d}" } }
+
+headers.concat(total_spare_part_headers)
+headers.concat(["Engrs Finished Date & Time", "Call Status", "Hold", "Hold Reason", "Re-Open Count", "Chargeable", "Total Amount", "Final Resolution"])
+
+wb = xlsx_package.workbook
+wb.add_worksheet(name: "ERP report") do |sheet|
+  sheet.add_row headers
+
+  @ticket.each do |ticket|
+    product = ticket.products.first
+
+    ticket_content = [ticket.customer.full_name, boolean_in_word(ticket.customer.organization.present?, "Corporate", "Walking"), ticket.customer.full_address, ticket.customer.try(:district).try(:name) ]
+
+    2.times.each{|e| ticket_content << "no"} if ticket.customer.contact_type_values.select{|ct| [2, 3].include?(ct.contact_type_id) }.empty?
+    ticket.customer.contact_type_values.select{|ct| [2, 3].include?(ct.contact_type_id) }.each do |contact|
+      ticket_content << contact.contact_type_id == 3 ? contact.value : ""
+      ticket_content << contact.contact_type_id == 2 ? contact.value : ""
+
+      break
+    end
+
+    product_info = [product.brand_name, product.category_full_name_index, product.model_no, product.product_no, product.serial_no, ticket.sla_description, ticket.support_ticket_no, ticket.hp_cases.map { |h| h.case_id }.join(", ")]
+
+    ticket_content.concat(product_info)
+
+    ticket_content << ticket.logged_at.to_date.strftime("#{INOCRM_CONFIG["short_date_format"]} #{INOCRM_CONFIG['time_format']}")
+    ticket_content << (ticket.owner_engineer.present? ? ticket.owner_engineer.created_at.to_date.strftime("#{INOCRM_CONFIG["short_date_format"]} #{INOCRM_CONFIG['time_format']}") : "")
+    ticket_content << (ticket.job_started_at.present? ? ticket.job_started_at.to_date.strftime("#{INOCRM_CONFIG["short_date_format"]} #{INOCRM_CONFIG['time_format']}") : "")
+    ticket_content << ticket.ticket_start_action.try(:action)
+    ticket_content << ticket.problem_description
+    ticket_content << ticket.owner_engineer.try(:sbu_name)
+    ticket_content << ticket.owner_engineer.try(:full_name)
+
+    spare_part_count.times.each do |e|
+      spare_part_info = []
+      sp = ticket.ticket_spare_parts.to_a[e]
+      if sp.present?
+        spare_part_info << sp.spare_part_no
+        spare_part_info << sp.spare_part_description
+        spare_part_info << (sp.request_from == 'M' ? sp.ticket_spare_part_manufacture.try(:event_no) : "")
+        spare_part_info << sp.inventory_product_generated_serial_item
+      else
+        4.times.each{|e| spare_part_info << ""}
+      end
+      ticket_content.concat(spare_part_info)
+    end
+
+    ticket_content << ticket.try(:job_finished_at).try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
+    ticket_content << ticket.ticket_status_name
+    ticket_content << boolean_in_word(ticket.status_hold, "Yes", "No")
+    ticket_content << (ticket.status_hold ? ticket.reason.try(:reason) : "" )
+    ticket_content << ticket.re_open_count
+    ticket_content << boolean_in_word(ticket.cus_chargeable, "Yes", "No")
+
+    tot_amount = 0.00
+    ded_amount = 0.00
+    ans = 0.00
+
+    tot_amount = ticket.final_invoice.try(:total_amount).try(:to_f)
+    ded_amount = ticket.final_invoice.try(:total_deduction).try(:to_f)
+    if ticket.tryfinal_invoice.try(:total_amount) and ticket.final_invoice.try(:total_deduction)
+      ans = tot_amount - ded_amount
+      ticket_content << number_with_precision(ans, precision: 2)
+    else
+      ticket_content << number_with_precision(0, precision: 2)
+    end
+    ticket_content << ticket.resolution_summary
+
+    sheet.add_row ticket_content
+  end
+end
+

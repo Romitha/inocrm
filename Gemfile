@@ -137,6 +137,9 @@ gem 'rubyzip'
 gem 'caracal'
 # gem 'omnidocx'
 
+gem 'axlsx', '~> 3.0.0.pre'
+gem 'axlsx_rails'
+
 group :production do
   gem 'god' # sudo apt-get install god
   

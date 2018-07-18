@@ -911,7 +911,7 @@ class ReportsController < ApplicationController
       # refined_search_ticket = [refined_search_ticket, "logged_at:[#{params[:l_range_from].present? ? params[:l_range_from] : (Date.today - 3.months) } TO #{params[:l_range_to].present? ? params[:l_range_to] : Date.today }]"]
       # refined_search_ticket << " AND logged_at:[* TO #{Date.today}]"
 
-      request.format = "xls"
+      # request.format = "xls"
     end
     params[:per_page] = 10000
     params[:query] = refined_search_ticket
@@ -919,11 +919,16 @@ class ReportsController < ApplicationController
 
     # @ticket = Ticket.all
     # @ticket = Ticket.search()
-    respond_to do |format|
-      if params[:search].present?
-        format.xls
-      else
-        format.html
+    if params[:search].present?
+      render xlsx: "excel_output"
+    else
+      respond_to do |format|
+        # if params[:search].present?
+          # format.xls
+          # format.xlsx
+        # else
+          format.html
+        # end
       end
     end
   end
