@@ -2011,8 +2011,8 @@ class InventoriesController < ApplicationController
                 io << "****************************\n"
                 io << p.inspect
                 io << params[:process_id]
-                ticket_spare_part = p.ticket_spare_part
-                view_context.ticket_bpm_headers params[:process_id], @ticket.id, ticket_spare_part.id
+                ticket_spare_part_id = p.ticket_spare_part_id
+                view_context.ticket_bpm_headers params[:process_id], @ticket.id, ticket_spare_part_id
               end
             end
             io.close
