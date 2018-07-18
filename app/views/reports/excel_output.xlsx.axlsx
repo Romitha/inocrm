@@ -19,10 +19,10 @@ wb.add_worksheet(name: "ERP report") do |sheet|
 
     ticket_content = [ticket.customer.full_name, boolean_in_word(ticket.customer.organization.present?, "Corporate", "Walking"), ticket.customer.full_address, ticket.customer.try(:district).try(:name) ]
 
-    2.times.each{|e| ticket_content << "no"} if ticket.customer.contact_type_values.select{|ct| [2, 3].include?(ct.contact_type_id) }.empty?
+    2.times.each{|e| ticket_content << ""} if ticket.customer.contact_type_values.select{|ct| [2, 3].include?(ct.contact_type_id) }.empty?
     ticket.customer.contact_type_values.select{|ct| [2, 3].include?(ct.contact_type_id) }.each do |contact|
-      ticket_content << contact.contact_type_id == 3 ? contact.value : ""
-      ticket_content << contact.contact_type_id == 2 ? contact.value : ""
+      ticket_content << (contact.contact_type_id == 3 ? contact.value : "")
+      ticket_content << (contact.contact_type_id == 2 ? contact.value : "")
 
       break
     end
@@ -31,9 +31,9 @@ wb.add_worksheet(name: "ERP report") do |sheet|
 
     ticket_content.concat(product_info)
 
-    ticket_content << ticket.logged_at.to_date.strftime("#{INOCRM_CONFIG["short_date_format"]} #{INOCRM_CONFIG['time_format']}")
-    ticket_content << (ticket.owner_engineer.present? ? ticket.owner_engineer.created_at.to_date.strftime("#{INOCRM_CONFIG["short_date_format"]} #{INOCRM_CONFIG['time_format']}") : "")
-    ticket_content << (ticket.job_started_at.present? ? ticket.job_started_at.to_date.strftime("#{INOCRM_CONFIG["short_date_format"]} #{INOCRM_CONFIG['time_format']}") : "")
+    ticket_content << ticket.logged_at.to_datetime.strftime("#{INOCRM_CONFIG["short_date_format"]} #{INOCRM_CONFIG['time_format']}")
+    ticket_content << (ticket.owner_engineer.present? ? ticket.owner_engineer.created_at.to_datetime.strftime("#{INOCRM_CONFIG["short_date_format"]} #{INOCRM_CONFIG['time_format']}") : "")
+    ticket_content << (ticket.job_started_at.present? ? ticket.job_started_at.to_datetime.strftime("#{INOCRM_CONFIG["short_date_format"]} #{INOCRM_CONFIG['time_format']}") : "")
     ticket_content << ticket.ticket_start_action.try(:action)
     ticket_content << ticket.problem_description
     ticket_content << ticket.owner_engineer.try(:sbu_name)
@@ -53,7 +53,7 @@ wb.add_worksheet(name: "ERP report") do |sheet|
       ticket_content.concat(spare_part_info)
     end
 
-    ticket_content << ticket.try(:job_finished_at).try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
+    ticket_content << (ticket.job_finished_at ? ticket.job_finished_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") : "")
     ticket_content << ticket.ticket_status_name
     ticket_content << boolean_in_word(ticket.status_hold, "Yes", "No")
     ticket_content << (ticket.status_hold ? ticket.reason.try(:reason) : "" )
