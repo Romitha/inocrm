@@ -106,7 +106,6 @@ class OrganizationContactPerson < ActiveRecord::Base
 
   scope :contact_persons1, -> { joins(:contact_person_primary_types).where(mst_contact_person_primary_type: {code: "CP1"}) }
   scope :contact_persons2, -> { joins(:contact_person_primary_types).where(mst_contact_person_primary_type: {code: "CP2"}) }
-
   def full_name
     "#{mst_title.try(:title)} #{name}"
   end
