@@ -191,6 +191,10 @@ class Customer < ActiveRecord::Base
     "#{address1}, #{address2}, #{address3}, #{address4}"
   end
 
+  def district_name
+    district.try(:name)
+  end
+
   def is_used_anywhere?
     tickets.any?# or contact_types.any?
   end
@@ -499,6 +503,11 @@ class TicketEngineer < ActiveRecord::Base
   def sbu_name
     # user_ticket_action.user_assign_ticket_action.sbu.sbu
     sbu_engineer.try(:sbu).try(:sbu)
+  end
+
+  def sbu_id
+    # user_ticket_action.user_assign_ticket_action.sbu.sbu
+    sbu_engineer.try(:sbu_id)
   end
 
   def rec_sub_engineers

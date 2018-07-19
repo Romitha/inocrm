@@ -10,7 +10,7 @@
 = tab_content tabpointer: :customer do
   = initiate_table table_type: "table-hover table-bordered" do
     = table_header ["Name", "Address", "Contacts"]
-    = table_body ["#{customer.mst_title.try(:name)} #{customer.name}", "#{customer.address1}, #{customer.address2}, #{customer.address3}, #{customer.address4}, #{customer.district.try(:name)}", customer_contact_types]
+    = table_body ["#{customer.mst_title.try(:name)} #{customer.name}", "#{customer.address1}, #{customer.address2}, #{customer.address3}, #{customer.address4}, #{customer.district_name}", customer_contact_types]
 = tab_content active_class: "active", tabpointer: :contact_type do
   .col-md-12
     .contact_people

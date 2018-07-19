@@ -45,7 +45,7 @@
       - if existing_customer
         = initiate_table table_type: "table-hover table-bordered" do
           = table_header ["Name", "Address", "Contacts"]
-          = table_body ["#{existing_customer.mst_title.try(:name)} #{existing_customer.name}", "#{existing_customer.address1}, #{existing_customer.address2}, #{existing_customer.address3}, #{existing_customer.address4}, #{existing_customer.district.try(:name)}", customer_contact_types]
+          = table_body ["#{existing_customer.mst_title.try(:name)} #{existing_customer.name}", "#{existing_customer.address1}, #{existing_customer.address2}, #{existing_customer.address3}, #{existing_customer.address4}, #{existing_customer.district_name}", customer_contact_types]
 
 - unless (ticket.ticket_contract.present? or product.owner_customer.present?)
   %strong.name_validate Customer

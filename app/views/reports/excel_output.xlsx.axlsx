@@ -17,7 +17,7 @@ wb.add_worksheet(name: "ERP report") do |sheet|
   @ticket.each do |ticket|
     product = ticket.products.first
 
-    ticket_content = [ticket.customer.full_name, boolean_in_word(ticket.customer.organization.present?, "Corporate", "Walking"), ticket.customer.full_address, ticket.customer.try(:district).try(:name) ]
+    ticket_content = [ticket.customer.full_name, boolean_in_word(ticket.customer.organization.present?, "Corporate", "Walking"), ticket.customer.full_address, ticket.customer.try(:district_name) ]
 
     2.times.each{|e| ticket_content << ""} if ticket.customer.contact_type_values.select{|ct| [2, 3].include?(ct.contact_type_id) }.empty?
     ticket.customer.contact_type_values.select{|ct| [2, 3].include?(ct.contact_type_id) }.each do |contact|
@@ -78,3 +78,4 @@ wb.add_worksheet(name: "ERP report") do |sheet|
   end
 end
 
+# https://github.com/randym/axlsx/blob/master/examples/example.rb
