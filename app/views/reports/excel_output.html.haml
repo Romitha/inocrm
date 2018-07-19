@@ -5,14 +5,13 @@
       #search_frame
         = form_tag excel_output_reports_path, method: :get, class: "form-horizontal" do
           .row.small_scale_margin-top1
-            .col-md-4
+            .col-md-3
               = text_field_tag "range_from", params[:range_from], class: "form-control datepicker", placeholder: "Select From date"
-            .col-md-4
+            .col-md-3
               = text_field_tag "range_to", params[:range_to], class: "form-control datepicker", placeholder: "Select To date"
-          .row.small_scale_margin-top1
-            .col-md-4
+            .col-md-3
               = text_field_tag "l_range_from", params[:l_range_from], class: "form-control datepicker", placeholder: "Select From logged date"
-            .col-md-4
+            .col-md-3
               = text_field_tag "l_range_to", params[:l_range_to], class: "form-control datepicker", placeholder: "Select To logged date"
           .row.small_scale_margin-top1
             .col-md-3
@@ -29,48 +28,46 @@
               = label_tag "#{CompanyConfig.first.try(:sup_product_category_label)} : "
               = select_tag "search_ticket[ticket_product_cat_id]", option_groups_from_collection_for_select(ProductCategory2.all, :active_product_categories, :id, :id, :name), class: "form-control parent_class product_category", id: "search_contracts_category_cat_id" ,include_blank: true
           .row
-            .col-md-4.small_scale_margin-top2
-              = text_field_tag "search_ticket[products.model_no]", nil, :placeholder => "Model No", class: "form-control"
-            .col-md-4.small_scale_margin-top2
+            .col-md-2.small_scale_margin-top2
               = label_tag "Chargeable"
               = check_box_tag "search_ticket[cus_chargeable]", true
-          .row.small_scale_margin-top1
-            .col-md-4.small_scale_margin-top1
+            .col-md-2.small_scale_margin-top2
+              = text_field_tag "search_ticket[products.model_no]", nil, :placeholder => "Model No", class: "form-control"
+            .col-md-2.small_scale_margin-top2
               = text_field_tag "search_ticket[products.serial_no]", nil, :placeholder => "Serial No", class: "form-control"
-            .col-md-4.small_scale_margin-top1
+            .col-md-2.small_scale_margin-top2
               = text_field_tag "search_ticket[ticket_spare_parts.spare_part_no]", nil, :placeholder => "Spare Part No", class: "form-control"
-            .col-md-4.small_scale_margin-top1
+            .col-md-2.small_scale_margin-top2
               = text_field_tag "search_ticket[ticket_contract.contract_no]", nil, :placeholder => "Contract No", class: "form-control"
+
+            .col-md-2.small_scale_margin-top2
+              = select_tag "search_ticket[status_id]", options_from_collection_for_select(TicketStatus.all, :id, :name), prompt: "Ticket Status", class: "form-control"
 
           .row.small_scale_margin-top1
             .col-md-4.small_scale_margin-top1
               = label_tag "Engineer"
-              = select_tag "search_ticket[owner_engineer.user.id]", options_from_collection_for_select(User.where(id: TicketEngineer.pluck(:user_id)).order("id ASC"), :id, :full_name), include_blank: true, class: "form-control"
+              = select_tag "search_ticket[owner_engineer.user_id]", options_from_collection_for_select(User.where(id: TicketEngineer.pluck(:user_id)).order("id ASC"), :id, :full_name), include_blank: true, class: "form-control"
 
             .col-md-4.small_scale_margin-top1
               = label_tag "Support Group(SBU)"
-              = select_tag "search_ticket[owner_engineer.sbu_name]", options_from_collection_for_select(Sbu.all, :sbu, :sbu), include_blank: true, class: "form-control"
+              = select_tag "search_ticket[owner_engineer.sbu_id]", options_from_collection_for_select(Sbu.all, :id, :sbu), include_blank: true, class: "form-control"
 
             .col-md-4.small_scale_margin-top1
               = label_tag "Support Engineer"
               = select_tag "search_ticket[ticket_engineers.ticket_support_engineers.user_id]", options_from_collection_for_select(User.where(id: TicketSupportEngineer.pluck(:user_id)).order("id ASC"), :id, :full_name), include_blank: true, class: "form-control"
               
-            .col-md-4.small_scale_margin-top1
+            .col-md-3.small_scale_margin-top1
               = label_tag "Customer (Registered)"
-              = select_tag "search_ticket[customer.organization.id]", options_from_collection_for_select(Organization.customers, :id, :name), include_blank: true, class: "form-control"
-              %br/
-              = label_tag "Customer (Not Registered)"
-              = text_field_tag "search_ticket[customer.name]", nil, :placeholder => "Customer", class: "form-control"
-            .col-md-4.small_scale_margin-top1
+              = select_tag "search_ticket[customer.organization_id]", options_from_collection_for_select(Organization.customers, :id, :name), include_blank: true, class: "form-control"
+            .col-md-3.small_scale_margin-top1
               = label_tag "District"
-              = select_tag "search_ticket[customer.district.id]", options_from_collection_for_select(District.all, :id, :name), include_blank: true, class: "form-control"
-
-            .col-md-4.small_scale_margin-top1
-              = label_tag "Ticket Status"
-              = select_tag "search_ticket[ticket_status.id]", options_from_collection_for_select(TicketStatus.all, :id, :name), include_blank: true, class: "form-control"
-            .col-md-2.small_scale_margin-top2
+              = select_tag "search_ticket[customer.district_id]", options_from_collection_for_select(District.all, :id, :name), include_blank: true, class: "form-control"
+            .col-md-3.small_scale_margin-top1
               = label_tag "Product Inside:"
               = select_tag "search_ticket[product_inside]", raw("<option value=1>Inside</option> <option value=0>Not Inside</option>"), class: "form-control parent_class", include_blank: true
+            .col-md-3.small_scale_margin-top1
+              = label_tag "Customer (Not Registered)"
+              = text_field_tag "search_ticket[customer.full_name]", nil, :placeholder => "Customer", class: "form-control"
           .row.small_scale_margin-top1
             .col-md-1
               .search

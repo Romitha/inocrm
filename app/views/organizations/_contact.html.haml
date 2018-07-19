@@ -17,7 +17,7 @@
   %dt
     Destrict:
   %dd
-    = customer.district.try(:name)
+    = customer.district_name
   - customer.contact_type_values.each do |c|
     %dt
       = c.contact_type.name
