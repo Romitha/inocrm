@@ -444,7 +444,7 @@ class InventoriesController < ApplicationController
    
     
     if params[:terminate]
-      if str
+      if str or aps
         save_ticket_on_loan_spare_part["CLS", 53] #Terminate On-Loan Part
         @flash_message = "Terminate action is Successfully done."
       end
@@ -2004,19 +2004,21 @@ class InventoriesController < ApplicationController
             @flash_message = "Estimate part is updated. but Bpm error"
           end
 
-          File.open(Rails.root.join("error.txt"), "w") do |io|
-            io << "#{d19_estimate_internal_below_margin}\n"
-            if d19_estimate_internal_below_margin == "Y"
-              estimation.ticket_estimation_parts.each do |p|
-                io << "****************************\n"
-                io << p.inspect
-                io << params[:process_id]
-                ticket_spare_part_id = p.ticket_spare_part_id
-                view_context.ticket_bpm_headers params[:process_id], @ticket.id, ticket_spare_part_id
-              end
+          if d19_estimate_internal_below_margin == "Y"
+            estimation.ticket_estimation_parts.each do |p|
+              # io << "****************************\n"
+              # io << p.inspect
+              # io << params[:process_id]
+              # ticket_spare_part_id = p.ticket_spare_part_id
+              # view_context.ticket_bpm_headers params[:process_id], @ticket.id, ticket_spare_part_id
+
+              @ticket_spare_part = p.ticket_spare_part
             end
-            io.close
           end
+          # File.open(Rails.root.join("error.txt"), "w") do |io|
+          #   io << "#{d19_estimate_internal_below_margin}\n"
+          #   io.close
+          # end
 
           update_headers("SPPT", @ticket)
 
@@ -2328,7 +2330,7 @@ class InventoriesController < ApplicationController
     end
 
     def ticket_on_loan_spare_part_params ticket_onloan_spare_part
-      t_onloan_spare_part = params.require(:ticket_on_loan_spare_part).permit(:return_part_serial_no, :return_part_ct_no, :unused_reason_id, :note, :part_terminated_reason_id, :approved, :approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :ref_spare_part_id, :note, :ticket_id, :status_action_id, :status_use_id, :store_id, :inv_product_id, :main_inv_product_id, :part_of_main_product, :received_part_serial_no, :received_part_ct_no, :return_part_damage, :return_part_damage_reason_id, :return_part_damage, :return_part_damage_reason_id, ticket_attributes: [:remarks, :id])
+      t_onloan_spare_part = params.require(:ticket_on_loan_spare_part).permit(:return_part_serial_no, :return_part_ct_no, :unused_reason_id, :note, :part_terminated, :part_terminated_reason_id, :approved, :approved_store_id, :approved_inv_product_id, :approved_main_inv_product_id, :ref_spare_part_id, :note, :ticket_id, :status_action_id, :status_use_id, :store_id, :inv_product_id, :main_inv_product_id, :part_of_main_product, :received_part_serial_no, :received_part_ct_no, :return_part_damage, :return_part_damage_reason_id, :return_part_damage, :return_part_damage_reason_id, ticket_attributes: [:remarks, :id])
 
       t_onloan_spare_part[:note] = t_onloan_spare_part[:note].present? ? "#{t_onloan_spare_part[:note]} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{ticket_onloan_spare_part.note}" : ticket_onloan_spare_part.note
       t_onloan_spare_part

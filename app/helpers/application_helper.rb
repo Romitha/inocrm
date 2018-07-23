@@ -822,11 +822,11 @@ module ApplicationHelper
       @h3_sub = ""
 
       spare_part = @ticket.ticket_spare_parts.find_by_id(spare_part_id)
-      File.open(Rails.root.join("error.txt"), "w") do |io|
-        io << spare_part.inspect
-        io.close
+      # File.open(Rails.root.join("error.txt"), "w") do |io|
+      #   io << spare_part.inspect
+      #   io.close
 
-      end
+      # end
 
       if spare_part.present?
         if spare_part
