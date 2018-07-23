@@ -1548,6 +1548,8 @@ class TicketsController < ApplicationController
                 view_context.send_email(email_to: support_engineer.user.email, engineer_id: @ticket_engineer.id, ticket_id: @ticket.id, email_code: "ASSIGN_JOB") if support_engineer.user.email.present?
               end
             end
+
+            @ticket.update owner_engineer_id: @ticket_engineer.id if @ticket_engineer.present? and (@ticket.owner_engineer_id == @re_assignment_rq_engineer.id)
           end
 
           if all_success

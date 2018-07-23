@@ -40,7 +40,7 @@
     = f.input :note, input_html: {value: nil}
     = simple_format ticket_on_loan_spare_part.note
 
-  - if @str
+  - if (@str or @aps)
     = f.input :part_terminated, wrapper: :append, input_html:{class: "part_terminated_reason_check"}
 
     .part_terminated_reason.hide
@@ -49,7 +49,7 @@
       = f.select :part_terminated_reason_id, Reason.where(terminate_spare_part: true).map{|r| [r.reason, r.id]}, {include_blank: true}, {class: "part_terminated_select"} # showing part_terminated is cheched through javascript
     = hidden_field_tag :terminate, "terminate"
 
-  = f.submit "terminate", name: "terminate", class: "btn btn-sm btn-success", data: {disable_with: "Please wait..."} if @str
+  = f.submit "terminate", name: "terminate", class: "btn btn-sm btn-success", data: {disable_with: "Please wait..."} if (@str or @aps)
   = f.submit "received", name: "recieved", class: "btn btn-sm btn-success", data: {disable_with: "Please wait..."} if @iss
   - if @rce or @rpr
     %label{:for => "Update without return"} Update without return
