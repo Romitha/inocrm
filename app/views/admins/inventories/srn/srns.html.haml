@@ -68,7 +68,7 @@
                     = srn_item.issue_terminated_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
                   %li
                     %strong Terminated Reason:
-                    = srn_item.issue_terminated_reason.reason
+                    = srn_item.issue_terminated_reason.try(:reason)
 
             %tr{class: "#{'danger' if srn_item.closed}", title: "#{'Closed' if srn_item.closed}"}
               - if srn_item.issue_terminated?
