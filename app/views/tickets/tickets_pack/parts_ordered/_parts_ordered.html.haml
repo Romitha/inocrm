@@ -432,9 +432,16 @@
                 %dd= ticket_spare_part_ref.ticket_spare_part_store.try(:approved_quantity)
                 %dt Action Status
                 %dd
+                  - content_for :history_content, flush: true do
+                    - ticket_spare_part_ref.ticket_spare_part_status_actions.each do |tsp|
+                      = tsp.spare_part_status_action.name
+                      %span{class: 'text-muted text3'}
+                        = User.cached_find_by_id(tsp.done_by).email
+                        -
+                        = tsp.done_at.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
+                      %br
                   = ticket_spare_part_ref.spare_part_status_action.name
-                  = link_to "history", "#", tabindex: "0", rel: "popover", title: "Action History", data: {toggle: "popover", trigger: "click", content: ticket_spare_part_ref.ticket_spare_part_status_actions.map { |tsp| "#{tsp.spare_part_status_action.name} <span class='text-muted text3'> #{User.cached_find_by_id(tsp.done_by).email}-#{tsp.done_at.strftime(INOCRM_CONFIG['short_date_format']+' %H:%M %P')}</span>" }.join("<br/>"), placement: "bottom", html: true}
-
+                  = link_to "history", "#", tabindex: "0", rel: "popover", title: "Action History", data: {toggle: "popover", trigger: "click", content: "#{yield(:history_content)}", placement: "bottom", html: true}
 
                 %dt Pending
                 %dd

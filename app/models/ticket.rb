@@ -243,8 +243,8 @@ class Ticket < ActiveRecord::Base
           }
         },
         customer: {
-          only: [:id, :organization_id, :district_id, :district_name],
-          methods: [:full_name, :full_address],
+          only: [:id, :organization_id, :district_id],
+          methods: [:full_name, :full_address, :district_name],
           include: {
             contact_type_values: {
               only: [:id, :value, :contact_type_id],

@@ -97,6 +97,6 @@
 
     .col-md-12.text-right
       - if @ticket.ticket_spare_parts.any? {|e| e.spare_part_status_use.name == "Used"}
-        - expected_manufacture = @ticket.ticket_spare_parts.to_a.sum {|e| e.ticket_spare_part_manufacture.payment_expected_manufacture}
+        - expected_manufacture = @ticket.ticket_spare_parts.to_a.sum {|e| e.ticket_spare_part_manufacture.try(:payment_expected_manufacture) || 0 }
         - m_currency = @ticket.manufacture_currency.code
         %strong Total Payment Expected From Manufacture (#{m_currency}) : #{expected_manufacture}
