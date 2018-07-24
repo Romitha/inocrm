@@ -231,8 +231,11 @@ class ContractsController < ApplicationController
           if params['contract_product_additional_params'][c_product.product_serial_id.to_s].present?
             c_product_attr = params['contract_product_additional_params'].require(c_product.product_serial_id.to_s).permit('amount', 'discount_amount', 'contract_start_at', 'contract_end_at', 'contract_b2b', 'location_address_id', 'installed_location_id','remarks' )
 
-            c_product_attr['contract_start_at'] = Time.strptime(c_product_attr['contract_start_at'],'%Y-%m-%d') if c_product_attr['contract_start_at'].present?
-            c_product_attr['contract_end_at'] = Time.strptime(c_product_attr['contract_end_at'],'%Y-%m-%d') if c_product_attr['contract_end_at'].present?
+            # c_product_attr['contract_start_at'] = Time.strptime(c_product_attr['contract_start_at'],'%Y-%m-%d') if c_product_attr['contract_start_at'].present?
+            # c_product_attr['contract_end_at'] = Time.strptime(c_product_attr['contract_end_at'],'%Y-%m-%d') i
+
+            c_product_attr['contract_start_at'] = @contract.contract_start_at
+            c_product_attr['contract_end_at'] = @contract.contract_end_at
 
             c_product.update!(c_product_attr)
             c_product.ticket_contract.update_index
