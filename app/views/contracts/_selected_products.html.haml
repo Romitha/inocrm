@@ -14,8 +14,8 @@
           - if params[:from_where] != "cus_product"
             %th Amount
             %th Discount Amount
-            %th Start Date
-            %th End Date
+            / %th Start Date
+            / %th End Date
             %th B2B Contract
             %th Installed Location
             %th Installed Address
@@ -52,8 +52,8 @@
             - if params[:from_where] != "cus_product"
               %td= text_field_tag "contract_product_additional_params[#{p.id}][amount]",0, class: "form-control cus_product_amount1", required: true
               %td= text_field_tag "contract_product_additional_params[#{p.id}][discount_amount]",0, class: "form-control cus_product_disamount1", required: true
-              %td= text_field_tag "contract_product_additional_params[#{p.id}][contract_start_at]",Date.today, class: "datepicker form-control", required: true
-              %td= text_field_tag "contract_product_additional_params[#{p.id}][contract_end_at]",Date.today, class: "datepicker form-control", required: true
+              / %td= text_field_tag "contract_product_additional_params[#{p.id}][contract_start_at]",Date.today, class: "datepicker form-control", required: true
+              / %td= text_field_tag "contract_product_additional_params[#{p.id}][contract_end_at]",Date.today, class: "datepicker form-control", required: true
               %td= check_box_tag "contract_product_additional_params[#{p.id}][contract_b2b]",nil, class: "form-control", required: true
               %td= label_tag "#{p.owner_customer_name}"
               %td.hide= hidden_field_tag "contract_product_additional_params[#{p.id}][installed_location_id]", p.owner_customer_id

@@ -134,7 +134,7 @@
         Terminated
       .col-md-6
         %strong Part terminated reason:
-        = request_part.ticket_spare_part.part_terminated_reason.try(:reason)
+        = request_part.part_terminated_reason.try(:reason)
   %hr
 
 - if request_part and srn_item
