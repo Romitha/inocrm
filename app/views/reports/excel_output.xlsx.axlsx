@@ -19,13 +19,17 @@ wb.add_worksheet(name: "ERP report") do |sheet|
 
     ticket_content = [ticket.customer.full_name, boolean_in_word(ticket.customer.organization.present?, "Corporate", "Walking"), ticket.customer.full_address, ticket.customer.try(:district_name) ]
 
-    2.times.each{|e| ticket_content << ""} if ticket.customer.contact_type_values.select{|ct| [2, 3].include?(ct.contact_type_id) }.empty?
-    ticket.customer.contact_type_values.select{|ct| [2, 3].include?(ct.contact_type_id) }.each do |contact|
-      ticket_content << (contact.contact_type_id == 3 ? contact.value : "")
-      ticket_content << (contact.contact_type_id == 2 ? contact.value : "")
+    customer_contact_values = ticket.customer.contact_type_values
+    2.times.each{|e| ticket_content << ""} if customer_contact_values.select{|ct| [2, 3].include?(ct.contact_type_id) }.empty?
+    contact_emails = []
+    contact_numbers = []
+    customer_contact_values.select{ |ct| [2, 3].include?(ct.contact_type_id) }.each do |contact|
+      contact_numbers << contact.value if contact.contact_type_id == 2
+      contact_emails << contact.value if contact.contact_type_id == 3
 
-      break
     end
+    ticket_content << contact_emails.compact.join(", ")
+    ticket_content << contact_numbers.compact.join(", ")
 
     product_info = [product.brand_name, product.category_full_name_index, product.model_no, product.product_no, product.serial_no, ticket.sla_description, ticket.support_ticket_no, ticket.hp_cases.map { |h| h.case_id }.join(", ")]
 
