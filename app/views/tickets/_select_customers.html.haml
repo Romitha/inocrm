@@ -11,7 +11,7 @@
     %li{:role => "presentation"}= link_to "Customer", "#customer_second_id", role: "tab", data: {toggle: "tab"}
 
   .tab-content
-    #organization.tab-pane{:role => "tabpanel"}
+    #organization.tab-pane.active{:role => "tabpanel"}
       #select_contact_organizations
         = form_tag new_customer_tickets_path, method: :get, remote: true do
           = hidden_field_tag :product_id, product.id
@@ -23,7 +23,7 @@
 
       #contact_organizations
 
-    #customer_second_id.tab-pane.active{:role => "tabpanel"}
+    #customer_second_id.tab-pane{:role => "tabpanel"}
       .row
         .col-lg-12
           #select_contact_persons

@@ -207,9 +207,6 @@
                     .row
                       .col-md-4
                         Reason: #{action.request_spare_part.try(:reject_return_part_reason).try(:reason)}
-                    .row
-                      .col-md-4
-                        Spare Part Note: #{raw action.request_spare_part.ticket_spare_part.note}
 
                 - elsif action.action_id == 15
                   .panel-body
@@ -244,9 +241,6 @@
                     .row
                       .col-md-4
                         Reason: #{action.request_spare_part.try(:reject_return_part_reason).try(:reason)}
-                    .row
-                      .col-md-4
-                        Spare Part Note: #{raw action.request_spare_part.ticket_spare_part.note}
 
 
                 - elsif action.action_id == 16
@@ -276,9 +270,6 @@
                     .row
                       .col-md-4
                         Reason: #{action.request_spare_part.try(:reject_return_part_reason).try(:reason)}
-                    .row
-                      .col-md-4
-                        Spare Part Note: #{raw action.request_spare_part.ticket_spare_part.note}
 
                 - elsif action.action_id == 17
                   .panel-body
@@ -307,9 +298,6 @@
                     .row
                       .col-md-4
                         Reason: #{action.request_spare_part.try(:reject_return_part_reason).try(:reason)}
-                    .row
-                      .col-md-4
-                        Spare Part Note: #{raw action.request_spare_part.ticket_spare_part.note}
 
                 - elsif action.action_id == 19
                   .panel-body
@@ -338,9 +326,6 @@
                           Store: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store).try(:name)}
                         .col-md-4
                           Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
-                    .row
-                      .col-md-4
-                        Spare Part Note: #{raw action.request_spare_part.ticket_spare_part.note}
 
                 - elsif action.action_id == 31
                   .panel-body 
@@ -366,9 +351,6 @@
                           Store: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store).try(:name)}
                         .col-md-4
                           Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
-                    .row
-                      .col-md-4
-                        Spare Part Note: #{raw action.request_spare_part.ticket_spare_part.note}
 
                 - elsif action.action_id == 33
                   .panel-body 
@@ -393,9 +375,6 @@
                           Store: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store).try(:name)}
                         .col-md-4
                           Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
-                    .row
-                      .col-md-4
-                        Spare Part Note: #{raw action.request_spare_part.ticket_spare_part.note}
 
                 - elsif action.action_id == 34
                   .panel-body 
@@ -422,9 +401,6 @@
                           Store: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store).try(:name)}
                         .col-md-4
                           Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
-                    .row
-                      .col-md-4
-                        Spare Part Note: #{raw action.request_spare_part.ticket_spare_part.note}
 
                 - elsif action.action_id == 36
                   .panel-body 
@@ -450,9 +426,6 @@
                           Store: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store).try(:name)}
                         .col-md-4
                           Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
-                    .row
-                      .col-md-4
-                        Spare Part Note: #{raw action.request_spare_part.ticket_spare_part.note}
 
                 - elsif action.action_id == 37
                   .panel-body 
@@ -477,9 +450,6 @@
                           Store: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store).try(:name)}
                         .col-md-4
                           Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
-                    .row
-                      .col-md-4
-                        Spare Part Note: #{raw action.request_spare_part.ticket_spare_part.note}
 
                 - elsif action.action_id == 38
                   .panel-body 
@@ -505,9 +475,6 @@
                           Store: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store).try(:name)}
                         .col-md-4
                           Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
-                    .row
-                      .col-md-4
-                        Spare Part Note: #{raw action.request_spare_part.ticket_spare_part.note}
 
                 - elsif action.action_id == 42
                   .panel-body
@@ -536,9 +503,6 @@
                           Store: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store).try(:name)}
                         .col-md-4
                           Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.inventory_product.generated_item_code}
-                    .row
-                      .col-md-4
-                        Spare Part Note: #{raw action.request_spare_part.ticket_spare_part.note}
 
                     .row
                       .col-md-4
@@ -574,9 +538,6 @@
                           Part Terminate Reason: #{action.request_spare_part.part_terminate_reason.reason}
                     .row
                       .col-md-4
-                        Spare Part Note: #{raw action.request_spare_part.ticket_spare_part.note}
-                    .row
-                      .col-md-4
                         Bundle No:
                         #{action.request_spare_part.ticket_spare_part.try(:ticket_spare_part_manufacture).try(:return_parts_bundle).try(:bundle_no)}
 
@@ -587,9 +548,6 @@
                         Spare Part No: #{action.request_spare_part.ticket_spare_part.spare_part_no}
                       .col-md-4
                         Spare Part Description: #{action.request_spare_part.ticket_spare_part.spare_part_description}
-                    .row
-                      .col-md-4
-                        Spare Part Note: #{raw action.request_spare_part.ticket_spare_part.note}
 
                 - elsif action.action_id == 46
                   - ticket_spare_part_manufacture = action.request_spare_part.ticket_spare_part.ticket_spare_part_manufacture
@@ -634,9 +592,6 @@
                         .col-md-4
                           Store Issued By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:full_name)}
 
-                    .row
-                      .col-md-4
-                        Spare Part Note: #{raw action.request_spare_part.ticket_spare_part.note}
 
                 - elsif action.action_id == 48
                   .panel-body
@@ -670,9 +625,6 @@
                           Store Request Approved By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.request_approved_by).try(:full_name)}
                         .col-md-4
                           Store Issued By: #{User.find_by_id(action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:issued_by)).try(:full_name)}
-                    .row
-                      .col-md-4
-                        Spare Part Note: #{raw action.request_spare_part.ticket_spare_part.note}
 
                 - elsif action.action_id == 64
                   .panel-body
@@ -694,9 +646,6 @@
                           Request From Store
                       .col-md-4
                         Payment Expected Manufacture : #{action.request_spare_part.ticket_spare_part.ticket_spare_part_manufacture.try(:payment_expected_manufacture)}
-                    .row
-                      .col-md-4
-                        Spare Part Note: #{raw action.request_spare_part.ticket_spare_part.note}
 
                 - elsif action.action_id == 78
                   .panel-body
@@ -728,9 +677,6 @@
                           Store: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store).try(:name)}
                         .col-md-4
                           Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.approved_inventory_product.generated_item_code}
-                    .row
-                      .col-md-4
-                        Spare Part Note: #{raw action.request_spare_part.ticket_spare_part.note}
 
                 - elsif action.action_id == 79
                   .panel-body
@@ -762,9 +708,6 @@
                           Store: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store).try(:name)}
                         .col-md-4
                           Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.approved_inventory_product.generated_item_code}
-                    .row
-                      .col-md-4
-                        Spare Part Note: #{raw action.request_spare_part.ticket_spare_part.note}
 
                 - elsif action.action_id == 86
                   .panel-body
@@ -796,9 +739,6 @@
                           Store: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store).try(:name)}
                         .col-md-4
                           Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.approved_inventory_product.generated_item_code}
-                    .row
-                      .col-md-4
-                        Spare Part Note: #{raw action.request_spare_part.ticket_spare_part.note}
 
 
                 - elsif action.action_id == 89
@@ -831,9 +771,6 @@
                           Store: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store).try(:name)}
                         .col-md-4
                           Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.approved_inventory_product.generated_item_code}
-                    .row
-                      .col-md-4
-                        Spare Part Note: #{raw action.request_spare_part.ticket_spare_part.note}
 
 
                 - elsif action.action_id == 90
@@ -866,9 +803,6 @@
                           Store: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store).try(:name)}
                         .col-md-4
                           Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.approved_inventory_product.generated_item_code}
-                    .row
-                      .col-md-4
-                        Spare Part Note: #{raw action.request_spare_part.ticket_spare_part.note}
 
 
                 - elsif action.action_id == 93
@@ -901,9 +835,6 @@
                           Store: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.try(:store).try(:name)}
                         .col-md-4
                           Product Item Code: #{action.request_spare_part.ticket_spare_part.ticket_spare_part_store.approved_inventory_product.generated_item_code}
-                    .row
-                      .col-md-4
-                        Spare Part Note: #{raw action.request_spare_part.ticket_spare_part.note}
 
               - elsif action.request_on_loan_spare_part.present?
                 - if action.action_id == 18
@@ -915,9 +846,6 @@
                         Product Item Code: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.inventory_product.try(:generated_item_code)}
                       .col-md-4
                         Product Description: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.inventory_product.try(:description)}
-                    .row
-                      .col-md-4
-                        Spare Part Note: #{raw action.request_on_loan_spare_part.ticket_on_loan_spare_part.note}
 
                 - elsif action.action_id == 49
                   .panel-body
@@ -934,9 +862,6 @@
                         Approved Product Item Code: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.approved_inventory_product.try(:generated_item_code)}
                       .col-md-4
                         Approved Product Description: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.approved_inventory_product.try(:description)}
-                    .row
-                      .col-md-4
-                        Spare Part Note: #{raw action.request_on_loan_spare_part.ticket_on_loan_spare_part.note}
 
 
                 - elsif action.action_id == 50
@@ -948,9 +873,6 @@
                         Approved Product Item Code: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.approved_inventory_product.try(:generated_item_code)}
                       .col-md-4
                         Approved Product Description: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.approved_inventory_product.try(:description)}
-                    .row
-                      .col-md-4
-                        Spare Part Note: #{raw action.request_on_loan_spare_part.ticket_on_loan_spare_part.note}
 
 
                 - elsif action.action_id == 51
@@ -962,9 +884,6 @@
                         Approved Product Item Code: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.approved_inventory_product.try(:generated_item_code)}
                       .col-md-4
                         Approved Product Description: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.approved_inventory_product.try(:description)}
-                    .row
-                      .col-md-4
-                        Spare Part Note: #{raw action.request_on_loan_spare_part.ticket_on_loan_spare_part.note}
 
 
                 - elsif action.action_id == 52
@@ -976,9 +895,6 @@
                         Approved Product Item Code: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.approved_inventory_product.try(:generated_item_code)}
                       .col-md-4
                         Approved Product Description: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.approved_inventory_product.try(:description)}
-                    .row
-                      .col-md-4
-                        Spare Part Note: #{raw action.request_on_loan_spare_part.ticket_on_loan_spare_part.note}
 
 
                 - elsif action.action_id == 53
@@ -990,9 +906,6 @@
                         Approved Product Item Code: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.approved_inventory_product.try(:generated_item_code)}
                       .col-md-4
                         Approved Product Description: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.approved_inventory_product.try(:description)}
-                    .row
-                      .col-md-4
-                        Spare Part Note: #{raw action.request_on_loan_spare_part.ticket_on_loan_spare_part.note}
 
 
                 - elsif action.action_id == 54
@@ -1004,9 +917,6 @@
                         Approved Product Item Code: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.approved_inventory_product.try(:generated_item_code)}
                       .col-md-4
                         Approved Product Description: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.approved_inventory_product.try(:description)}
-                    .row
-                      .col-md-4
-                        Spare Part Note: #{raw action.request_on_loan_spare_part.ticket_on_loan_spare_part.note}
 
                 - elsif action.action_id == 65
                   .panel-body
@@ -1017,9 +927,6 @@
                         Approved Product Item Code: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.approved_inventory_product.try(:generated_item_code)}
                       .col-md-4
                         Approved Product Description: #{action.request_on_loan_spare_part.ticket_on_loan_spare_part.approved_inventory_product.try(:description)}
-                    .row
-                      .col-md-4
-                        Spare Part Note: #{raw action.request_on_loan_spare_part.ticket_on_loan_spare_part.note}
                   
 
               - elsif action.action_id == 20 and action.hp_case.present?
