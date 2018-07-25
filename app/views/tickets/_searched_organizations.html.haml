@@ -1,0 +1,26 @@
+= paginate organization_customers, remote: true, method: :get, params: {product_id: product.id, ticket_time_now: @ticket_time_now} if organization_customers.present?
+.row
+  .table-responsive.col-md-8.table-stiped.table
+    %table.table
+      %thead
+        %tr
+          %th
+            Name
+          %th
+            Contacts
+          %th
+            Customers
+      %tbody
+        - organization_customers.each do |org|
+          %tr
+            %td
+              = link_to org.name, edit_organization_path(org), target: "_blank"
+
+            - if org.addresses.select{|a| a.primary_address }.any?
+              - org.addresses.each do |address|
+                - if address.primary_address
+                  %td= org.full_address
+              %td
+                = link_to "select", "#", onclick: "Tickets.assign_customer('', '#{product.id}', '#{@ticket_time_now}', '#{org.id}', 'create'); false;"
+            - else
+              %td{colspan: 2} No primary address for the customer. Please Set any primary address.

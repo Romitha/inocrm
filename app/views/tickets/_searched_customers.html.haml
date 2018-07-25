@@ -1,0 +1,29 @@
+= paginate customers, remote: true, method: :get, params: {product_id: product.id, ticket_time_now: @ticket_time_now} if customers.present?
+.table-responsive.col-md-8.table-stiped.table
+  %table.table
+    %thead
+      %tr
+        %th
+          Name
+        %th
+          Address
+        %th
+          Contacts
+        %th
+          Organization
+        %th
+          Function
+    %tbody
+      - customers.each do |customer|
+        %tr
+          %td= customer.full_name
+          %td= customer.full_address
+          %td
+            - customer.contact_type_values.each do |c_value|
+              = c_value.contact_info
+              %br/
+          %td
+            = link_to customer.organization.name, organization_path(customer.organization.id), target: "_blank" if customer.organization.present?
+          %td
+            = link_to "select", "#", onclick: "Tickets.assign_customer('#{customer.id}', '#{product.id}', '#{@ticket_time_now}', '', 'select'); false;"
+            = link_to "edit", "#", onclick: "Tickets.customer_select('create', '#{product.id}', '#{@ticket_time_now}', '#{customer.id}'); false;"

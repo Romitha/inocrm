@@ -367,17 +367,23 @@ class TicketsController < ApplicationController
       @customers = []
       @organization_customers = []
       @display_select_option = (params[:function_param]=="create")
-    elsif params[:select_customer]
+    elsif params[:select_customer].present?
       search_customer = params[:search_customer].strip
-      customers_nameonly = Customer.where("name like ?", "%#{search_customer}%").where(organization_id: nil)
-      customers_nameandnum = ContactTypeValue.where("value like ?", "%#{search_customer}%").map{|c| c.customer if c.customer.organization_id.nil? }.compact
-      customers_borth = customers_nameonly + customers_nameandnum
-      @customers = Kaminari.paginate_array(customers_borth.uniq).page(params[:page]).per(INOCRM_CONFIG["pagination"]["customer_per_page"])
+      # customers_nameonly = Customer.where("name like ?", "%#{search_customer}%").where(organization_id: nil)
+      @customers = Customer.search(query: search_customer, page: params[:page])
+      # customers_nameandnum = ContactTypeValue.where("value like ?", "%#{search_customer}%").map{|c| c.customer if c.customer.organization_id.nil? }.compact
+      # customers_borth = customers_nameonly + customers_nameandnum
+      # @customers = Kaminari.paginate_array(customers_borth.uniq).page(params[:page]).per(INOCRM_CONFIG["pagination"]["customer_per_page"])
 
-      org_customers_nameonly = Organization.customers.where("organizations.name like ?", "%#{search_customer}%")
-      # org_customers_nameandnum = ContactTypeValue.where("value like ?", "%#{search_customer}%").map{|c| c.customer if c.customer.organization_id.present? }.compact
-      org_customers_borth = org_customers_nameonly#.select{|o| o.primary_address.present? }# + org_customers_nameandnum
-      @organization_customers = Kaminari.paginate_array(org_customers_borth).page(params[:page]).per(INOCRM_CONFIG["pagination"]["organization_per_page"])
+      # org_customers_nameonly = Organization.customers.where("organizations.name like ?", "%#{search_customer}%")
+      # # org_customers_nameandnum = ContactTypeValue.where("value like ?", "%#{search_customer}%").map{|c| c.customer if c.customer.organization_id.present? }.compact
+      # org_customers_borth = org_customers_nameonly#.select{|o| o.primary_address.present? }# + org_customers_nameandnum
+      # @organization_customers = Kaminari.paginate_array(org_customers_borth).page(params[:page]).per(INOCRM_CONFIG["pagination"]["organization_per_page"])
+    
+    elsif params[:select_organization].present?
+      search_organization = params[:search_organization].strip
+      @organization_customers = Organization.search(query: search_organization, page: params[:page])
+
     end
     if params[:customer_id].present?
       existed_customer = Customer.find params[:customer_id]
