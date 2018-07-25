@@ -200,7 +200,7 @@ class Customer < ActiveRecord::Base
   end
 
   def self.search(params)  
-    tire.search(page: (params[:page] || 1), per_page: 5) do
+    tire.search(page: (params[:page] || 1), per_page: 10) do
       query do
         boolean do
           must { string params[:query] } if params[:query].present?
@@ -218,9 +218,12 @@ class Customer < ActiveRecord::Base
   def to_indexed_json
     ContactNumber
     to_json(
-      only: [:id, :name, :created_at],
+      only: [:id, :name, :created_at, :organization_id],
       methods: [:full_name, :full_address],
       include: {
+        organization: {
+          only: [:id, :name]
+        },
         contact_type_values: {
           only: [:created_at, :id],
           methods: [:contact_info]

@@ -1,7 +1,11 @@
-- if params[:function_param] == "select" or params[:select_customer].present?
+- if params[:function_param] == "select"
   $("#customer_modal").modal();
   $("#customer_modal .modal-content").html("#{j render 'tickets/select_customers', customers: @customers, organization_customers: @organization_customers, product: @product}")
   $("#new_customer_form").addClass("hide")
+- elsif params[:select_customer].present?
+  $("#contact_persons").html("#{j render 'tickets/searched_customers', customers: @customers, product: @product}")
+- elsif params[:select_organization].present?
+  $("#contact_organizations").html("#{j render 'tickets/searched_organizations', organization_customers: @organization_customers, product: @product}")
 - else
   $("#form_frame").html("#{j render 'tickets/customer_form', customer: @new_customer, display_select_option: @display_select_option, existing_customer: @existing_customer, product: @product}");
   $("body").removeClass("modal-open");

@@ -3,94 +3,40 @@
   %button.close{"aria-label" => "Close", "data-dismiss" => "modal", :type => "button"}
     %span{"aria-hidden" => "true"} &times;
   = @header
+
+
 .modal-body
-  .row
-    .col-lg-12
-      #select_contact_persons
+  %ul#myTab.nav.nav-tabs{:role => "tablist"}
+    %li.active{:role => "presentation"}= link_to "Organization", "#organization", role: "tab", data: {toggle: "tab"}
+    %li{:role => "presentation"}= link_to "Customer", "#customer_second_id", role: "tab", data: {toggle: "tab"}
+
+  .tab-content
+    #organization.tab-pane{:role => "tabpanel"}
+      #select_contact_organizations
         = form_tag new_customer_tickets_path, method: :get, remote: true do
           = hidden_field_tag :product_id, product.id
           = hidden_field_tag :ticket_time_now, @ticket_time_now
           .input-group
-            = text_field_tag "search_customer", nil, class: "form-control", placeholder: "search customer by name or contact value"
+            = text_field_tag "search_organization", nil, class: "form-control", placeholder: "search customer by name or contact value"
             %span.input-group-btn
-              = submit_tag "Search", class: "btn btn-default", name: "select_customer"
-  %br/
-  %ul#myTab.nav.nav-tabs{:role => "tablist"}
-    %li.active{:role => "presentation"}= link_to "Customer", "#customer_second_id", role: "tab", data: {toggle: "tab"}
-    %li{:role => "presentation"}= link_to "Organization", "#organization", role: "tab", data: {toggle: "tab"}
+              = submit_tag "Search", class: "btn btn-default", name: "select_organization"
 
-  .tab-content
+      #contact_organizations
+
     #customer_second_id.tab-pane.active{:role => "tabpanel"}
-      #contact_persons
-        .row
-          = paginate customers, remote: true, method: :get, params: {product_id: product.id, ticket_time_now: @ticket_time_now} if customers.present?
-          .table-responsive.col-md-8.table-stiped.table
-            %table.table
-              %thead
-                %tr
-                  %th
-                    Name
-                  %th
-                    Address
-                  %th
-                    Contacts
-                  %th
-                    Organization
-                  %th
-                    Function
-              %tbody
-                - customers.each do |customer|
-                  %tr
-                    %td
-                      #{customer.mst_title.try(:title)} #{customer.name}
-                    %td
-                      = customer.address1
-                      %br/
-                      = customer.address2
-                      %br/
-                      = customer.address3
-                      %br/
-                      = customer.address4
-                    %td
-                      - customer.contact_type_values.each do |c_value|
-                        #{c_value.contact_type.name}: #{c_value.value}
-                        %br/
-                    %td
-                      = link_to customer.organization.name, organization_path(customer.organization), target: "_blank" if customer.organization
-                    %td
-                      = link_to "select", "#", onclick: "Tickets.assign_customer('#{customer.id}', '#{product.id}', '#{@ticket_time_now}', '', 'select'); false;"
-                      = link_to "edit", "#", onclick: "Tickets.customer_select('create', '#{product.id}', '#{@ticket_time_now}', '#{customer.id}'); false;"
-
-    #organization.tab-pane{:role => "tabpanel"}
-      = paginate organization_customers, remote: true, method: :get, params: {product_id: product.id, ticket_time_now: @ticket_time_now} if organization_customers.present?
       .row
-        .table-responsive.col-md-8.table-stiped.table
-          %table.table
-            %thead
-              %tr
-                %th
-                  Name
-                %th
-                  Contacts
-                %th
-                  Customers
-            %tbody
-              - organization_customers.each do |org|
-                %tr
-                  %td
-                    = link_to_if 9, org.name, edit_organization_path(org), target: "_blank"
+        .col-lg-12
+          #select_contact_persons
+            = form_tag new_customer_tickets_path, method: :get, remote: true do
+              = hidden_field_tag :product_id, product.id
+              = hidden_field_tag :ticket_time_now, @ticket_time_now
+              .input-group
+                = text_field_tag "search_customer", nil, class: "form-control", placeholder: "search customer by name or contact value"
+                %span.input-group-btn
+                  = submit_tag "Search", class: "btn btn-default", name: "select_customer"
 
-                  - if org.primary_address.present?
-                    %td
-                      = org.primary_address.address1
-                      %br/
-                      = org.primary_address.address2
-                      %br/
-                      = org.primary_address.address3
-                    %td
-                      = link_to "select", "#", onclick: "Tickets.assign_customer('', '#{product.id}', '#{@ticket_time_now}', '#{org.id}', 'create'); false;"
-                  - else
-                    %td{colspan: 2} No primary address for the customer. Please Set any primary address.
+      #contact_persons
+
 
 .modal-footer
   %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
