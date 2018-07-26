@@ -38,7 +38,7 @@
           -if ticket.ticket_contract.present?
             %span.sla_time #{ticket.ticket_contract.try(:sla_time).try(:sla_time)}
           -else
-            = link_to "#", class: "inline_edit", data: {type: "select", id:"sla_change", resource: "ticket", source: SlaTime.where(active: true).collect{|sla_time| {value: sla_time.id, text: sla_time.description}}, name: "sla_id", url: ticket_update_tickets_path(ticket_time_now: @ticket_time_now, product_id: ticket.products.first.try(:id) ), "original-title" => "Update Product Category" } do
+            = link_to "#", class: "inline_edit", data: {type: "select", id:"sla_change", resource: "ticket", source: SlaTime.where(active: true).collect{|sla_time| {value: sla_time.id, text: sla_time.description}}, name: "sla_id", url: ticket_update_tickets_path(ticket_time_now: @ticket_time_now, product_id: ticket.products.first.try(:id) ), "original-title" => "Update SLA" } do
               %span.sla_time #{ticket.products.first.try(:sla_time).try(:sla_time)}
 
 .row
