@@ -33,6 +33,8 @@ module TodosHelper
       end
     end
 
+    logging("REQUEST: #{args}\n RESPONSE: #{response}")
+
     response
 
   end
@@ -280,7 +282,9 @@ module TodosHelper
         request.query = compulsory_query
         # response = HTTPI.get request
         request_method = "get"
+
       end
+
       begin
         response = HTTPI.send(request_method, request)
         Hash.from_xml response.body
@@ -295,6 +299,21 @@ module TodosHelper
       request = HTTPI::Request.new
       request.headers = {"Authorization" => "Basic a3Jpc3Y6a3Jpc3Y=", "Content-type" => "application/json", "Accept" => "application/xml"}
       request
+    end
+
+    def logging msg
+      logger = Logger.new("log/jbpm.log")
+
+      # logs for program called MainProgram
+      logger.progname = 'JBPM'
+
+      # a simple formatter
+      logger.formatter = proc do |severity, time, progname, msg|
+        "#{time} from #{progname}: #{msg}\n"
+      end
+
+      logger.info(msg)
+
     end
 
     def start_process_path(deployment_id, process_id)
