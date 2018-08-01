@@ -302,7 +302,11 @@ module TodosHelper
     end
 
     def logging msg
-      logger = Logger.new("log/jbpm.log")
+      dir = File.dirname("log/jbpm/#{Date.today.strftime('%m')}/#{Date.today.strftime('%d')}/#{Date.today.strftime('%m-%d')}-jbpm.log")
+
+      FileUtils.mkdir_p(dir) unless File.directory?(dir)
+
+      logger = Logger.new("#{dir}/#{Date.today.strftime('%m-%d')}-jbpm.log")
 
       # logs for program called MainProgram
       logger.progname = 'JBPM'

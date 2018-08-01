@@ -14,6 +14,12 @@ Rails.application.configure do
   config.action_controller.perform_caching = true
   config.cache_store = :dalli_store, nil, { :namespace => "inovcrm", :expires_in => 1.day, :compress => true }
 
+  dir = File.dirname("log/inocrm/#{Date.today.strftime('%m')}/#{Date.today.strftime('%d')}/#{Date.today.strftime('%m-%d')}-#{Rails.env}.log")
+
+  FileUtils.mkdir_p(dir) unless File.directory?(dir)
+
+  config.logger = Logger.new("#{dir}/#{Date.today.strftime('%m-%d')}-#{Rails.env}.log")
+
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
 

@@ -1,1 +1,11 @@
-= link_to_if can?(:reindex_all_model, Organization), "Re-Index", reindex_all_model_admins_dashboards_path, method: :post, data: {disable_with: 'Please wait...', confirm: 'Please make sure to keep application system idle and don\'t refresh page untill complete point of re-indexing...'}
+- if can?(:reindex_all_model, Organization)
+  = link_to "Re-Index", reindex_all_model_admins_dashboards_path, method: :post, data: {disable_with: 'Please wait...', confirm: 'Please make sure to keep application system idle and don\'t refresh page untill complete point of re-indexing...'}
+  %hr
+  = form_tag regenerate_jbpm_admins_dashboards_path, method: :post do
+    .form-group
+      .row
+        = label_tag "JBPM Inputs", class: "col-md-12" do
+          JBPM Inputs
+          = text_field_tag :jbpm_inputs, nil, class: "form-control", style: "width: 100%;"
+        .col-md-1
+          = submit_tag "Re-Send", class: "btn btn-success"
