@@ -42,13 +42,39 @@ module Admins
 
     end
 
+    def regenerate_jbpm
+      jbpm_params = params[:jbpm_inputs]
+      flash_message = {notice: 'processing...' }
+      begin
+        case
+        when jbpm_params.present?
+          formatted_params = eval(jbpm_params)
+
+          @bpm_response = view_context.send_request_process_data formatted_params
+
+          if @bpm_response[:status].try(:upcase) == "SUCCESS"
+            flash_message = {notice: 'JBPM is successfully updated.' }
+          else
+            flash_message = {alert: 'Failed to updated.' }
+          end
+          puts flash_message
+
+        end
+      rescue
+        flash_message = {alert: 'Application error occured' }
+      end
+
+      redirect_to admins_dashboards_url, flash_message
+
+    end
+
     def reindex_all_model
       authorize! :reindex_all_model, Organization
 
       DashboardsController.async( ttr: 1800.seconds ).reindex_all_models_async
 
       respond_to do |format|
-        format.html {redirect_to admins_root_url, notice: 'Index is successfully initiated. System needs around 2-5 minutes to complete indexing...'}
+        format.html {redirect_to admins_root_url, notice: 'Index is successfully initiated. System needs around 20-30 minutes to complete indexing...'}
       end
     end
 
@@ -57,6 +83,7 @@ module Admins
       #   system "rake environment tire:deep_import CLASS=#{models.first} PCLASS=#{models.last} FORCE=true"
       # end
       system "rake environment tire:index_all_model RAILS_ENV=#{Rails.env}"
+
     end
 
     # private :reindex_all_models_async

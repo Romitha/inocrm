@@ -522,6 +522,7 @@ Rails.application.routes.draw do
     resources :dashboards do
       collection do
         post "reindex_all_model"
+        post "regenerate_jbpm"
       end
     end
     resources :sales
