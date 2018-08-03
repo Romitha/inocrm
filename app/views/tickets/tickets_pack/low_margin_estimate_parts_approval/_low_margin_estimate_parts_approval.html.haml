@@ -281,7 +281,7 @@
             %th{class: "text-right"}
               Total profit
               %span (
-              %span#db_margin{style: "font-weight:bold;"}= CompanyConfig.first.try(:sup_external_job_profit_margin).to_f
+              %span#db_margin{style: "font-weight:bold;"}= CompanyConfig.first.try(:sup_internal_part_profit_margin).to_f
               %span %)
             %th{class: "text-right"}
               %span#total_margin_price{class: "#{'red' if CompanyConfig.first.try(:sup_external_job_profit_margin).to_f > (total_estimation / total_cost - 1)*100 }"}= number_with_precision (total_estimation / total_cost - 1)*100, precision: 2
