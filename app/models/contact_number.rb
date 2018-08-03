@@ -110,6 +110,7 @@ class OrganizationContactPerson < ActiveRecord::Base
     "#{mst_title.try(:title)} #{name}"
   end
 
+
   def contact_type_name
     contact_person_type.name
   end
