@@ -33,7 +33,9 @@ module TodosHelper
       end
     end
 
-    logging("REQUEST: #{args}\n RESPONSE: #{response}")
+    unless args[:task_list]
+      logging("REQUEST: #{args}\n RESPONSE: #{response}")
+    end
 
     response
 

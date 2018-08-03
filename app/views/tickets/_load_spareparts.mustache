@@ -21,8 +21,6 @@
     %strong Serial No
 %hr
 #sparepart_list
-  {{#products}}
-  {{#tickets}}
   {{#spare_parts}}
   %div{ id: "addclick_function_{{part_no}}"}
 
@@ -36,7 +34,7 @@
         .col-md-1.now_amount_default {{amount}}
         .col-md-1.now_class {{spare_part_description}}
         .col-md-2
-          <a href="#" class="btn btn-default has-popover" data-content="{{{note}}}" data-placement="bottom" data-toggle="popover" data-html="true" "title"="this is sample text">View Note</a>
+          <a href="#" class="has-popover" data-content="{{{note}}}" data-placement="bottom" data-toggle="popover" data-html="true" "title"="this is sample text">View Note</a>
 
         .col-md-1 {{ticket_no}}
         .col-md-1 {{serial_no}}
@@ -45,5 +43,3 @@
     %hr
 
   {{/spare_parts}}
-  {{/tickets}}
-  {{/products}}

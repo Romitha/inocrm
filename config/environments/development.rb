@@ -17,6 +17,7 @@ Rails.application.configure do
   dir = File.dirname("log/inocrm/#{Date.today.strftime('%m')}/#{Date.today.strftime('%d')}/#{Date.today.strftime('%m-%d')}-#{Rails.env}.log")
 
   FileUtils.mkdir_p(dir) unless File.directory?(dir)
+  # File.chmod 0777, Rails.root.join('log', 'inocrm', '08', '03', '08-03-development.log')
 
   config.logger = Logger.new("#{dir}/#{Date.today.strftime('%m-%d')}-#{Rails.env}.log")
 
