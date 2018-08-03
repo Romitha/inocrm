@@ -5658,9 +5658,11 @@ class TicketsController < ApplicationController
 
     @po = SoPo.new
     if params[:product_brand_id].present?
-      @product_brand = ProductBrand.find params[:product_brand_id]
-      @products = @product_brand.products
-    else
+      # @product_brand = ProductBrand.find params[:product_brand_id]
+      # @products = @product_brand.products
+      # @products = Product.search(query: "product_brand_id:#{params[:product_brand_id]}")
+      # @po.currency_id = @product_brand.currency_id
+      @ticket_spare_part_manufactures = TicketSparePartManufacture.joins(ticket_spare_part: {ticket: {products: :product_brand}}).where( bundled: true, po_required: true, mst_spt_product_brand: { id: params[:product_brand_id] } ).where("bundled IS TRUE AND po_required IS TRUE AND po_completed IS NOT TRUE")
     end
     respond_to do |format|
       format.json
@@ -5718,9 +5720,16 @@ class TicketsController < ApplicationController
 
     authorize! :create_po, SoPo
 
-    @po = SoPo.new po_params
+    po_no = po_params['po_no']
+    @po = if SoPo.find_by_po_no(po_no).present?
+      SoPo.find_by_po_no(po_no)
+    else
+      SoPo.new
+    end
 
-    if @po.save
+    @po.attributes = po_params
+
+    if @po.save!
       @po.so_po_items.each do |item|
         ticket_spare_part = item.ticket_spare_part
 
@@ -5896,7 +5905,7 @@ class TicketsController < ApplicationController
     end
 
     def po_params
-      tspt_params = params.require(:so_po).permit(:id, :created_at, :created_by, :so_no, :po_no, :po_date, :amount, :invoiced, :currency_id, :product_brand_id, :note, so_po_items_attributes: [ :id, :_destroy, :spt_so_po_id, :item_no, :amount, :ticket_spare_part_id])
+      tspt_params = params.require(:so_po).permit(:id, :created_at, :created_by, :so_no, :po_no, :po_date, :amount, :invoiced, :currency_id, :product_brand_id, :note, so_po_items_attributes: [ :id, :_destroy, :spt_so_po_id, :item_no, :amount, :ticket_spare_part_id, :description])
       tspt_params
     end
 

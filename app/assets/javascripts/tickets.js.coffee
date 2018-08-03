@@ -687,7 +687,7 @@ window.Tickets =
   select_brand_create_po: ->
     _this = this
     $("#brand1").change ->
-      _this = this
+      __this = this
       if $("#brand1").val()
         $("#hp_po_page").removeClass("hide")
       else
@@ -697,14 +697,16 @@ window.Tickets =
 
       this_data = {product_brand_id: $(@).val()}
       $.get url, this_data, (data)->
+        _this.ajax_loader()
         $('#load_spareparts_json_render').html Mustache.to_html($('#load_spareparts_output').html(), data)
         # console.log $("#brand1").val()
-        $("#so_po_currency_id").val($(":selected", _this).data("currencyid"))
+        $("#so_po_currency_id").val($(":selected", __this).data("currencyid"))
         $("#so_po_product_brand_id").val($("#brand1").val())
-        $("#dynamic_currency_code").text($(":selected", _this).data("currencycode"))
+        $("#dynamic_currency_code").text($(":selected", __this).data("currencycode"))
         # $('#create_hp_po_form').html ($('#create_ho_po_load').html(), data)
         # _this.initial_loaders()
         $("a[rel~=popover], .has-popover").popover()
+        _this.remove_ajax_loader()
 
   select_brand_create_invoice_for_so: ->
     $("#brand_id_for_sales").change ->

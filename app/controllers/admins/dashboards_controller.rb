@@ -45,6 +45,8 @@ module Admins
     def regenerate_jbpm
       jbpm_params = params[:jbpm_inputs]
       flash_message = {notice: 'processing...' }
+      authorize! :reindex_all_model, Organization
+
       begin
         case
         when jbpm_params.present?
@@ -57,7 +59,6 @@ module Admins
           else
             flash_message = {alert: 'Failed to updated.' }
           end
-          puts flash_message
 
         end
       rescue
