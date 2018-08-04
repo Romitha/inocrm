@@ -440,8 +440,8 @@ module ApplicationHelper
     invoice = ticket_invoice
 
     ticket = invoice.ticket
-    ticket_date = ticket.created_at.strftime(INOCRM_CONFIG['long_date_format'])
-    ticket_time = ticket.created_at.strftime(INOCRM_CONFIG['time_format'])
+    invoice_date = invoice.created_at.strftime(INOCRM_CONFIG['long_date_format'])
+    invoice_time = invoice.created_at.strftime(INOCRM_CONFIG['time_format'])
     ticket_ref = ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG['ticket_no_format'])
     company_name = ticket.customer.full_name
     contact_person = "#{ticket.contact_person1.full_name}"
@@ -480,6 +480,10 @@ module ApplicationHelper
     special_note = ticket.note
     invoice_note = invoice.note
     created_by = invoice.created_by_ch_eng.full_name
+    delivery_address = invoice.delivery_address
+    so_number = invoice.so_number
+    po_number = invoice.po_number
+    delivery_number_date = invoice.delivery_number_date
     if invoice.canceled?
       canceled = "CANCELED" 
     else
@@ -693,9 +697,13 @@ module ApplicationHelper
       "ADDRESS3=#{address3}",
       "ADDRESS4=#{address4}",
       "TICKET_REF=#{ticket_ref}",
-      "CREATED_DATE=#{ticket_date}",
-      "CREATED_TIME=#{ticket_time}",
+      "CREATED_DATE=#{invoice_date}",
+      "CREATED_TIME=#{invoice_time}",
       "PAYMENT_TERM=#{payment_term}",
+      "DELIVERY_ADDRESS=#{delivery_address}",
+      "SO_NUMBER=#{so_number}",
+      "PO_NUMBER=#{po_number}",
+      "DELIVERY_NUMBER_DATE=#{delivery_number_date}",
       repeat_data,
       "TOTAL_AMOUNT=#{standard_currency_format total_amount}",
       "CURRENCY3=#{currency}",
