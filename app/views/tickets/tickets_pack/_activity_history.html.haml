@@ -1204,7 +1204,7 @@
                         Reject Note: #{action_warranty_extend.try(:note)}
                     .row
                       .col-md-4
-                        Request Note: action_warranty_extend.reject_note
+                        Request Note: #{action_warranty_extend.reject_note}
 
                 - elsif action.action_id == 39 and action.action_warranty_extend.present?
                   .panel-body
@@ -1228,7 +1228,7 @@
                       .col-md-4
                         Reject Reason: #{action_warranty_extend.reject_reason.try(:reason)}
                       .col-md-4
-                        Reject Note: action_warranty_extend.reject_note
+                        Reject Note: #{action_warranty_extend.reject_note}
 
               - elsif action.action_id == 56 and action.act_ticket_close_approve.present?
                 .panel-body
