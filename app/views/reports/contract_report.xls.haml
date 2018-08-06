@@ -57,8 +57,8 @@
             No
         %td= contract.ticket_currency.try(:code)
         %td= contract.status_name
-        %td= standard_currency_format(contract.product_amount)
-        %td= contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f}
+        %td= standard_currency_format(contract.product_amount) , precision: 2
+        %td= contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f} , precision: 2
         %td= number_with_precision standard_currency_format(contract.pending_amount), precision: 2
     %tr
       %td
