@@ -94,7 +94,7 @@
         %td= ticket.ticket_contract.try(:location_address_full)
         %td= ticket.products.first.try(:serial_no)
         %td= ticket.ticket_contract.try(:ticket_currency).try(:code)
-        %td= ticket.ticket_contract_product_amount.to_f
+        %td= ticket.ticket_contract_product_amount.to_f, precision: 2
         %td= ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
         %td
           - if ticket.present?
@@ -116,11 +116,11 @@
         %td= boolean_in_word ticket.cus_chargeable, "Yes", "No"
         %td= ticket.resolution_summary
 
-        %td= ticket.ticket_engineer_cost.to_f
-        %td= ticket.ticket_support_engineer_cost.to_f
-        %td= ticket.ticket_additional_cost.to_f
-        %td= ticket.ticket_part_cost.to_f
-        %td= total_cost
+        %td= ticket.ticket_engineer_cost.to_f, precision: 2
+        %td= ticket.ticket_support_engineer_cost.to_f, precision: 2
+        %td= ticket.ticket_additional_cost.to_f, precision: 2
+        %td= ticket.ticket_part_cost.to_f, precision: 2
+        %td= total_cost, precision: 2
     %tr
       %td
         %strong Total

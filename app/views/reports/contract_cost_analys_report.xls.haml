@@ -103,16 +103,16 @@
         %td= contract_product.instral_loc_full_address
         %td= contract_product.product.serial_no
         %td= contract_product.ticket_contract.ticket_currency.try(:code)
-        %td= (contract_product.try(:amount).to_f - contract_product.try(:discount_amount).to_f)
-        %td= contract_amount
-        %td= recived_amount
+        %td= (contract_product.try(:amount).to_f - contract_product.try(:discount_amount).to_f), precision: 2
+        %td= contract_amount , precision: 2
+        %td= recived_amount , precision: 2
         %td= contract_product.num_of_tickets
-        %td= contract_product.contract_product_engineer_cost
-        %td= contract_product.contract_product_support_engineer_cost
-        %td= contract_product.contract_product_part_cost
-        %td= contract_product.contract_product_additional_cost
-        %td= total_cost
-        %td= ((contract_product.try(:amount).to_f - contract_product.try(:discount_amount).to_f) - total_cost.to_f)
+        %td= contract_product.contract_product_engineer_cost, precision: 2
+        %td= contract_product.contract_product_support_engineer_cost, precision: 2
+        %td= contract_product.contract_product_part_cost, precision: 2
+        %td= contract_product.contract_product_additional_cost, precision: 2
+        %td= total_cost, precision: 2
+        %td= ((contract_product.try(:amount).to_f - contract_product.try(:discount_amount).to_f) - total_cost.to_f), precision: 2
     %tr
       %td
         %strong Total

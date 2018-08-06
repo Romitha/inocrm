@@ -116,11 +116,11 @@
           %td= boolean_in_word ticket.cus_chargeable, "Yes", "No"
           %td= ticket.resolution_summary
 
-          %td= ticket.ticket_engineer_cost.to_f
-          %td= ticket.ticket_support_engineer_cost.to_f
-          %td= ticket.ticket_additional_cost.to_f
-          %td= ticket.ticket_part_cost.to_f
-          %td= total_cost
+          %td= ticket.ticket_engineer_cost.to_f, precision: 2
+          %td= ticket.ticket_support_engineer_cost.to_f, precision: 2
+          %td= ticket.ticket_additional_cost.to_f, precision: 2
+          %td= ticket.ticket_part_cost.to_f, precision: 2
+          %td= total_cost, precision: 2
     %tr
       %td
         %strong Total
