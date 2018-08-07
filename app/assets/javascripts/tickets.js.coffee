@@ -39,6 +39,7 @@ window.Tickets =
     @filter_category_report()
     @filter_category_ticket_report()
     @dynamically_filter_select_onload()
+    @validate_po_no()
     return
 
   initial_loaders: ->
@@ -1408,3 +1409,12 @@ window.Tickets =
     $("#live_search_select_activity_history_user").change ->
       console.log $(":selected", @).val()
       activityHistoryListUser.search($(":selected", @).val())
+
+  validate_po_no: ->
+    $("#so_po_po_no").blur ->
+      _this = $(@)
+      po_no = _this.val()
+      $.post("/tickets/validate_po_no", {po_no: po_no}, (data)->
+        $(".po_no_error").remove()
+        _this.after("<label class='error po_no_error'>#{data.message}</label>")
+      )

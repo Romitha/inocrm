@@ -512,7 +512,7 @@ class GrnSerialItem < ActiveRecord::Base
 
   def self.search(params)
     # https://www.elastic.co/guide/en/elasticsearch/reference/2.3/query-dsl-query-string-query.html
-    tire.search(page: (params[:page] || 1), per_page: 10) do
+    tire.search( page: ( params[:page] || 1 ), per_page: ( params[:per_page] || 10 ) ) do
       query do
         boolean do
           must { string params[:query] } if params[:query].present?

@@ -3692,7 +3692,7 @@ class TicketsController < ApplicationController
 
     if @onloan_or_store.approved_inventory_product.inventory_product_info
 
-      search_hash = {page: params[:page]}
+      search_hash = {page: params[:page], per_page: 500}
       search_hash[:query] = "store_id:#{@onloan_or_store.approved_store_id} AND grn_item.inventory_not_updated:false AND grn_item.product_id:#{@onloan_or_store.approved_inventory_product.id} AND remaining:true"
 
       if @onloan_or_store.approved_inventory_product.inventory_product_info.need_serial
@@ -5670,6 +5670,19 @@ class TicketsController < ApplicationController
     end
   end
 
+  def validate_po_no
+    TicketSparePart
+    @po = SoPo.find_by_po_no(params[:po_no])
+    response = if @po
+      { message: "PO No is available under the brand of #{@po.brand_of_product_name}. Still you can save with this PO No. Please make sure the selected brand is #{@po.brand_of_product_name}." }
+    else
+      { message: '' }
+    end
+
+    render json: response, status: 200
+
+  end
+
   def view_po
     TicketSparePart
     Product
@@ -5727,9 +5740,11 @@ class TicketsController < ApplicationController
       SoPo.new
     end
 
+    existing_brand_id = @po.product_brand_id if @po.persisted?
     @po.attributes = po_params
+    new_brand_id = @po.product_brand_id
 
-    if @po.save!
+    if (!existing_brand_id or (existing_brand_id == new_brand_id)) and @po.save!
       @po.so_po_items.each do |item|
         ticket_spare_part = item.ticket_spare_part
 
@@ -5749,7 +5764,7 @@ class TicketsController < ApplicationController
       end
       
     else
-      flash[:alert] = "Unable to save. Please review."
+      flash[:alert] = "Unable to save. Please review. If the PO No already available, make sure same brand."
       respond_to do |format|
         format.html{ redirect_to hp_po_tickets_path }
       end

@@ -7,12 +7,12 @@ json.spare_parts @ticket_spare_part_manufactures do |ticket_spare_part_manufactu
   json.event_closed_date ticket_spare_part_manufacture.issued_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
   json.order_no ticket_spare_part_manufacture.order_no
   json.issued_at ticket_spare_part_manufacture.issued_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
-  json.part_no ticket_spare_part_manufacture.spare_part_id
+  json.part_no ticket_spare_part_manufacture.ticket_spare_part.spare_part_no
   json.spare_part_description ticket_spare_part_manufacture.ticket_spare_part.spare_part_description
   json.amount ticket_spare_part_manufacture.payment_expected_manufacture
   json.note ticket_spare_part_manufacture.ticket_spare_part.note
   json.ticket_no ticket_spare_part_manufacture.ticket_spare_part.ticket.support_ticket_no
-  json.serial_no ticket_spare_part_manufacture.ticket_spare_part.spare_part_no
+  json.faulty_serial_no ticket_spare_part_manufacture.ticket_spare_part.faulty_serial_no
   json.part_id ticket_spare_part_manufacture.ticket_spare_part.id
   json.currency_id ticket_spare_part_manufacture.ticket_spare_part.ticket.products.first.product_brand.currency_id
 end
