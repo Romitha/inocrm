@@ -215,6 +215,7 @@ Rails.application.routes.draw do
       get "inform_customer_in_modal"
       get "master_data"
       get "hp_po"
+      post "validate_po_no"
       get "view_po"
       get "view_delivered_bundle"
       get "approve_manufacture_parts"

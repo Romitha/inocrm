@@ -11,7 +11,7 @@
     #load_spareparts_json_render{style: "margin-left:30px;"}
   / #create_hp_po_form
   #ss
-    = simple_nested_form_for @po, url: create_po_tickets_path, html: {class: "validate_form"}, method: :post do |f|
+    = simple_nested_form_for @po, url: create_po_tickets_path, html: {class: "validate_form", id: "form_create_po"}, method: :post do |f|
       = f.input :currency_id, as: :hidden
       = f.input :product_brand_id, as: :hidden
       .row
@@ -78,7 +78,7 @@
           .col-md-12
             = f.link_to_add "Add item", :so_po_items, id: "inventory_po_items", class: "hide"
         .col-md-1
-          = f.submit "Save", class: "btn btn-success btn-sm"
+          = f.submit "Save", class: "btn btn-success btn-sm", id: "submit_create_po"
 
 %script{type: "text/html", id: "load_spareparts_output"}
   = render 'load_spareparts'
