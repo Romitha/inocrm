@@ -480,10 +480,10 @@ module ApplicationHelper
     special_note = ticket.note
     invoice_note = invoice.note
     created_by = invoice.created_by_ch_eng.full_name
-    delivery_address = invoice.delivery_address
-    so_number = invoice.so_number
-    po_number = invoice.po_number
-    delivery_number_date = invoice.delivery_number_date
+    # delivery_address = invoice.delivery_address
+    # so_number = invoice.so_number
+    # po_number = invoice.po_number
+    # delivery_number_date = invoice.delivery_number_date
     if invoice.canceled?
       canceled = "CANCELED" 
     else
@@ -700,10 +700,10 @@ module ApplicationHelper
       "CREATED_DATE=#{invoice_date}",
       "CREATED_TIME=#{invoice_time}",
       "PAYMENT_TERM=#{payment_term}",
-      "DELIVERY_ADDRESS=#{delivery_address}",
-      "SO_NUMBER=#{so_number}",
-      "PO_NUMBER=#{po_number}",
-      "DELIVERY_NUMBER_DATE=#{delivery_number_date}",
+      # "DELIVERY_ADDRESS=#{delivery_address}",
+      # "SO_NUMBER=#{so_number}",
+      # "PO_NUMBER=#{po_number}",
+      # "DELIVERY_NUMBER_DATE=#{delivery_number_date}",
       repeat_data,
       "TOTAL_AMOUNT=#{standard_currency_format total_amount}",
       "CURRENCY3=#{currency}",

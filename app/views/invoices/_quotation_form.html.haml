@@ -3,6 +3,10 @@
     %h3 Customer Quotation
     = simple_nested_form_for quotation, url: update_quotation_invoices_path(action_type: @action_type), method: :post, html: {class: "validate_form_q"} do |f|
       = hidden_field_tag :quotation_id, f.object.id
+
+      - if params[:from_where1] == 'estimations_quotations'
+        = hidden_field_tag :ticket_id, params[:ticket_id]
+
       - if params[:task_id].present?
         = hidden_field_tag :process_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:process_id]
         = hidden_field_tag :task_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:task_id]
