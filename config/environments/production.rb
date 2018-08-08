@@ -46,11 +46,11 @@ Rails.application.configure do
 
   # Use the lowest log level to ensure availability of diagnostic information
   # when problems arise.
-  dir = File.dirname("log/inocrm/#{Date.today.strftime('%m')}/#{Date.today.strftime('%d')}/#{Date.today.strftime('%m-%d')}-#{Rails.env}.log")
+  # dir = File.dirname("log/inocrm/#{Date.today.strftime('%m')}/#{Date.today.strftime('%d')}/#{Date.today.strftime('%m-%d')}-#{Rails.env}.log")
 
-  FileUtils.mkdir_p(dir) unless File.directory?(dir)
+  # FileUtils.mkdir_p(dir) unless File.directory?(dir)
 
-  config.logger = Logger.new("#{dir}/#{Date.today.strftime('%m-%d')}-#{Rails.env}.log")
+  # config.logger = Logger.new("#{dir}/#{Date.today.strftime('%m-%d')}-#{Rails.env}.log")
 
   config.log_level = :debug
 
