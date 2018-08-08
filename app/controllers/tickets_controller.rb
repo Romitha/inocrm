@@ -5705,8 +5705,8 @@ class TicketsController < ApplicationController
 
     case params[:po_callback]
     when "select_po"
-      @po = SoPo.find_by_id params[:po_id]
-      if SoPo.find_by_id params[:po_id]
+      @po = SoPo.find_by_id params[:po_no]
+      if @po.present?
         render "tickets/view_selected_po"
       end
     else

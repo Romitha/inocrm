@@ -4,8 +4,6 @@
     = simple_nested_form_for quotation, url: update_quotation_invoices_path(action_type: @action_type), method: :post, html: {class: "validate_form_q"} do |f|
       = hidden_field_tag :quotation_id, f.object.id
 
-      - if params[:from_where1] == 'estimations_quotations'
-        = hidden_field_tag :ticket_id, params[:ticket_id]
 
       - if params[:task_id].present?
         = hidden_field_tag :process_id, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:process_id]
@@ -13,6 +11,8 @@
         = hidden_field_tag :owner, Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:owner]
         - Rails.cache.fetch(["/tickets/resolution", params[:task_id]])[:bpm_input_variables].each do |bpm_input_variable|
           = hidden_field_tag bpm_input_variable[0], bpm_input_variable[1]
+      - else
+        = hidden_field_tag :ticket_id, params[:ticket_id]
 
       .row
         .col-md-3
@@ -20,7 +20,6 @@
           = f.input :validity_period, input_html: {id: "validity_period_id"}
           = f.input :delivery_period
           = f.input :warranty
-          / = label_tag "Payment term"
           = f.association :payment_term,collection: PaymentTerm.where(active: true), required: true
           = f.input :customer_contacted, wrapper: :append
           = f.input :canceled, wrapper: :append, label: "Cancelled"

@@ -496,7 +496,7 @@ class InvoicesController < ApplicationController
       @render_to_page = "tickets/tickets_pack/customer_feedback/update_customer_feedback"
 
     else
-      @render_to_page = {js: "window.location.href = '#{todos_url}'"}
+      @render_to_page = { js: "window.location.href = '#{todos_url}'" }
 
     end
     render @render_to_page
