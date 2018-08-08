@@ -247,7 +247,7 @@
                     .row
                       .col-md-1
                         - if params[:page]
-                          = (index+1) + 10*(params[:page].to_i-1)
+                          = (index+1) + 500*(params[:page].to_i-1)
                         - else
                           = (index+1)
 

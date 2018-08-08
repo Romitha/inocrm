@@ -28,7 +28,7 @@
               .col-md-1
                 .reset
                   = link_to "Reset", "#", onclick: "Tickets.reset_searchpo(); return false;", class: "resetpo"
-  - if @po.any?
+  - if @pos.any?
     .row
       .col-md-12
         %table.table.table-hover
@@ -43,7 +43,7 @@
               %th Note
               %th ticket
           %tbody
-            - @po.each_with_index do |po, index|
+            - @pos.each_with_index do |po, index|
               %tr
                 %td
                   - if params[:page]
@@ -62,5 +62,5 @@
                   - po.so_po_items.each do |so|
                     = so.ticket_spare_part.ticket.support_ticket_no#try(:ticket_spare_part).try(:ticket).try(:ticket_id)
                     / = so.support_ticket_no
-          = paginate @po, remote: false, method: :get
+          = paginate @pos, remote: false, method: :get
           %hr

@@ -5700,8 +5700,7 @@ class TicketsController < ApplicationController
 
     end
     params[:query] = refined_query
-    @po = SoPo.search(params)
-    # render "tickets/view_po"
+    @pos = SoPo.search(params)
 
     case params[:po_callback]
     when "select_po"
