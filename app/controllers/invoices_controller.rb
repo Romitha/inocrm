@@ -586,9 +586,13 @@ class InvoicesController < ApplicationController
     user_ticket_action.build_act_quotation(customer_quotation_id: @customer_quotation.id)
     user_ticket_action.save
 
-    redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
+    if params[:process_id].present?
+      redirect_response = view_context.redirect_to_resolution_page params[:process_id], params[:owner], current_user.id
 
-    redirect_to redirect_response[:url], notice: [redirect_response[:flash_message], @flash_message].join(", ")
+      redirect_to redirect_response[:url], notice: [redirect_response[:flash_message], @flash_message].join(", ")
+    else
+      redirect_to @ticket, notice: "Successfully saved."
+    end
 
   end
 
