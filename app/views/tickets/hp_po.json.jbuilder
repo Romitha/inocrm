@@ -12,7 +12,8 @@ json.spare_parts @ticket_spare_part_manufactures do |ticket_spare_part_manufactu
   json.amount ticket_spare_part_manufacture.payment_expected_manufacture
   json.note ticket_spare_part_manufacture.ticket_spare_part.note
   json.ticket_no ticket_spare_part_manufacture.ticket_spare_part.ticket.support_ticket_no
-  json.faulty_serial_no ticket_spare_part_manufacture.ticket_spare_part.faulty_serial_no
+  json.serial_no ticket_spare_part_manufacture.ticket_spare_part.ticket.products.first.serial_no
   json.part_id ticket_spare_part_manufacture.ticket_spare_part.id
   json.currency_id ticket_spare_part_manufacture.ticket_spare_part.ticket.products.first.product_brand.currency_id
+  json.currency_code ticket_spare_part_manufacture.ticket_spare_part.ticket.products.first.product_brand.currency.code
 end
