@@ -5737,7 +5737,7 @@ class TicketsController < ApplicationController
       # @products = @product_brand.products
       # @products = Product.search(query: "product_brand_id:#{params[:product_brand_id]}")
       # @po.currency_id = @product_brand.currency_id
-      @ticket_spare_part_manufactures = TicketSparePartManufacture.joins(ticket_spare_part: {ticket: {products: :product_brand}}).where( bundled: true, po_required: true, mst_spt_product_brand: { id: params[:product_brand_id] } ).where("bundled IS TRUE AND po_required IS TRUE AND po_completed IS NOT TRUE")
+      @ticket_spare_part_manufactures = TicketSparePartManufacture.joins(ticket_spare_part: {ticket: {products: :product_brand}}).where( bundled: true, po_required: true, mst_spt_product_brand: { id: params[:product_brand_id] } ).where("po_completed IS NOT TRUE")
     end
     respond_to do |format|
       format.json

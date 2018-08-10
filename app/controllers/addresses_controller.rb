@@ -69,6 +69,8 @@ class AddressesController < ApplicationController
     end
     @address.update_attribute(:primary_address, true)
 
+    @organization.update_index
+
     respond_to do |format|
       format.html {redirect_to (@address.addressable_type == "User" ? profile_user_path(@address.addressable) : polymorphic_path([@address.addressable])), notice: "Address is set to primary."}
     end
