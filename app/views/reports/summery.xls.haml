@@ -111,7 +111,7 @@
           %td= contract.formated_contract_start_at
           %td= contract.formated_contract_end_at
           %td= contract.contract_no
-          %td= (due_amount1.to_f - contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f}), precision: 2
+          %td= standard_currency_format(due_amount1.to_f - contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f})
           %td= contract.organization.account.get_account_manager
           %td= contract.remarks
           %td
@@ -150,7 +150,7 @@
           %td= contract.formated_contract_start_at
           %td= contract.formated_contract_end_at
           %td= contract.contract_no
-          %td= contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f}, precision: 2
+          %td= standard_currency_format contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f}
           %td= contract.organization.account.get_account_manager
           %td= contract.remarks
           %td
@@ -191,7 +191,7 @@
           %td= contract.formated_contract_start_at
           %td= contract.formated_contract_end_at
           %td= contract.contract_no
-          %td= (due_amount2.to_f - contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f}), precision: 2
+          %td= standard_currency_format (due_amount2.to_f - contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f}), 
           %td= contract.organization.account.get_account_manager
           %td= contract.remarks
           %td
@@ -229,7 +229,7 @@
           %td= contract.formated_contract_start_at
           %td= contract.formated_contract_end_at
           %td= contract.contract_no
-          %td= contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f}, precision: 2
+          %td= standard_currency_format contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f}
           %td= contract.organization.account.get_account_manager
           %td= contract.remarks
           %td
@@ -310,7 +310,7 @@
               %td= contract.formated_contract_start_at
               %td= contract.formated_contract_end_at
               %td= contract.contract_no
-              %td= contract.contract_payment_installments.sum{|i| (i.installment_start_date.to_date <= given_date and i.installment_end_date.to_date >= given_date and i.contract_id.to_s == contract.id ) ? (contract.product_amount.to_f) - (i.total_amount.to_f) : 0 }, precision: 2
+              %td= standard_currency_format contract.contract_payment_installments.sum{|i| (i.installment_start_date.to_date <= given_date and i.installment_end_date.to_date >= given_date and i.contract_id.to_s == contract.id ) ? (contract.product_amount.to_f) - (i.total_amount.to_f) : 0 }
               %td= contract.organization.account.get_account_manager
               %td= contract.remarks
               %td
