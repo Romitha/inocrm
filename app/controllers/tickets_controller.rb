@@ -2954,9 +2954,12 @@ class TicketsController < ApplicationController
     authorize! :onloan_return_pending_parts, Ticket
     Product
     TicketSparePart
+    Inventory
+    refined_onloan_return_pending_parts = ""
     if params[:search].present?
       refined_onloan_return_pending_parts = params[:search_return_part].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
     end
+    refined_onloan_return_pending_parts += " issued:true AND part_returned:false"
     params[:query] = refined_onloan_return_pending_parts
     @return_parts = TicketOnLoanSparePart.search(params)
     render "onloan_returns/onloan_return_pending_parts"

@@ -17,13 +17,17 @@
           .col-md-3
             %strong Supplier :
             = t.object.try(:supplier).try(:name)
-        .col-md-3
+        .col-md-1
           %strong Part No :
           #{t.object.ticket_spare_part.try(:spare_part_no)}
         .col-md-3
           %strong Part Description :
           #{t.object.ticket_spare_part.try(:spare_part_description)}
         .col-md-3
+          %strong Part status:
+          #{t.object.ticket_spare_part.try(:spare_part_status_action).try(:name)} #{"(Terminated)" 
+          t.object.ticket_spare_part.part_terminated.present? }
+        .col-md-2
           %strong Warranty Period (months) :
           #{t.object.try(:warranty_period)}
 
