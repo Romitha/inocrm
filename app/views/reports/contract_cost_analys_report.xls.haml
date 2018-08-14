@@ -112,7 +112,7 @@
         %td= standard_currency_format contract_product.contract_product_part_cost
         %td= standard_currency_format contract_product.contract_product_additional_cost
         %td= standard_currency_format total_cost,
-        %td= standard_currency_format ((contract_product.try(:amount).to_f - contract_product.try(:discount_amount).to_f) - total_cost.to_f)
+        %td= standard_currency_format (contract_product.amount.to_f - contract_product.discount_amount.to_f - total_cost.to_f)
     %tr
       %td
         %strong Total
