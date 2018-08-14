@@ -368,7 +368,7 @@ class TicketsController < ApplicationController
       @organization_customers = []
       @display_select_option = (params[:function_param]=="create")
     elsif params[:select_customer].present?
-      search_customer = params[:search_customer].strip
+      search_customer = "name:#{params[:search_customer]}"
       # customers_nameonly = Customer.where("name like ?", "%#{search_customer}%").where(organization_id: nil)
       @customers = Customer.search(query: search_customer, page: params[:page])
       # customers_nameandnum = ContactTypeValue.where("value like ?", "%#{search_customer}%").map{|c| c.customer if c.customer.organization_id.nil? }.compact
@@ -381,7 +381,7 @@ class TicketsController < ApplicationController
       # @organization_customers = Kaminari.paginate_array(org_customers_borth).page(params[:page]).per(INOCRM_CONFIG["pagination"]["organization_per_page"])
     
     elsif params[:select_organization].present?
-      search_organization = params[:search_organization].strip
+      search_organization = "name:#{params[:search_organization]}"
       @organization_customers = Organization.search(query: search_organization, page: params[:page])
 
     end
@@ -5692,7 +5692,7 @@ class TicketsController < ApplicationController
 
     refined_query = ""
     if params[:search].present?
-      support_ticket_no = "so_po_items.ticket_spare_part.ticket.support_ticket_no:#{params[:support_ticket_no]}" if params[:support_ticket_no].present?
+      support_ticket_no = "(so_po_items.ticket_spare_part.ticket.support_ticket_no:#{params[:support_ticket_no]} OR so_po_items.ticket_spare_part.ticket.ticket_no:#{params[:support_ticket_no]})" if params[:support_ticket_no].present?
       po_no_format = "po_no_format:#{params[:po_no_format]}" if params[:po_no_format].present?
       product_brand_id = "product_brand_id:#{params[:product_brand_id]}" if params[:product_brand_id].present?
 
@@ -5704,7 +5704,7 @@ class TicketsController < ApplicationController
 
     case params[:po_callback]
     when "select_po"
-      @po = SoPo.find_by_id params[:po_no]
+      @po = SoPo.find_by_id params[:po_id]
       if @po.present?
         render "tickets/view_selected_po"
       end
