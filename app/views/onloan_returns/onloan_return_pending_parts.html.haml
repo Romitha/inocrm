@@ -29,7 +29,7 @@
           .row
             .col-md-4.brand
               = label_tag InventoryCategoryCaption.first.caption
-              = select_tag "search_return_part[inventory_product.category1_id]",options_from_collection_for_select(InventoryCategory1.where(active: true), :id, :name, (params[:search_return_part] and params[:search_return_part][:category1_id])), include_blank: true, class: "form-control", id: "search_inventory_brand"
+              = select_tag "search_return_part[inventory_product.category1_id]", options_from_collection_for_select(InventoryCategory1.where(active: true), :id, :name, (params[:search_return_part] and params[:search_return_part][:category1_id])), include_blank: true, class: "form-control", id: "search_inventory_brand"
             .col-md-4.product
               = label_tag InventoryCategoryCaption.second.caption
               = select_tag "search_return_part[inventory_product.category2_id]", option_groups_from_collection_for_select(InventoryCategory1.where(active: true), :active_inventory_category2s, :id, :id, :name, (params[:search_return_part] and params[:search_return_part][:category2_id])), include_blank: true, class: "form-control", id: "search_inventory_product"
@@ -83,4 +83,3 @@
 
           %td
             = link_to "View Ticket", ticket_path(part.ticket_id), target: "_blank", remote: false
-          / - if part.issued and !part.part_returned
