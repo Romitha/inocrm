@@ -191,7 +191,7 @@
           %td= contract.formated_contract_start_at
           %td= contract.formated_contract_end_at
           %td= contract.contract_no
-          %td= standard_currency_format (due_amount2.to_f - contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f}), 
+          %td= standard_currency_format (due_amount2.to_f - contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f})
           %td= contract.organization.account.get_account_manager
           %td= contract.remarks
           %td
@@ -278,7 +278,6 @@
               %td
                 - contract.contract_payment_receiveds.each do |e|
                   = e.try(:invoice_no)
-                  ,
             %td
               %strong Total
             %td
@@ -316,7 +315,6 @@
               %td
                 - contract.contract_payment_receiveds.each do |e|
                   = e.try(:invoice_no)
-                  ,
             %td
               %strong Total
             %td
