@@ -25,6 +25,12 @@
         = f.input :canceled, wrapper: :append if f.object.persisted? and !ticket.ticket_invoices.where.not(id: f.object.id).any? { |i| !i.canceled }
         .panel.panel-info
           .panel-body
+            = f.input :delivery_address, label: "Delivery Address"
+            = f.input :so_number, label: "SO Number"
+            = f.input :po_number, label: "PO Number"
+            = f.input :delivery_number_date, label: "Delivery Number Date"
+        .panel.panel-info
+          .panel-body
             = f.association :organization, collection: ([Organization.owner] + Organization.owner.members), include_blank: true, label: "Organization : #{invoice.organization.try(:name)}"
             = f.association :organization_bank_detail, label_method: :bank_name, collection: ([Organization.owner] + Organization.owner.members), as: :grouped_select, group_method: :organization_bank_details, include_blank: true,  input_html: {class: "chosen-select"}, label: "Bank Name : #{f.object.organization_bank_detail.try(:bank_name)}"
             = f.association :print_currency, label_method: :code, label: "Currency : #{f.object.print_currency.try(:code)}"
