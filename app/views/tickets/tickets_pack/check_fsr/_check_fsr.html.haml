@@ -114,6 +114,14 @@
                 %td= tsp.ret_part_received ? 'Yes' : 'No'
                 %td= tsp.return_part_serial_no
                 %td{class: "#{'hide' if ['STR', 'APS'].include?(tsp.spare_part_status_action.code)}"}= check_box_tag :ticket_on_loan_spare_part_ids, tsp.id, tsp.close_approved, name: "ticket_on_loan_spare_part_ids[]", class: "dynamic_check"
+      %hr
+      .row
+        .col-md-2
+          %strong Resolution Summary:
+        .col-md-10
+          #{ticket.resolution_summary}
+      %hr
+
       .row.col-md-12.col-xs-12
         %p FSR Information
         = f.simple_fields_for :ticket_fsrs do |ff|
