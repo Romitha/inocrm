@@ -300,7 +300,7 @@ window.Tickets =
 
   load_datapicker: ->
     $('.datepicker').datepicker
-      format: "dd M, yyyy"
+      format: "dd-mm-yyyy"
       todayBtn: true
       todayHighlight: true
 

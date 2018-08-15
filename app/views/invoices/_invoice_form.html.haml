@@ -28,7 +28,7 @@
             = f.input :delivery_address, label: "Delivery Address"
             = f.input :so_number, label: "SO Number"
             = f.input :po_number, label: "PO Number"
-            = f.input :delivery_number_date, label: "Delivery Number Date"
+            = f.input :delivery_number_date, label: "Delivery Number Date", input_html: {class: "datepicker"}
         .panel.panel-info
           .panel-body
             = f.association :organization, collection: ([Organization.owner] + Organization.owner.members), include_blank: true, label: "Organization : #{invoice.organization.try(:name)}"
