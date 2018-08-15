@@ -129,28 +129,28 @@
       %td
       %td
         %strong
-          = total_discount_amount
+          = standard_currency_format total_discount_amount
       %td
       %td
       %td
       %td
         %strong
-          = total_eng_cost
+          = standard_currency_format total_eng_cost
       %td
         %strong
-          = total_support_engineer_cost
+          = standard_currency_format total_support_engineer_cost
       %td
         %strong
-          = total_part_cost
+          = standard_currency_format total_part_cost
       %td
         %strong
-          = total_additional_cost
+          = standard_currency_format total_additional_cost
       %td
         %strong
-          = total_total_cost
+          = standard_currency_format total_total_cost
       %td
         %strong
-          = total_profit
+          = standard_currency_format total_profit
 
 %h5 Print By : #{current_user.full_name}
 %h5 Print At : #{(DateTime.now).to_date}

@@ -42,13 +42,13 @@
     /   %td
     /   %td
     /     %strong
-    /       = total_product_amount
+    /       = standard_currency_format total_product_amount
     /   %td
     /     %strong
-    /       = total_payment_receiveds
+    /       = standard_currency_format total_payment_receiveds
     /   %td
     /     %strong
-    /       = total_pending_amount
+    /       = standard_currency_format total_pending_amount
 
 %h5 Print By : #{current_user.full_name}
 %h5 Print At : #{(DateTime.now).to_date}
