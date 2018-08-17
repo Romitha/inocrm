@@ -861,7 +861,7 @@ module ApplicationHelper
           end
 
           if (spare_part.spare_part_status_action.manufacture_type_index < 3) and (manufacture_part.order_pending == 1)
-            @h3_sub = " [Order Updated]Evn No:#{manufacture_part.event_no}]#{@h3_sub}"
+            @h3_sub = " [Order Updated][Evn No:#{manufacture_part.event_no}]#{@h3_sub}"
           end
 
           h3_color_code = "blue" if (spare_part.spare_part_status_action.code == "CLT" or spare_part.spare_part_status_action.code == "RCS")
