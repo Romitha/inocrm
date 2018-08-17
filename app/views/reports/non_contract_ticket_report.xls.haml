@@ -81,7 +81,7 @@
           - total_additional_cost = total_additional_cost + ticket.ticket_additional_cost.to_f
           - total_total_cost = total_total_cost + total_cost
 
-          %td= ticket.customer.try(:organization).try(:name)
+          %td= ticket.customer.try(:organization).try(:full_name)
           %td= ticket.owner_organization.try(:name)
           %td= ticket.customer.try(:organization).try(:account).try(:get_account_manager)
           %td= ticket.ticket_product_brand_name

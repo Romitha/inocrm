@@ -8,7 +8,7 @@
         %dd
           = link_to history.ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"]), history
         %dt Date
-        %dd= history.logged_at.try(:strftime, "%m-%d-%Y")
+        %dd= history.logged_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
         %dt By
         %dd= history.created_by_user_full_name
         %dt Status
