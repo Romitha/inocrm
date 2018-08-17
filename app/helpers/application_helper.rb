@@ -480,10 +480,10 @@ module ApplicationHelper
     special_note = ticket.note
     invoice_note = invoice.note
     created_by = invoice.created_by_ch_eng.full_name
-    # delivery_address = invoice.delivery_address
-    # so_number = invoice.so_number
-    # po_number = invoice.po_number
-    # delivery_number_date = invoice.delivery_number_date
+    delivery_address = invoice.delivery_address
+    so_number = invoice.so_number
+    po_number = invoice.po_number
+    delivery_number_date = invoice.delivery_number_date
     if invoice.canceled?
       canceled = "CANCELED" 
     else
