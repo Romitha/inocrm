@@ -700,10 +700,10 @@ module ApplicationHelper
       "CREATED_DATE=#{invoice_date}",
       "CREATED_TIME=#{invoice_time}",
       "PAYMENT_TERM=#{payment_term}",
-      # "DELIVERY_ADDRESS=#{delivery_address}",
-      # "SO_NUMBER=#{so_number}",
-      # "PO_NUMBER=#{po_number}",
-      # "DELIVERY_NUMBER_DATE=#{delivery_number_date}",
+      "DELIVERY_ADDRESS=#{delivery_address}",
+      "SO_NUMBER=#{so_number}",
+      "PO_NUMBER=#{po_number}",
+      "DELIVERY_NUMBER_DATE=#{delivery_number_date}",
       repeat_data,
       "TOTAL_AMOUNT=#{standard_currency_format total_amount}",
       "CURRENCY3=#{currency}",
@@ -861,7 +861,7 @@ module ApplicationHelper
           end
 
           if (spare_part.spare_part_status_action.manufacture_type_index < 3) and (manufacture_part.order_pending == 1)
-            @h3_sub = " [Order Updated]#{@h3_sub}"
+            @h3_sub = " [Order Updated]Evn No:#{manufacture_part.event_no}]#{@h3_sub}"
           end
 
           h3_color_code = "blue" if (spare_part.spare_part_status_action.code == "CLT" or spare_part.spare_part_status_action.code == "RCS")
