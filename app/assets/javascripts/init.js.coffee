@@ -13,4 +13,5 @@ $ ->
   Invoices.setup()
   Searches.setup()
   Todos.setup()
+  Reports.setup()
   return

@@ -6,13 +6,13 @@
         = form_tag excel_output_reports_path, method: :get, class: "form-horizontal" do
           .row.small_scale_margin-top1
             .col-md-3
-              = text_field_tag "range_from", params[:range_from], class: "form-control datepicker", placeholder: "Select From date"
+              = text_field_tag "range_from", params[:range_from], class: "form-control date_restrict", placeholder: "Select From date", data: {affectdataclass: "date_restrict_affect"}
             .col-md-3
-              = text_field_tag "range_to", params[:range_to], class: "form-control datepicker", placeholder: "Select To date"
+              = text_field_tag "range_to", params[:range_to], class: "form-control date_restrict_affect", placeholder: "Select To date", disabled: true
             .col-md-3
-              = text_field_tag "l_range_from", params[:l_range_from], class: "form-control datepicker", placeholder: "Select From logged date"
+              = text_field_tag "l_range_from", params[:l_range_from], class: "form-control date_restrict_affect date_restrict_log_affect", placeholder: "Select From logged date", disabled: true, data: {affectdataclass: "date_restrict_log_affect_to"}
             .col-md-3
-              = text_field_tag "l_range_to", params[:l_range_to], class: "form-control datepicker", placeholder: "Select To logged date"
+              = text_field_tag "l_range_to", params[:l_range_to], class: "form-control datepicker date_restrict_log_affect_to", placeholder: "Select To logged date", disabled: true
           .row.small_scale_margin-top1
             .col-md-3
               = label_tag "Brand"

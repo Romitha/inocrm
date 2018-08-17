@@ -787,7 +787,7 @@ window.Inventories =
     setTimeout (->
       # Tickets.load_datapicker()
       $('.datepicker').datepicker
-        format: "dd-mm-yyyy"
+        format: "yyyy-mm-dd"
         todayBtn: true
         todayHighlight: true
 

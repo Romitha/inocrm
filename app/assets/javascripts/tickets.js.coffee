@@ -46,7 +46,7 @@ window.Tickets =
     $('.inline_edit').editable()
 
     $('.datepicker').datepicker
-      format: "dd-mm-yyyy"
+      format: "yyyy-mm-dd"
       todayBtn: true
       todayHighlight: true
 
@@ -300,7 +300,7 @@ window.Tickets =
 
   load_datapicker: ->
     $('.datepicker').datepicker
-      format: "dd-mm-yyyy"
+      format: "yyyy-mm-dd"
       todayBtn: true
       todayHighlight: true
 
@@ -863,7 +863,7 @@ window.Tickets =
       $("#email_to").prop("disabled", true)
   date_picker_call:->
     $('.datepicker').datepicker({
-    format: "yyyy-m-dd",
+    format: "yyyy-mm-dd",
     todayBtn: true,
     todayHighlight: true
     });
@@ -904,7 +904,7 @@ window.Tickets =
 
   dynamically_filter_select: (el, position, parent_class='', cat1, cat2)->
     $('.datepicker').datepicker({
-    format: "yyyy-m-dd",
+    format: "yyyy-mm-dd",
     todayBtn: true,
     todayHighlight: true
     });

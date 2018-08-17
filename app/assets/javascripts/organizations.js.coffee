@@ -37,7 +37,7 @@ window.Organizations =
 
   initiate_datepicker: ->
     $('.datepicker').datepicker
-      format: "dd M, yyyy"
+      format: "yyyy-mm-dd"
       todayBtn: true
       todayHighlight: true
 
