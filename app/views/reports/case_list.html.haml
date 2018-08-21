@@ -6,13 +6,15 @@
 .row
   .col-md-2
     %strong No
-  .col-md-3
+  .col-md-2
+    %strong Case ID  
+  .col-md-2
     %strong Case Note
   .col-md-2
     %strong Action at
   .col-md-2
     %strong Action By
-  .col-md-3
+  .col-md-2
     %strong Engineer
 - num = 0
 %hr
@@ -25,9 +27,10 @@
         - else
           - num= num+1
           = (num)
-      .col-md-3= case_list.case_note
+      .col-md-2= case_list.case_id   
+      .col-md-2= case_list.case_note
       .col-md-2= case_list.action_at
       .col-md-2= case_list.action_by
-      .col-md-3= case_list.action_eng
+      .col-md-2= case_list.action_eng
 
     %hr

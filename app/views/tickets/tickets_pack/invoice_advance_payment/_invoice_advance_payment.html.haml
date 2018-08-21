@@ -4,7 +4,7 @@
   .row
     .col-md-6
       %fieldset
-        %legend Advance Payment Invoice
+        %legend Advance Payment Receipt
         = simple_nested_form_for ticket_payment_received, url: update_invoice_advance_payment_invoices_path, method: :post, remote: true do |f|
           - unless params[:check_payment]
             = hidden_field_tag :process_id, Rails.cache.fetch([uri.path, params[:task_id]])[:process_id]

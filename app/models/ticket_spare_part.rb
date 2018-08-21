@@ -82,6 +82,23 @@ class TicketSparePart < ActiveRecord::Base
   def engineer_name
     engineer.full_name
   end
+
+  def spare_part_type
+
+    label_type = case request_from
+    when "M"
+      "Manufacture Part"
+    when "S"
+      "Store Part"
+    when "NS"
+      "Non Stock"
+    else
+      "NA"
+    end
+
+     label_type
+  end
+
   has_many :dyna_columns, as: :resourceable, autosave: true
 
   # has_many :invoices, foreign_key: "customer_id"

@@ -1,7 +1,7 @@
 - part_histories = @part_histories
 - serial_no = @serial_no
 - date_before_year = (Date.today - 1.year)
-%h3 Parts Order History Store Report 
+%h3 Parts Order History
 %strong from #{date_before_year} to #{Date.today}
 %br
 %br
@@ -16,6 +16,7 @@
       %th Ticket Status
       %th Spare Part No
       %th Spare Part Description
+      %th Spare Part Type
       %th Part Ordered Date
       %th Part Ordered By
       %th Event No
@@ -38,6 +39,7 @@
           %td= part_history.ticket_status
           %td= part_history.spare_part_no
           %td= part_history.spare_part_description
+          %td= part_history.spare_part_type
           %td= part_history.requested_at.strftime(INOCRM_CONFIG["short_date_format"])
           %td= User.cached_find_by_id(part_history.requested_by).full_name
           %td= part_history.try(:ticket_spare_part_manufacture).try(:event_no)

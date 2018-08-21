@@ -148,7 +148,7 @@
           .col-md-2
             %strong
               Profit (%):
-              .append_profit_margin{ data: {estimate: t.object.estimated_price.to_f, cost: t.object.cost_price.to_f}} #{(t.object.estimated_price.to_f/t.object.cost_price.to_f - 1)*100 if t.object.cost_price.to_f > 0}
+              .append_profit_margin{ data: {estimate: t.object.estimated_price.to_f, cost: t.object.cost_price.to_f}} standard_currency_format #{(t.object.estimated_price.to_f/t.object.cost_price.to_f - 1)*100 if t.object.cost_price.to_f > 0}
 
           .col-md-12
             %hr
