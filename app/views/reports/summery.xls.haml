@@ -36,27 +36,27 @@
     %tr
 
       %td Service Contract Value 
-      %td= contract_value_season_1
-      %td= contract_value_season_2
-      %td= (contract_value_season_1 + contract_value_season_2)
+      %td= standard_currency_format contract_value_season_1
+      %td= standard_currency_format contract_value_season_2
+      %td= standard_currency_format (contract_value_season_1 + contract_value_season_2)
     %tr
 
       %td Due Amount Out Of Total
-      %td= contract_due_amount_season_1.sum
-      %td= contract_due_amount_season_2.sum
-      %td= (contract_due_amount_season_1.sum + contract_due_amount_season_2.sum)
+      %td= standard_currency_format contract_due_amount_season_1.sum
+      %td= standard_currency_format contract_due_amount_season_2.sum
+      %td= standard_currency_format (contract_due_amount_season_1.sum + contract_due_amount_season_2.sum)
     %tr
 
       %td Collected Amount
-      %td= collected_amount_season_1
-      %td= collected_amount_season_2
-      %td= (collected_amount_season_1 + collected_amount_season_2)
+      %td= standard_currency_format collected_amount_season_1
+      %td= standard_currency_format collected_amount_season_2
+      %td= standard_currency_format (collected_amount_season_1 + collected_amount_season_2)
     %tr
 
       %td To be collected 
-      %td= to_be_collected_season_1
-      %td= to_be_collected_season_2
-      %td= (to_be_collected_season_1 + to_be_collected_season_2)
+      %td= standard_currency_format to_be_collected_season_1
+      %td= standard_currency_format to_be_collected_season_2
+      %td= standard_currency_format (to_be_collected_season_1 + to_be_collected_season_2)
     %tr
 
       %td Percentage %
@@ -64,20 +64,20 @@
         - if (contract_due_amount_season_1.sum == 0)
           NaN
         - else
-          = ((collected_amount_season_1/contract_due_amount_season_1.sum)*100).round
+          = standard_currency_format ((collected_amount_season_1/contract_due_amount_season_1.sum)*100).round
           #{"%"}
 
       %td
         - if (contract_due_amount_season_2.sum == 0)
           NaN
         - else
-          = ((collected_amount_season_2/contract_due_amount_season_2.sum)*100).round
+          = standard_currency_format ((collected_amount_season_2/contract_due_amount_season_2.sum)*100).round
           #{"%"}
       %td
         - if ((contract_due_amount_season_1.sum + contract_due_amount_season_2.sum) == 0)
           NaN
         - else
-          = (((collected_amount_season_1 + collected_amount_season_2)/(contract_due_amount_season_1.sum + contract_due_amount_season_2.sum))*100).round
+          = standard_currency_format (((collected_amount_season_1 + collected_amount_season_2)/(contract_due_amount_season_1.sum + contract_due_amount_season_2.sum))*100).round
           #{"%"}
 / 2nd table
 - total_to_be_colected1 = 0
