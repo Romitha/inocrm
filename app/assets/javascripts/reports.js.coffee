@@ -2,6 +2,7 @@ window.Reports =
 
   setup: ->
     @restrict_date_on_erp()
+    @search_registered_customers()
     return
 
   restrict_date_on_erp: ->
@@ -21,3 +22,12 @@ window.Reports =
 
     $(".date_restrict").datepicker({format: "yyyy-mm-dd", endDate: (new Date())}).on('changeDate', change_dependency)
     $(".date_restrict_log_affect").datepicker({format: "yyyy-mm-dd", endDate: (new Date())}).on('changeDate', change_dependency)
+
+  search_registered_customers: ->
+    $("#search_registered_customers").change ->
+      if $(":selected", this).val() != ""
+        $("#check_children_wrapper").removeClass("hide")
+      else
+        $("#check_children_wrapper").addClass("hide")
+        $("#check_children_wrapper input[type=checkbox]").prop(":checked", false)
+

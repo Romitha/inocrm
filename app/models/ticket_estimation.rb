@@ -148,4 +148,8 @@ class TicketPaymentReceived < ActiveRecord::Base
 
   validates_presence_of [:ticket_id, :received_at, :received_by, :amount, :type_id, :currency_id]
 
+  def received_by_user_full_name
+    received_by_user.full_name
+  end
+
 end

@@ -904,8 +904,17 @@ class ReportsController < ApplicationController
       params[:from_where] = "excel_output"
 
       search_ticket = params[:search_ticket]
+      if params[:organization_children].present? and search_ticket["customer.organization_id"].present?
+        organization_id = search_ticket["customer.organization_id"]
+        organization = Organization.find(organization_id)
+        anchestor_ids = organization.anchestors.map{|o| o[:member].id }
+        search_ticket["customer.organization_id"] = "(#{anchestor_ids.join(' OR ')})" if anchestor_ids.any?
+        puts search_ticket["customer.organization_id"]
+      end
+
       refined_search_ticket = search_ticket.map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
 
+      refined_search_ticket << "status_id: (#{params[:status_ids].map { |e| e if e.present? }.compact.join(' OR ')})" if params[:status_ids].present?
       params[:range_from] ||= ( Date.today - 3.months ).strftime("%Y-%m-%d")
       params[:range_to] ||= Date.today.strftime("%Y-%m-%d")
     end

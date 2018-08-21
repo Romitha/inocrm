@@ -1806,7 +1806,7 @@ class TicketsController < ApplicationController
             action_id = TaskAction.find_by_action_no(49).id
             d18_approve_request_store_part = "Y"
 
-            @onloan_request_part.update status_action_id: SparePartStatusAction.find_by_code("APS").id
+            @onloan_request_part.update status_action_id: SparePartStatusAction.find_by_code("APS").id, approved_at: DateTime.now, approved_by: current_user.id
             @onloan_request_part.ticket_on_loan_spare_part_status_actions.create(status_id: @onloan_request_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
 
             srn = @onloan_request_part.approved_store.srns.create(created_by: current_user.id, created_at: DateTime.now, requested_module_id: BpmModule.find_by_code("SPT").id, srn_no: CompanyConfig.first.increase_inv_last_srn_no)#inv_srn
@@ -1819,7 +1819,7 @@ class TicketsController < ApplicationController
             #Reject On-Loan Part for Store
             action_id = TaskAction.find_by_action_no(65).id
 
-            @onloan_request_part.update approved_inv_product_id: nil, approved_main_inv_product_id: nil, approved_store_id: nil, status_action_id: SparePartStatusAction.find_by_code("CLS").id
+            @onloan_request_part.update approved_inv_product_id: nil, approved_main_inv_product_id: nil, approved_store_id: nil, status_action_id: SparePartStatusAction.find_by_code("CLS").id, approved_at: DateTime.now, approved_by: current_user.id
 
             # @onloan_request_part.update status_action_id: SparePartStatusAction.find_by_code("CLS").id
 
@@ -1871,7 +1871,7 @@ class TicketsController < ApplicationController
             action_id = TaskAction.find_by_action_no(64).id
 
             @ticket_spare_part.ticket_spare_part_store.update approved_inv_product_id: nil, approved_main_inv_product_id: nil, approved_store_id: nil
-            @ticket_spare_part.update status_action_id: SparePartStatusAction.find_by_code("CLS").id
+            @ticket_spare_part.update status_action_id: SparePartStatusAction.find_by_code("CLS").id, request_approved_at: DateTime.now, request_approved_by: current_user.id
 
             @ticket_spare_part.ticket_spare_part_status_actions.create([{status_id: SparePartStatusAction.find_by_code("RJS").id, done_by: current_user.id, done_at: DateTime.now}, {status_id: SparePartStatusAction.find_by_code("CLS").id , done_by: current_user.id, done_at: DateTime.now}])
 
@@ -4348,7 +4348,7 @@ class TicketsController < ApplicationController
       @continue = true #to call update_bpm_header
 
       spt_ticket_spare_part.save
-      spt_ticket_spare_part.ticket_spare_part_manufacture.update order_pending: 1 
+      spt_ticket_spare_part.ticket_spare_part_manufacture.update order_pending: 1, order_pending_at: DateTime.now, order_pending_by: current_user.id 
       @flash_message = {notice: "Successfully updated without order"}
 
     else

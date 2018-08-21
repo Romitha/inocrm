@@ -1,9 +1,9 @@
 spare_part_count = 10
 
 headers = ["Company Name", "Customer Type (Corporate/Walking)", "Customer Address", "District", 
-  "Customer Email", "Customer Contact No", "Product Brand", "Category", "Model Number", "Product Number", "Product Serial No", "SLA", "Job Number (Partner)", "CASE ID / HP Advisory", "Log Date", "Engineer Assign Date", "Start Date", "Start Action", "Problem Description", "Support Group (SBU)", "Engineer Name"]
+  "Customer Email", "Customer Contact No", "Product Brand", "Category", "Model Number", "Product Number", "Product Serial No", "SLA", "Job Number (Partner)", "CASE ID / HP Advisory", "Log Date", "Logged by", "Job Finished At", "Customer Support Representative", "Engineer Assign Date", "Start Date", "Start Action", "Problem Description", "Support Group (SBU)", "Engineer Name"]
 
-spare_part_headers = ["Part NumberIn Use", "Part Description", "Event No", "Item Code"]
+spare_part_headers = ["Part NumberIn Use", "Part Description", "Event No", "Item Code", "Ordered", "Collected from Manufacture"]
 total_spare_part_headers = []
 spare_part_count.times.each{|s| spare_part_headers.each{|d| total_spare_part_headers << "#{s+1} #{d}" } }
 
@@ -38,9 +38,12 @@ wb.add_worksheet(name: "ERP report") do |sheet|
 
     ticket_content.concat(product_info)
 
-    ticket_content << ticket.logged_at.to_datetime.strftime("#{INOCRM_CONFIG["short_date_format"]} #{INOCRM_CONFIG['time_format']}")
-    ticket_content << (ticket.owner_engineer.present? ? ticket.owner_engineer.created_at.to_datetime.strftime("#{INOCRM_CONFIG["short_date_format"]} #{INOCRM_CONFIG['time_format']}") : "")
-    ticket_content << (ticket.job_started_at.present? ? ticket.job_started_at.to_datetime.strftime("#{INOCRM_CONFIG["short_date_format"]} #{INOCRM_CONFIG['time_format']}") : "")
+    ticket_content << ticket.logged_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
+    ticket_content << ticket.logged_by_user
+    ticket_content << (ticket.job_finished_at and ticket.job_finished_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}"))
+    ticket_content << ticket.ticket_payment_receiveds.map(&:received_by_user_full_name).join(", ")
+    ticket_content << (ticket.owner_engineer.present? ? ticket.owner_engineer.created_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") : "")
+    ticket_content << (ticket.job_started_at.present? ? ticket.job_started_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") : "")
     ticket_content << ticket.ticket_start_action.try(:action)
     ticket_content << ticket.problem_description
     ticket_content << ticket.owner_engineer.try(:sbu_name)
@@ -54,6 +57,17 @@ wb.add_worksheet(name: "ERP report") do |sheet|
         spare_part_info << sp.spare_part_description
         spare_part_info << (sp.request_from == 'M' ? sp.ticket_spare_part_manufacture.try(:event_no) : "")
         spare_part_info << sp.inventory_product_generated_serial_item
+        status_actions = []
+        if sp.ticket_spare_part_status_actions.any?
+          sp.ticket_spare_part_status_actions.each do |action|
+            status_actions << (action.status_id == 2 ? action.done_at.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") ? "")
+
+            status_actions << (action.status_id == 3 ? action.done_at.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") : "")
+          end
+          spare_part_info.contact(status_actions)
+        else
+          2.times.each{|e| spare_part_info << ""}
+        end
       else
         4.times.each{|e| spare_part_info << ""}
       end

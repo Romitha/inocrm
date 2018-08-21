@@ -88,7 +88,7 @@
           .col-md-6
             = tm.input :event_closed, label: "Event Closed (Claim Completed)",wrapper: :append, input_html: {checked: true, class: "hide"}
           .col-md-6
-            = tm.input :po_required, label: "PO Required", wrapper: :append
+            = tm.input :po_required, label: "PO Required", wrapper: :append, input_html: { checked: true }
           .col-md-12
             = tm.input :payment_expected_manufacture, label: "Payment Expected (#{product.product_brand.currency.try(:code)})", input_html: {class: "only_float"}
           .col-md-12
