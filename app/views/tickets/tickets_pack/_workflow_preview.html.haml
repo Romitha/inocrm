@@ -3,7 +3,7 @@
   |
   = link_to "Regenerate workflow", regenerate_workflow_tickets_path(ticket_id: ticket.id ), class: "btn btn-danger"
 
-- ticket.ticket_engineers.group_by{ |t| t.re_open_index }.map { |k, v| { re_open_index: k, eng_set: v.group_by{|v1| v1.channel_no.to_i }.map{ |k1, rr| { channel_no: k1, channeled_eng_set: rr.map{ |r| {name: r.user.full_name, image: r.user.avatar.url, contact_info: r.user.primary_contact_number.try(:contact_info), id: r.id, order_no: r.order_no, channel_no: r.channel_no, ticket_id: r.ticket_id, deletable: r.deletable?, workflow_process_id: r.ticket_workflow_process.try(:process_id), process_status: r.status.to_i, task_description: r.task_description} }.sort{ |p, n| p[:order_no].to_i <=> n[:order_no].to_i } } } } }.each do |indexed_ticket_engineer|
+- ticket.ticket_engineers.group_by{ |t| t.re_open_index }.map { |k, v| { re_open_index: k, eng_set: v.group_by{|v1| v1.channel_no.to_i }.map{ |k1, rr| { channel_no: k1, channeled_eng_set: rr.map{ |r| {name: r.user.full_name, image: r.user.avatar.url, contact_info: r.user.primary_contact_number.try(:contact_info),land_line: r.user.contact_numbers.where(type_id: 1).map(&:value).join(", "), id: r.id, order_no: r.order_no, channel_no: r.channel_no, ticket_id: r.ticket_id, deletable: r.deletable?, workflow_process_id: r.ticket_workflow_process.try(:process_id), process_status: r.status.to_i, task_description: r.task_description} }.sort{ |p, n| p[:order_no].to_i <=> n[:order_no].to_i } } } } }.each do |indexed_ticket_engineer|
   %fieldset
     %legend Re-Open: #{indexed_ticket_engineer[:re_open_index]}
     .row
@@ -31,5 +31,9 @@
                   </br>
 
                   = channeled_eng_set[:contact_info]
+                  </br>
+                  = channeled_eng_set[:land_line]
+
+
 
               .vertical_line
