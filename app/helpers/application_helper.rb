@@ -15,13 +15,6 @@ module ApplicationHelper
 
   def print_ticket_tag_value ticket #REQUEST_TYPE=PRINT_SPPT_TICKET
 
-# Customer Contact Info
-    # "TELPHONE=#{ticket.customer.contact_type_values.select{|c| c.contact_type.name == "Telephone"}.first.try(:value)}",
-    # "MOBILE=#{ticket.customer.contact_type_values.select{|c| c.contact_type.mobile}.first.try(:value)}",
-    # "FAX=#{ticket.customer.contact_type_values.select{|c| c.contact_type.name == "Fax"}.first.try(:value)}",
-    # "EMAIL=#{ticket.customer.contact_type_values.select{|c| c.contact_type.email}.first.try(:value)}",
-
-    # "FAX=#{ticket.customer.contact_type_values.select{|c| c.contact_type.code == "FX"}.first.try(:value)}",
     contact_person = ticket.inform_cp == 2 ? ticket.contact_person2 : ticket.contact_person1
     [
       "DUPLICATE=#{ticket.ticket_print_count > 0 ? 'D' : ''}",
@@ -733,6 +726,7 @@ module ApplicationHelper
     if process_id.present? and @ticket.present?
 
       ticket_spare_parts = @ticket.ticket_spare_parts.reload
+      ticket_estimations = @icket.ticket_estimations.reload
 
       ticket_no  = "[#{@ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG['ticket_no_format'])}]"
 
@@ -761,7 +755,7 @@ module ApplicationHelper
 
       # File.open(Rails.root.join("bug_file.txt"), "w+"){|file| file.write("ticket_deliver_units: #{tdu.inspect}"); file.close}
 
-      custormer_approval_pending = "[Customer Approval Pending]" if @ticket.ticket_estimations.any?{ |estimation| estimation.cust_approval_required and !estimation.cust_approved_at.present? }
+      custormer_approval_pending = "[Customer Approval Pending]" if ticket_estimations.any?{ |estimation| estimation.cust_approval_required and !estimation.cust_approved_at.present? }
 
       hold = "[Hold]" if @ticket.status_hold
 
@@ -801,7 +795,7 @@ module ApplicationHelper
         end
       end
 
-      pending_estimation_count = @ticket.ticket_estimations.to_a.sum{|estimation| estimation.estimation_status.code == 'RQS' ? 1 : 0 }
+      pending_estimation_count = ticket_estimations.to_a.sum{|estimation| estimation.estimation_status.code == 'RQS' ? 1 : 0 }
 
       pending_unit_collect = @ticket.ticket_deliver_units.any?{|deliver_unit| !deliver_unit.delivered_to_sup }
 
@@ -821,7 +815,7 @@ module ApplicationHelper
         "orange"
       when ticket_spare_parts.any?{ |spare_part| spare_part.spare_part_status_action.code == "ISS" }
         "blue"
-      when @ticket.ticket_estimations.any?{ |estimation| estimation.cust_approval_required and !estimation.cust_approved }
+      when ticket_estimations.any?{ |estimation| estimation.cust_approval_required and !estimation.cust_approved }
         "yellow"
       end
       h1_color_code = h2_color_code = h3_color_code = color_code
