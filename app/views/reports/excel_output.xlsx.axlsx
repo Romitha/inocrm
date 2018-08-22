@@ -60,9 +60,9 @@ wb.add_worksheet(name: "ERP report") do |sheet|
         status_actions = []
         if sp.ticket_spare_part_status_actions.any?
           sp.ticket_spare_part_status_actions.each do |action|
-            status_actions << (action.status_id == 2 ? action.done_at.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") : "")
+            status_actions << (action.status_id == 2 ? action.done_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") : "")
 
-            status_actions << (action.status_id == 3 ? action.done_at.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") : "")
+            status_actions << (action.status_id == 3 ? action.done_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") : "")
           end
           spare_part_info.contact(status_actions)
         else
