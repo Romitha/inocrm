@@ -2693,12 +2693,17 @@ class TicketsController < ApplicationController
             if more_parts_bundle_pending
 
               # bpm output variables
-              bpm_variables.merge!(d47_bundle_only: "Y")
+              bpm_variables.merge!(d44_bundle_only: "Y")
 
-              ticket_id = ''
-              request_spare_part_id = ''
+              ticket_id = (params[:ticket_id] or session[:ticket_id])
+              @ticket = Ticket.find_by_id ticket_id
+              request_spare_part_id = params[:request_spare_part_id]  
+              priority = @ticket.priority           
+
+              # ticket_id = ''
+              # request_spare_part_id = ''
               supp_engr_user = ''
-              priority = ''
+              # priority = ''
 
               # Create Process "SPPT_MFR_PART_RETURN",
               process_name = "SPPT_MFR_PART_RETURN"
