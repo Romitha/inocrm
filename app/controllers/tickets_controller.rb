@@ -2676,14 +2676,48 @@ class TicketsController < ApplicationController
           end
 
           # bpm output variables
-          d36_more_parts_bundle_pending = TicketSparePartManufacture.any?{ |ticket_spare_part_manufacture| ticket_spare_part_manufacture.ready_to_bundle and not ticket_spare_part_manufacture.bundled } ? "Y" : "N"
+          #d36_more_parts_bundle_pending = TicketSparePartManufacture.any?{ |ticket_spare_part_manufacture| ticket_spare_part_manufacture.ready_to_bundle and not ticket_spare_part_manufacture.bundled } ? "Y" : "N"
+
+          more_parts_bundle_pending = TicketSparePartManufacture.any?{ |ticket_spare_part_manufacture| ticket_spare_part_manufacture.ready_to_bundle and not ticket_spare_part_manufacture.bundled } 
+
+          d36_more_parts_bundle_pending = "N"
+
           bpm_variables = view_context.initialize_bpm_variables.merge(d36_more_parts_bundle_pending: d36_more_parts_bundle_pending, bundle_id: @return_bundle.id)
 
           @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
           if @bpm_response[:status].upcase == "SUCCESS"
 
-            flash[:notice]= "Successfully updated"
+            flash[:notice]= "Successfully updated1"
+
+            if more_parts_bundle_pending
+
+              # bpm output variables
+              bpm_variables.merge!(d47_bundle_only: "Y")
+
+              ticket_id = ''
+              request_spare_part_id = ''
+              supp_engr_user = ''
+              priority = ''
+
+              # Create Process "SPPT_MFR_PART_RETURN",
+              process_name = "SPPT_MFR_PART_RETURN"
+              query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority}
+
+              bpm_response1 = view_context.send_request_process_data start_process: true, process_name: process_name, query: query
+
+              if bpm_response1[:status].try(:upcase) == "SUCCESS"
+                # @ticket.ticket_workflow_processes.create(process_id: bpm_response1[:process_id], process_name: bpm_response1[:process_name], engineer_id: engineer_id, spare_part_id: request_spare_part_id, re_open_index: re_open_count)
+                # view_context.ticket_bpm_headers bpm_response1[:process_id], @ticket.id, request_spare_part_id
+
+                flash[:notice]= "Successfully updated2"
+              else
+                flash[:notice]= "Successfully updated3"
+              end              
+            end
+
+
+
           else
             flash[:error]= "Bundle is updated. but Bpm error"
           end
