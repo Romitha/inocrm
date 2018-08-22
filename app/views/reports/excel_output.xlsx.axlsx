@@ -3,7 +3,7 @@ spare_part_count = 10
 headers = ["Company Name", "Customer Type (Corporate/Walking)", "Customer Address", "District", 
   "Customer Email", "Customer Contact No", "Product Brand", "Category", "Model Number", "Product Number", "Product Serial No", "SLA", "Job Number (Partner)", "CASE ID / HP Advisory", "Log Date", "Logged by", "Job Finished At", "Customer Support Representative", "Engineer Assign Date", "Start Date", "Start Action", "Problem Description", "Support Group (SBU)", "Engineer Name"]
 
-spare_part_headers = ["Part NumberIn Use", "Part Description", "Event No", "Item Code", "Ordered", "Collected from Manufacture"]
+spare_part_headers = ["Part Number In Use", "Part Description", "Event No", "Item Code", "Ordered", "Collected from Manufacture"]
 total_spare_part_headers = []
 spare_part_count.times.each{|s| spare_part_headers.each{|d| total_spare_part_headers << "#{s+1} #{d}" } }
 
@@ -60,9 +60,9 @@ wb.add_worksheet(name: "ERP report") do |sheet|
         status_actions = []
         if sp.ticket_spare_part_status_actions.any?
           sp.ticket_spare_part_status_actions.each do |action|
-            status_actions << (action.status_id == 2 ? action.done_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") : "")
+            status_actions << (action.status_id == 2 ? action.done_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") : "or")
 
-            status_actions << (action.status_id == 3 ? action.done_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") : "")
+            status_actions << (action.status_id == 3 ? action.done_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") : "co")
           end
           spare_part_info.concat(status_actions)
         else
