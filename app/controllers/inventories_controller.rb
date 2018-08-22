@@ -242,7 +242,7 @@ class InventoriesController < ApplicationController
 
             # Create Process "SPPT_MFR_PART_RETURN",
             process_name = "SPPT_MFR_PART_RETURN"
-            query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority}
+            query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority, d44_bundle_only: "N", d45_deliver_bundle: "Y"}
 
           elsif (store_warranty and (rce or rpr)) or (store_chargeable and (rce or rpr))
 
