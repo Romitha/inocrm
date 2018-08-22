@@ -97,6 +97,8 @@ module TodosHelper
       d44_store_part_need_approval: "Y",
       d45_manufacture_part_need_approval: "Y",
       d46_manufacture_part_approved: "Y",
+      d47_bundle_only: "N",
+      d48_deliver_bundle: "Y",
     }
   end
 
@@ -197,7 +199,7 @@ module TodosHelper
         # "lk.inova:INOCRM:1.0.1.0"
         # "lk.inova:INOCRM:1.0.2.4"
         # "lk.inova:INOCRM:1.0.3.1"
-        "lk.inova:INOCRM:1.0.2.7"
+        "lk.inova:INOCRM:1.0.2.8"
       when "production"
         # "lk.inova:INOCRM:1.0.0.4"
         # cloned from github
@@ -205,13 +207,13 @@ module TodosHelper
         # "lk.inova:INOCRM:1.0.0.6"
         # "lk.inova:INOCRM:1.0.0.9"
         # "lk.inova:INOCRM:1.0.2.4"
-        "lk.inova:INOCRM:1.0.2.7"
+        "lk.inova:INOCRM:1.0.2.8"
       when "test"
         # "lk.inova:INOCRM:1.0.2.4"
-        "lk.inova:INOCRM:1.0.2.7"
+        "lk.inova:INOCRM:1.0.2.8"
       when "staging"
         # "lk.inova:INOCRM:1.0.2.4"
-        "lk.inova:INOCRM:1.0.2.7"
+        "lk.inova:INOCRM:1.0.2.8"
       end
         
     end
