@@ -64,7 +64,7 @@ wb.add_worksheet(name: "ERP report") do |sheet|
 
             status_actions << (action.status_id == 3 ? action.done_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") : "")
           end
-          spare_part_info.contact(status_actions)
+          spare_part_info.concat(status_actions)
         else
           2.times.each{|e| spare_part_info << ""}
         end
