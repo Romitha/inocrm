@@ -97,8 +97,8 @@ module TodosHelper
       d44_store_part_need_approval: "Y",
       d45_manufacture_part_need_approval: "Y",
       d46_manufacture_part_approved: "Y",
-      d47_bundle_only: "N",
-      d48_deliver_bundle: "Y",
+      d44_bundle_only: "N",
+      d45_deliver_bundle: "Y",
     }
   end
 
