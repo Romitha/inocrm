@@ -2705,7 +2705,7 @@ class TicketsController < ApplicationController
 
               # Create Process "SPPT_MFR_PART_RETURN",
               process_name = "SPPT_MFR_PART_RETURN"
-              query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority, d44_bundle_only: "Y", d45_deliver_bundle: "Y"}
+              query = {ticket_id: ticket_id, request_spare_part_id: request_spare_part_id, supp_engr_user: supp_engr_user, priority: priority, d47_bundle_only: "Y", d48_deliver_bundle: "Y"}
 
               bpm_response1 = view_context.send_request_process_data start_process: true, process_name: process_name, query: query
 
