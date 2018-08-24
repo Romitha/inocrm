@@ -84,7 +84,7 @@ class TodosController < ApplicationController
 
     if @bpm_response_exist[:content].present?
       @bpm_input_variables = []
-      input_variables.split(",").each do |input_variable|
+      input_variables.to_a.split(",").each do |input_variable|
         @bpm_input_variables << view_context.send_request_process_data(process_history: true, process_instance_id: process_instance_id, variable_id: input_variable)
       end
       session[:process_id] = process_instance_id
