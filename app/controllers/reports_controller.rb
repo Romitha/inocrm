@@ -863,7 +863,7 @@ class ReportsController < ApplicationController
   end
   def parts_pending
     TicketSparePart
-    @pending_parts = TicketSparePartStore.where(store_requested: true, issued: false)
+    @pending_parts = TicketSparePartStore.where(store_requested: true, issued: false).order("store_requested_at desc")
     render "reports/parts_pending"
   end
 
@@ -871,7 +871,7 @@ class ReportsController < ApplicationController
 
   def parts_available
     TicketSparePart
-    @available_parts = TicketSparePartStore.joins(:ticket_spare_part).where("spt_ticket_spare_part.received_eng_by is NULL AND issued")#where("recived_eng_at IS NULL AND issued")
+    @available_parts = TicketSparePartStore.joins(:ticket_spare_part).where("spt_ticket_spare_part.received_eng_by is NULL AND issued").order("issued_at desc")#where("recived_eng_at IS NULL AND issued")
     render "reports/parts_available"
   end  
 

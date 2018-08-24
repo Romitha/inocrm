@@ -13,8 +13,10 @@
     %strong Spare Part No
   .col-md-1
     %strong Event No
-  .col-md-2
+  .col-md-1
     %strong Engineer Name
+  .col-md-1
+    %strong Part Status
   .col-md-2
     %strong Note
   .col-md-1
@@ -30,13 +32,13 @@
         - else
           - num= num+1
           = (num)
-
       .col-md-1= user_ticket_action.action_at.strftime(INOCRM_CONFIG["short_date_format"])
       .col-md-1= user_ticket_action.ticket.support_ticket_no
       .col-md-2= user_ticket_action.request_spare_part.ticket_spare_part.spare_part_description
       .col-md-1= user_ticket_action.request_spare_part.ticket_spare_part.spare_part_no
       .col-md-1= user_ticket_action.request_spare_part.ticket_spare_part.spare_part_event_no
-      .col-md-2= user_ticket_action.request_spare_part.ticket_spare_part.engineer_name
+      .col-md-1= user_ticket_action.request_spare_part.ticket_spare_part.engineer_name
+      .col-md-1= user_ticket_action.request_spare_part.ticket_spare_part.spare_part_status_use.name
       .col-md-2{ "class"=> "has-popover", "data-toggle"=> "popover", "title"=> "Note: #{user_ticket_action.request_spare_part.ticket_spare_part.note}", "data-content"=> "#{yield(:customer_supplier_p_more)}", "data-html" => "true", "data-trigger" => "hover", "data-placement" => "left" }= strip_tags(user_ticket_action.request_spare_part.ticket_spare_part.note).truncate(40)
       - date_sent = Date.parse(user_ticket_action.action_at.strftime(INOCRM_CONFIG["short_date_format"]))
       - date_now = Date.today

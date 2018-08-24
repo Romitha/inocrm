@@ -12,7 +12,7 @@
   .col-md-3
     %strong Part Description
   .col-md-2
-    %strong Hold Reason
+    %strong Spare Part Note
 - num = 0
 %hr
 - ticket_manufactures.each_with_index do |ticket_manufacture, index|
@@ -26,7 +26,7 @@
     .col-md-2= ticket_manufacture.updated_at.to_date.try :strftime, INOCRM_CONFIG["short_date_format"]
     .col-md-2= ticket_manufacture.ticket_spare_part.ticket.support_ticket_no
     .col-md-2= ticket_manufacture.ticket_spare_part.spare_part_no
-    .col-md-3= ticket_manufacture.ticket_spare_part.spare_part_description
-    .col-md-2= ticket_manufacture.ticket_spare_part.ticket.reason.try(:reason)
+    .col-md-2= ticket_manufacture.ticket_spare_part.spare_part_description
+    .col-md-3= ticket_manufacture.ticket_spare_part.note
 
   %hr
