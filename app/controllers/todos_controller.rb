@@ -84,7 +84,7 @@ class TodosController < ApplicationController
 
     if @bpm_response_exist[:content].present?
       @bpm_input_variables = []
-      input_variables.to_a.split(",").each do |input_variable|
+      input_variables.to_s.split(",").each do |input_variable|
         @bpm_input_variables << view_context.send_request_process_data(process_history: true, process_instance_id: process_instance_id, variable_id: input_variable)
       end
       session[:process_id] = process_instance_id
@@ -95,7 +95,6 @@ class TodosController < ApplicationController
 
       session[:cache_key] = [url, task_id]
       Rails.cache.write([url, task_id], { process_id: process_instance_id, task_id: task_id, owner: owner, bpm_input_variables: @bpm_input_variables.map{|e| [e[:variable_id], e[:value]] } })
-
       @redirect_url = "#{url}?process_id=#{process_instance_id}&task_id=#{task_id}&owner=#{owner}&#{@bpm_input_variables.map{|e| e[:variable_id]+'='+e[:value]}.join('&')}"
     else
       Rails.cache.delete(session[:cache_key]) if session[:cache_key].present?
