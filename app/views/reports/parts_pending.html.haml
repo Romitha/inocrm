@@ -1,5 +1,5 @@
 - pending_parts = @pending_parts
-%h3 Parts Pending Report
+%h3 Parts Pending From Store
 %br
 %br
 .row
@@ -11,13 +11,15 @@
     %strong Requested By
   .col-md-1
     %strong Ticket No
-  .col-md-2
+  .col-md-1
     %strong Customer
   .col-md-2
     %strong Item/description
   .col-md-1
     %strong Spare Part No
-  .col-md-2
+  .col-md-1
+    %strong Store Part Status
+  .col-md-2 
     %strong No of days since requested date
   .col-md-1
     %strong Ticket Status
@@ -37,7 +39,7 @@
       .col-md-1= pending_part.ticket_no
       .col-md-2= pending_part.customer_name
       .col-md-2= pending_part.ticket_spare_part.spare_part_description
-      .col-md-1= pending_part.ticket_spare_part.spare_part_no
+      .col-md-1= pending_part.ticket_spare_part.spare_part_status_action.name
       - date_sent = Date.parse(pending_part.store_requested_at.strftime(INOCRM_CONFIG["short_date_format"]))
       - date_now = Date.today
       .col-md-2= (date_now - date_sent).to_i
