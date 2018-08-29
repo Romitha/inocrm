@@ -90,7 +90,7 @@
     .row
       .col-md-12
         = hidden_field_tag ("#{params[:edit_more] ? 'update' : 'create'}"), ("#{params[:edit_more] ? 'update' : 'create'}")
-        = f.submit "Save", class: "btn btn-success", id: "submit_new_inventory_product", name: "#{params[:edit_more] ? 'update' : 'create'}"
+        = f.submit "Save", class: "btn btn-success", id: "submit_new_inventory_product", name: "#{params[:edit_more] ? 'update' : 'create'}", data: {disable_with: "Please wait..."}
     %hr
   = button_to "Show Products", product_admins_inventories_path(show_me:true), class: "btn btn-sm btn-info"
 - if params[:search].present? || params[:show_me].present?

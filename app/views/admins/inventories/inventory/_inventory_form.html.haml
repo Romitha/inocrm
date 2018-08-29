@@ -46,7 +46,7 @@
         = f.input :remarks
     .row
       .col-md-3
-        = f.submit "Save", class: "btn btn-success btn-sm", name: "create"
+        = f.submit "Save", class: "btn btn-success btn-sm", name: "create", data: {disable_with: "Please wait..."}
 
 = javascript_tag do
   $(".validate_form").validate();

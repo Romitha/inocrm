@@ -58,7 +58,7 @@
                   %span.glyphicon.glyphicon-plus-sign Add a Shelf
       .row{style: "margin-top:20px;"}
         .col-md-11
-          = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_location", name: "#{params[:edit_more] ? 'update' : 'create'}"
+          = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_location", name: "#{params[:edit_more] ? 'update' : 'create'}", data: {disable_with: "Please wait..."}
 = collapse_wrapper collapse_id: "inventory_rack_list", labelledby: "inv_rack_labelledby" do
   - @inventory_all_rack.each_with_index do |rack, index|
     = collapse collapse_type: "primary", labelledby: "labelledby_#{rack.id}", header_content: "#{index+1} Rack : #{rack.description}", collapse_link: "invracklink_#{rack.id}", collapse_id: "inventory_rack_list" do
