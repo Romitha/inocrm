@@ -355,7 +355,8 @@
         = simple_format f.object.remarks
     .row
       .col-md-12.small_scale_margin-bottom1
-        = f.submit "Save", class: "btn btn-sm btn-success"
+        = f.submit "Save", class: "btn btn-sm btn-success", data: {disable_with: "Please wait..."}
+
 
 #modal_for_main_part.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "modal_for_main_part", "aria-hidden" => true}
   .modal-dialog.modal-lg

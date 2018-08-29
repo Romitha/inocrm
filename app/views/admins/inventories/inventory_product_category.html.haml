@@ -7,7 +7,7 @@
       = f.input :code, input_html: {maxlength: InventoryCategoryCaption.second.code_length }, label: "Product code", required: true
     .col-md-4
       = f.input :name, input_html: {required: true}, label: "Product name"
-  = f.submit "Save", class: "btn btn-sm btn-success", name: "#{params[:edit_more] ? 'update' : 'create'}"
+  = f.submit "Save", class: "btn btn-sm btn-success", name: "#{params[:edit_more] ? 'update' : 'create'}", data: {disable_with: "Please wait..."}
 
 %hr
 #product_categories

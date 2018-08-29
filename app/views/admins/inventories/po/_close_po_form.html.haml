@@ -37,7 +37,7 @@
           .col-md-1
             = p.input :closed, wrapper: :append, label: false
 
-      = f.submit "Delete/Close", class: "btn btn-sm btn-success", data: {confirm: "Are you sure? This sensitive action cannot be undone!."}
+      = f.submit "Delete/Close", class: "btn btn-sm btn-success", data: {confirm: "Are you sure? This sensitive action cannot be undone!.", disable_with: "Please wait..."}
       = link_to "Cancel", "#", data: {dismiss: "modal"}, class: "btn btn-link"
 
 = javascript_tag do

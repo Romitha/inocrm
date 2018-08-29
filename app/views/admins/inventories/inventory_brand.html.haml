@@ -2,7 +2,7 @@
   = f.input :created_by, as: :hidden, input_html: {value: current_user.id}
   = f.input :code, label: "Brand code", required: true, input_html: { maxlength: InventoryCategoryCaption.first.code_length }
   = f.input :name, label: "Brand name", input_html: {required: true}
-  = f.submit "Save", class: "btn btn-sm btn-success", name: "#{params[:edit_more] ? 'update' : 'create'}"
+  = f.submit "Save", class: "btn btn-sm btn-success", name: "#{params[:edit_more] ? 'update' : 'create'}", data: {disable_with: "Please wait..."}
 
 %hr
 = collapse_wrapper collapse_id: "product_brand", labelledby: "labelledby" do

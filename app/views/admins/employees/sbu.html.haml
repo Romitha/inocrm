@@ -35,7 +35,7 @@
           %span.glyphicon.glyphicon-plus-sign
     .row
       .col-md-8
-        = f.submit "Save", class: "btn btn-success btn-sm", id: "submit_new_sbu", name: "#{params[:edit_more] ? 'update' : 'create'}"
+        = f.submit "Save", class: "btn btn-success btn-sm", id: "submit_new_sbu", name: "#{params[:edit_more] ? 'update' : 'create'}", data: {disable_with: "Please wait..."}
 
 = collapse_wrapper collapse_id: "emp_sbu_list", labelledby: "emp_sbu_labelledby" do
   - @sbu_all.each_with_index do |sbu, index|
