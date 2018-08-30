@@ -9,8 +9,10 @@
     %strong Ticket No
   .col-md-3
     %strong Customer Name
-  .col-md-3
+  .col-md-2
     %strong Model No
+  .col-md-1
+    %strong No. of Days
 - num = 0
 %hr
   - combined_tickets.each_with_index do |ticket, index|
@@ -24,6 +26,11 @@
       .col-md-3= ticket.try(:job_finished_at).try(:to_date).try :strftime, INOCRM_CONFIG["short_date_format"]
       .col-md-2= ticket.support_ticket_no
       .col-md-3= ticket.customer_name
-      .col-md-3= ticket.products.first.model_no
-
+      .col-md-2= ticket.products.first.model_no
+      .col-md-1
+        - if [ticket.job_finished_at, ticket.qc_passed_at, ticket.final_invoice.try(:created_at)].compact.max.present?
+          = Date.today - [ticket.job_finished_at, ticket.qc_passed_at, ticket.final_invoice.try(:created_at)].compact.max.to_date
+        - else
+          NAN
+      .col-m
     %hr
