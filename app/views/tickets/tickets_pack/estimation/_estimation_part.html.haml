@@ -255,7 +255,10 @@
           .request_part_check
             = label_tag "Request part"
             = check_box_tag :request_spare_part, true, (estimation.advance_payment_amount.to_f == 0)
-        = f.submit "Save", class: "btn btn-success btn-sm"
+
+        = f.submit "Save", class: "btn btn-success btn-sm", disabled: (CompanyConfig.first.sup_estimation_quotation_required or !estimation.customer_quotations.non_canceled_quotations.any?)
+        - unless estimation.customer_quotations.non_canceled_quotations.any?
+          %h4.red Need quotation for customer approval or quotation is disabled.
 
 
 / show spare_part_note text field

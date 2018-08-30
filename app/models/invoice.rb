@@ -142,6 +142,8 @@ class CustomerQuotation < ActiveRecord::Base
   has_many :ticket_estimations, through: :customer_quotation_estimations
   has_many :act_quotations
 
+  scope :non_canceled_quotations, -> {where(canceled: false)}
+
   before_save do |customer_quotation|
    if customer_quotation.persisted? and customer_quotation.remark_changed? and customer_quotation.remark.present?
       customer_quotation_remark = "#{customer_quotation.remark} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(customer_quotation.current_user_id).try(:full_name)}</span><br/>#{customer_quotation.remark_was}"

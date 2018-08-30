@@ -225,9 +225,9 @@ class InventoriesController < ApplicationController
 
       if not params[:update_without_return]
         if continue
-          if (manufacture_warranty or manufacture_chargeable) and (rce or rpr)
+          ticket_spare_part.unused_reason = Reason.find_by_spare_part_unused(true) if ticket_spare_part.spare_part_status_use.try(:code) == "UUS" and !ticket_spare_part.unused_reason_id.present?
 
-            ticket_spare_part.unused_reason = Reason.find_by_spare_part_unused(true) if ticket_spare_part.spare_part_status_use.try(:code) == "UUS" and !ticket_spare_part.unused_reason_id.present?
+          if (manufacture_warranty or manufacture_chargeable) and (rce or rpr)
 
             ticket_spare_part.update(
               part_returned: true,
@@ -586,6 +586,7 @@ class InventoriesController < ApplicationController
     spare_part_note = params[:spare_part_note]
 
     @estimation = TicketEstimation.find estimation_params[:id]
+    old_cust_approved_at = @estimation.cust_approved_at
     updatable_estimation_params = estimation_params
     @estimation.attributes = updatable_estimation_params
 
@@ -595,7 +596,7 @@ class InventoriesController < ApplicationController
     continue = params[:task_id].present? ? bpm_continue : true
     engineer_id = params[:engineer_id].present? ? params[:engineer_id] : @estimation.engineer_id
 
-    if continue
+    if continue and !old_cust_approved_at.present?
       if @estimation.cust_approved
 
         if (@estimation.cust_approval_required)

@@ -2383,6 +2383,8 @@ class TicketsController < ApplicationController
         user_ticket_action.build_request_spare_part(ticket_spare_part_id: spt_ticket_spare_part.id)
         user_ticket_action.save
 
+        spt_ticket_spare_part.update available_mail_sent_at: DateTime.now, available_mail_sent_by: current_user.id if !spt_ticket_spare_part.available_mail_sent_at.present?
+
         email_template = EmailTemplate.find_by_code("PART_AVAILABLE")
 
         email_to = spt_ticket_spare_part.engineer.user.email
@@ -5829,6 +5831,8 @@ class TicketsController < ApplicationController
 
     else
       @ticket_spare_part = TicketSparePart.find(params[:part_id])
+
+      @ticket_spare_part.update available_mail_sent_at: DateTime.now, available_mail_sent_by: current_user.id if !@ticket_spare_part.available_mail_sent_at.present?
 
       email_to = @ticket_spare_part.engineer.user.email
       view_context.send_email(email_to: email_to, ticket_id: @ticket_spare_part.ticket_id, engineer_id: @ticket_spare_part.engineer_id, spare_part_id: @ticket_spare_part.id, email_code: "STORE_PART_AVAILABLE") if email_to.present?
