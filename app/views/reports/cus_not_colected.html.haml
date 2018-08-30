@@ -27,7 +27,7 @@
       .col-md-2= ticket.support_ticket_no
       .col-md-3= ticket.customer_name
       .col-md-2= ticket.products.first.model_no
-      .col-md-1
+      .col-md-1{tooltip:ticket.job_finished_at, ticket.qc_passed_at, ticket.final_invoice.try(:created_at)].compact.max}
         - if [ticket.job_finished_at, ticket.qc_passed_at, ticket.final_invoice.try(:created_at)].compact.max.present?
           = Date.today - [ticket.job_finished_at, ticket.qc_passed_at, ticket.final_invoice.try(:created_at)].compact.max.to_date
         - else
