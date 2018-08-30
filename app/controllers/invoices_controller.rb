@@ -267,7 +267,7 @@ class InvoicesController < ApplicationController
 
         bpm_variables.merge! d37_qc_passed: "Y"
 
-        update_ticket_params.merge! status_id: TicketStatus.find_by_code("#{!(@ticket.cus_chargeable or @ticket.cus_payment_required or @ticket.ticket_terminated) ? 'CFB' : 'PMT' }").id, qc_passed: true
+        update_ticket_params.merge! status_id: TicketStatus.find_by_code("#{!(@ticket.cus_chargeable or @ticket.cus_payment_required or @ticket.ticket_terminated) ? 'CFB' : 'PMT' }").id, qc_passed: true, qc_passed_at: DateTime.now
 
       elsif params[:reject] #Reject QC
         bpm_variables.merge! d38_ticket_close_approved: "Y"
@@ -372,7 +372,7 @@ class InvoicesController < ApplicationController
 
         editable_ticket_params.merge! ticket_close_approval_requested: false, ticket_close_approved: false if !@ticket.ticket_close_approval_required or @ticket.ticket_close_approval_requested or @ticket.ticket_close_approved
 
-        editable_ticket_params.merge! re_open_count: (@ticket.re_open_count.to_i+1), job_finished: false, job_finished_at: nil, status_id: TicketStatus.find_by_code("ROP").id, cus_payment_completed: false, job_closed: false, job_closed_at: nil, qc_passed: false
+        editable_ticket_params.merge! re_open_count: (@ticket.re_open_count.to_i+1), job_finished: false, job_finished_at: nil, status_id: TicketStatus.find_by_code("ROP").id, cus_payment_completed: false, job_closed: false, job_closed_at: nil, qc_passed: false, qc_passed_at: nil
 
       else
         if @ticket.cus_payment_required
@@ -422,7 +422,7 @@ class InvoicesController < ApplicationController
       if @ticket.ticket_terminated
         # Action:(60)Terminate Job Customer Feedback, DB.spt_act_customer_feedback.
         action_no = 60
-      else  
+      else
         # Action (58) Customer Feedback, DB.spt_act_customer_feedback.
         action_no = 58
       end

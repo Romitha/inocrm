@@ -1,14 +1,14 @@
 spare_part_count = 10
 
 headers = ["Company Name", "Customer Type (Corporate/Walking)", "Customer Address", "District", 
-  "Customer Email", "Customer Contact No", "Product Brand", "Category", "Model Number", "Product Number", "Product Serial No", "SLA", "Job Number (Partner)", "CASE ID / HP Advisory", "Log Date", "Logged by", "Job Finished At", "Customer Support Representative", "Engineer Assign Date", "Start Date", "Start Action", "Problem Description", "Support Group (SBU)", "Engineer Name"]
+  "Customer Email", "Customer Contact No", "Product Brand", "Category", "Model Number", "Product Number", "Product Serial No", "SLA", "Job Number (Partner)", "CASE ID / HP Advisory", "Created at", "Log Date", "Logged by", "Job Finished At", "Customer Support Representative", "Engineer Assign Date", "Start Date", "Start Action", "Problem Description", "Support Group (SBU)", "Engineer Name"]
 
-spare_part_headers = ["Part Number In Use", "Part Description", "Event No", "Item Code", "Ordered", "Collected from Manufacture"]
+spare_part_headers = ["Part Number", "Part Description", "Event No", "Item Code", "Ordered from manufacture at", "Collected from Manufacture at", "Requested at", "Requested by"]
 total_spare_part_headers = []
-spare_part_count.times.each{|s| spare_part_headers.each{|d| total_spare_part_headers << "#{s+1} #{d}" } }
+spare_part_count.times.each{|s| spare_part_headers.each{|d| total_spare_part_headers << "#{s+1} - #{d}" } }
 
 headers.concat(total_spare_part_headers)
-headers.concat(["Engrs Finished Date & Time", "Call Status", "Hold", "Hold Reason", "Re-Open Count", "Chargeable", "Total Amount", "Final Resolution"])
+headers.concat(["Engrs Finished Date & Time", "Call Status", "Hold", "Hold Reason", "Re-Open Count", "Chargeable", "Total Amount", "Final Resolution", "Last part received date", "Last Resolved Date", "Last Close Approval", "Last QC Reject Date", "Last QC Approval Date", "Last Customer Feedback Taken By"])
 
 wb = xlsx_package.workbook
 wb.add_worksheet(name: "ERP report") do |sheet|
@@ -38,6 +38,7 @@ wb.add_worksheet(name: "ERP report") do |sheet|
 
     ticket_content.concat(product_info)
 
+    ticket_content << ticket.created_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
     ticket_content << ticket.logged_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
     ticket_content << ticket.logged_by_user
     ticket_content << (ticket.job_finished_at and ticket.job_finished_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}"))
@@ -57,16 +58,21 @@ wb.add_worksheet(name: "ERP report") do |sheet|
         spare_part_info << sp.spare_part_description
         spare_part_info << (sp.request_from == 'M' ? sp.ticket_spare_part_manufacture.try(:event_no) : "")
         spare_part_info << sp.inventory_product_generated_serial_item
-        status_actions = []
+        status_actions = {}
         if sp.ticket_spare_part_status_actions.any?
-          sp.ticket_spare_part_status_actions.each do |action|
-            status_actions << (action.status_id == 2 ? action.done_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") : "or")
+          sp.ticket_spare_part_status_actions.select{|a| [1,2,3].include?(a.action_id)}.each_with_index do |action, index|
+            status_actions[1] = action.done_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") if action.status_id == 2
 
-            status_actions << (action.status_id == 3 ? action.done_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") : "co")
+            status_actions[2] = action.done_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") if action.status_id == 3
+            if action.status_id == 1
+              status_actions[3] = action.done_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") # Request
+              status_actions[4] = User.cached_find_by_id(action.done_by).try(:full_name)
+            end
           end
-          spare_part_info.concat(status_actions)
+          4.times.each{|e| status_actions[(e+1)] ||= '' }
+          spare_part_info.concat(Hash[status_actions.sort].values)
         else
-          2.times.each{|e| spare_part_info << ""}
+          4.times.each{|e| spare_part_info << ""}
         end
       else
         4.times.each{|e| spare_part_info << ""}
@@ -94,6 +100,17 @@ wb.add_worksheet(name: "ERP report") do |sheet|
       ticket_content << number_with_precision(0, precision: 2)
     end
     ticket_content << ticket.resolution_summary
+
+    last_spare_part = ticket.ticket_spare_parts.last
+    last_part_infos = {}
+    if last_spare_part.present?
+      last_spare_part.ticket_spare_part_status_actions.select{|a| [ 4, 6 ].include?(a.action_id) }.each_with_index do |action, index|
+        last_part_infos[action.action_id.to_i] = action.done_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
+      end
+    end
+    [4, 6].each{ |e| last_part_infos[e] ||= ''  }
+    ticket_content.concat(last_part_infos)
+
 
     sheet.add_row ticket_content
   end

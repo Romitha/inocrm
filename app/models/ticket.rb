@@ -262,14 +262,14 @@ class Ticket < ActiveRecord::Base
           }
         },
         ticket_spare_parts: {
-          only: [:id, :spare_part_no, :spare_part_description, :request_from],
+          only: [:id, :spare_part_no, :spare_part_description, :request_from, :available_mail_sent_at],
           methods: [:inventory_product_generated_serial_item],
           include: {
             ticket_spare_part_manufacture: {
               only: [:id, :event_no],
             },
             ticket_spare_part_status_actions: {
-              only: [:status_id, :done_at],
+              only: [:status_id, :done_at, :done_by],
             },
           }
         },

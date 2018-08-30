@@ -281,7 +281,7 @@ workflow_mappings = [
   ["SPPT", "pop_approval", "/tickets/pop-approval", "SPT_SC_5", "Support - POP Approval", "h1", "ticket_id", nil],
   ["SPPT", "edit_serial_no", "/tickets/edit_serial", "SPT_SC_6", "Support - Edit Serial No", "h1", "ticket_id", nil],
   ["SPPT", "job_estimate", "/tickets/estimate_job", "SPT_SC_7", "Support - Job Estimation", "h1", "ticket_id", nil],
-  ["SPPT", "mark_delivered_colleted", "/tickets/deliver_unit", "SPT_SC_8", "Support - Unit To Be Delivered or Collected for External Repaire", "h1", "ticket_id,deliver_unit_id", nil],
+  ["SPPT", "mark_delivered_colleted", "/tickets/deliver_unit", "SPT_SC_8", "Support - Unit To Be Delivered or Collected for External Repair", "h1", "ticket_id,deliver_unit_id", nil],
   ["SPPT_MFR_PART_REQUEST", "order_part", "/tickets/order_manufacture_parts", "SPT_SC_9", "Support - Order Part (Manufacture)", "h3", "ticket_id,request_spare_part_id,supp_engr_user", nil],
   ["SPPT_MFR_PART_REQUEST", "receive_Issue_part", "/tickets/received_and_issued", "SPT_SC_10", "Support - Receive or Issue Part (Manufacture)", "h3", "ticket_id,request_spare_part_id,supp_engr_user", nil],
   ["SPPT_MFR_PART_RETURN", "return_manufacture_part", "/tickets/return_manufacture_part", "SPT_SC_11", "Support - Return Part (Manufacture)", "h3", "ticket_id,request_spare_part_id,supp_engr_user", nil],

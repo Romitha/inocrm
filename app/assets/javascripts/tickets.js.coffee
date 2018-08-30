@@ -729,8 +729,10 @@ window.Tickets =
     $("a[rel~=popover], .has-popover").popover("destroy")
     _this = elem
     value = $(_this).data("value")
+    added_count = $("#sparepart_list").data("addedcount")
     $("#inventory_po_items").click() # add_link
     $("#inventory_po_items").prev().find(".single_extra_info").html($(_this).parent().prev().html()) # insert infor to remove
+    $("#inventory_po_items").prev().find(".single_extra_info .now_item_default").html(added_count)
     $("#inventory_po_items").prev().find(".remove_nested_fields").data("insertedid", value)
     $("#inventory_po_items").prev().find(".spare_part_class").val(spare_part)
     $(".ticket_currency_class").val(ticket_currency_id)
@@ -738,6 +740,8 @@ window.Tickets =
     $("#inventory_po_items").prev().find(".item_no_class").val($(_this).parent().prev().find(".now_item_default").html())
     $("#inventory_po_items").prev().find(".po_amount_class").val($(_this).parent().prev().find(".now_amount_default").html())
     $("#inventory_po_items").prev().find(".remove").data("value", value)
+
+    $("#sparepart_list").data("addedcount", (parseFloat(added_count)+1))
 
     $(_this).css("pointer-events", "none")
     $("a[rel~=popover], .has-popover").popover()

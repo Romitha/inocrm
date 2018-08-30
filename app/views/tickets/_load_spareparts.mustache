@@ -6,7 +6,7 @@
   .col-md-1
     %strong Order No
   .col-md-1
-    %strong Date Ordered
+    %strong Event Closed Date
   .col-md-1
     %strong Part No
   .col-md-1
@@ -20,7 +20,7 @@
   .col-md-1
     %strong Faulty Serial No
 %hr
-#sparepart_list
+#sparepart_list{data: {addedcount: 1}}
   {{#spare_parts}}
   %div{ id: "addclick_function_{{part_no}}"}
 
@@ -31,7 +31,9 @@
         .col-md-1 {{order_no}}
         .col-md-1 {{event_closed_date}}
         .col-md-1 {{part_no}}
-        .col-md-1.now_amount_default {{currency_code}} {{amount}}
+        .col-md-1
+          {{currency_code}}
+          %span.now_amount_default {{amount}}
         .col-md-1.now_class {{spare_part_description}}
         .col-md-2
           <a href="#" class="has-popover" data-content="{{{note}}}" data-placement="bottom" data-toggle="popover" data-html="true" "title"="this is sample text">View Note</a>

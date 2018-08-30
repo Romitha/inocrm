@@ -19,7 +19,7 @@
         %th
           Part No
         %th
-          Ticket No
+          Event No
         %th
           Item no
         %th
@@ -41,9 +41,9 @@
             %td
               = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:issued_at).try(:strftime, INOCRM_CONFIG['short_date_format'])
             %td
-              = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:spare_part_id)
+              = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:spare_part_no)
             %td
-              = po_item.ticket_spare_part.ticket.support_ticket_no
+              = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:event_no)
             %td
               = po_item.item_no
             %td
