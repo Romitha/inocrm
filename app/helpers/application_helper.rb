@@ -96,7 +96,7 @@ module ApplicationHelper
       "PAYMENT_TYPE=#{INOCRM_CONFIG['TicketPaymentReceivedType'].key(receipt.payment_type)}",
       "PAYMENT_NOTE=#{receipt.payment_note.to_s.try(:truncate, 35)}",
       "TYPE=#{receipt.ticket_payment_received_type.name}",
-      "NOTE=#{receipt.note.to_s.truncate(35)}",
+      "NOTE=#{receipt.note.to_s.truncate(70)}",
       "CREATED_DATE=#{receipt.created_at.strftime(INOCRM_CONFIG['long_date_format'])}",
       "CREATED_TIME=#{receipt.created_at.strftime(INOCRM_CONFIG['time_format'])}",
       "CREATED_BY=#{User.cached_find_by_id(receipt.received_by).full_name}"
