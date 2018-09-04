@@ -1,6 +1,6 @@
 spare_part_count = 10
 
-headers = ["Company Name", "Customer Type (Corporate/Walking)", "Customer Address", "District", 
+headers = ["Company Name", "Customer Type (Corporate/Walking)", "Problem Category", "Customer Address", "District", 
   "Customer Email", "Customer Contact No", "Product Brand", "Category", "Model Number", "Product Number", "Product Serial No", "SLA", "Job Number (Partner)", "CASE ID / HP Advisory", "Created at", "Log Date", "Logged by", "Job Finished At", "Customer Support Representative", "Engineer Assign Date", "Start Date", "Start Action", "Problem Description", "Support Group (SBU)", "Engineer Name"]
 
 spare_part_headers = ["Part Number", "Part Description", "Event No", "Item Code", "Ordered from manufacture at", "Collected from Manufacture at", "Requested at", "Requested by"]
@@ -8,7 +8,7 @@ total_spare_part_headers = []
 spare_part_count.times.each{|s| spare_part_headers.each{|d| total_spare_part_headers << "#{s+1} - #{d}" } }
 
 headers.concat(total_spare_part_headers)
-headers.concat(["Engrs Finished Date & Time", "Call Status", "Hold", "Hold Reason", "Re-Open Count", "Chargeable", "Total Amount", "Final Resolution", "Last part received date", "Last Resolved Date", "Last Close Approval", "Last QC Reject Date", "Last QC Approval Date", "Last Customer Feedback Taken By"])
+headers.concat(["Engrs Finished Date & Time", "Call Status", "Hold", "Hold Reason", "Re-Open Count", "Chargeable", "Total Amount", "Final Resolution", 'Last part received by engineer', "No Of Used Manufacture Parts", "No Of Used Store Parts", "No Of Used OnLoan Parts",  "Resolved Date", "Close Approval Request Date", "Last Customer Feedback Taken By", "QC Reject Date", "QC Approval Date"])
 
 wb = xlsx_package.workbook
 wb.add_worksheet(name: "ERP report") do |sheet|
@@ -17,7 +17,7 @@ wb.add_worksheet(name: "ERP report") do |sheet|
   @ticket.each do |ticket|
     product = ticket.products.first
 
-    ticket_content = [ticket.customer.full_name, boolean_in_word(ticket.customer.organization.present?, "Corporate", "Walking"), ticket.customer.full_address, ticket.customer.try(:district_name) ]
+    ticket_content = [ticket.customer.full_name, boolean_in_word(ticket.customer.organization.present?, "Corporate", "Walking"), ticket.problem_category_name, ticket.customer.full_address, ticket.customer.try(:district_name) ]
 
     customer_contact_values = ticket.customer.contact_type_values
     if customer_contact_values.select{|ct| [2, 3].include?(ct.contact_type_id) }.empty?
@@ -69,13 +69,11 @@ wb.add_worksheet(name: "ERP report") do |sheet|
               status_actions[4] = User.cached_find_by_id(action.done_by).try(:full_name)
             end
           end
-          4.times.each{|e| status_actions[(e+1)] ||= '' }
-          spare_part_info.concat(Hash[status_actions.sort].values)
-        else
-          4.times.each{|e| spare_part_info << ""}
         end
+        4.times.each{|e| status_actions[(e+1)] ||= '' }
+        spare_part_info.concat(Hash[status_actions.sort].values)
       else
-        4.times.each{|e| spare_part_info << ""}
+        8.times.each{|e| spare_part_info << ""}
       end
       ticket_content.concat(spare_part_info)
     end
@@ -104,13 +102,39 @@ wb.add_worksheet(name: "ERP report") do |sheet|
     last_spare_part = ticket.ticket_spare_parts.last
     last_part_infos = {}
     if last_spare_part.present?
-      last_spare_part.ticket_spare_part_status_actions.select{|a| [ 4, 6 ].include?(a.action_id) }.each_with_index do |action, index|
-        last_part_infos[action.action_id.to_i] = action.done_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
+      case last_spare_part.request_from
+       when "M"
+        last_spare_part.ticket_spare_part_status_actions.select{|a| [ 4 ].include?(a.action_id) }.each_with_index do |action, index|
+          last_part_infos[1] = action.done_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
+        end
+
+      when "S"
+        last_part_infos[1] = last_spare_part.available_mail_sent_at.try :strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}"
+
       end
     end
-    [4, 6].each{ |e| last_part_infos[e] ||= ''  }
-    ticket_content.concat(last_part_infos)
+    [1].each{ |e| last_part_infos[e] ||= ''  }
+    ticket_content.concat(Hash[last_part_infos.sort].values)
 
+
+    ticket_content << ticket.spare_part_counts[:manufacture]
+    ticket_content << ticket.spare_part_counts[:store]
+    ticket_content << ticket.spare_part_counts[:onloan]
+    ticket_content << ticket.job_completed_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
+
+    user_actions = {}
+    ticket.user_ticket_actions.select{|u| [55, 58, 67].include?(u.action_id) }.each do |u|
+      if u.action_id == 58
+        user_actions[u.action_id.to_i] = u.action_by_name
+      else
+        user_actions[u.action_id.to_i] = u.formatted_action_date
+      end
+    end
+
+    [55, 58, 67].each{ |e| user_actions[e] ||= ''  }
+    ticket_content.concat(Hash[user_actions.sort].values)
+
+    ticket_content << ticket.qc_passed_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
 
     sheet.add_row ticket_content
   end
