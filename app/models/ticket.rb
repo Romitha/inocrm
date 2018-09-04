@@ -10,7 +10,7 @@ class Ticket < ActiveRecord::Base
   belongs_to :warranty_type, foreign_key: :warranty_type_id
   belongs_to :job_type, foreign_key: :job_type_id
   belongs_to :inform_method,foreign_key: :informed_method_id
-  belongs_to :problem_category,foreign_key: :problem_category_id
+  belongs_to :problem_category, foreign_key: :problem_category_id
   belongs_to :ticket_contact_type, foreign_key: :contact_type_id
   belongs_to :ticket_contract, foreign_key: :contract_id
   belongs_to :ticket_status, foreign_key: :status_id
@@ -185,8 +185,8 @@ class Ticket < ActiveRecord::Base
     UserTicketAction
     TicketEstimation
     to_json(
-      only: [:created_at, :cus_chargeable, :id, :customer_id, :ticket_no, :logged_at, :logged_by, :slatime, :job_started_at, :job_started_action_id, :problem_description, :job_type_id, :job_finished_at, :job_finished, :status_id, :status_hold, :re_open_count,:owner_engineer_id, :final_invoice_id, :resolution_summary, :ticket_type, :updated_at, :product_inside],
-      methods: [:customer_name, :created_by_user_full_name, :inhouse_type_select,:sla_description, :is_hold_and_have_last_hold_action?, :ticket_product_brand_name, :ticket_product_brand_id, :ticket_product_serial_no, :ticket_product_cat_id, :ticket_product_cat1_id, :ticket_product_cat2_id, :ticket_support_engineer_cost, :ticket_additional_cost, :ticket_external_cost, :ticket_engineer_cost, :ticket_part_cost, :ticket_contract_contract_end_at, :ticket_contract_contract_start_at, :job_type_get, :owner_engineer_name, :ticket_status_name, :ticket_status_code, :warranty_type_name, :support_ticket_no, :ticket_type_name, :ticket_type_code,  :ticket_contract_product_amount, :ticket_contract_location, :logged_by_user],
+      only: [:created_at, :cus_chargeable, :id, :customer_id, :ticket_no, :logged_at, :logged_by, :slatime, :job_started_at, :job_started_action_id, :problem_description, :job_type_id, :job_finished_at, :job_finished, :status_id, :status_hold, :re_open_count,:owner_engineer_id, :final_invoice_id, :resolution_summary, :ticket_type, :updated_at, :product_inside, :job_completed_at, :qc_passed_at, :problem_category_id],
+      methods: [:customer_name, :created_by_user_full_name, :inhouse_type_select,:sla_description, :is_hold_and_have_last_hold_action?, :ticket_product_brand_name, :ticket_product_brand_id, :ticket_product_serial_no, :ticket_product_cat_id, :ticket_product_cat1_id, :ticket_product_cat2_id, :ticket_support_engineer_cost, :ticket_additional_cost, :ticket_external_cost, :ticket_engineer_cost, :ticket_part_cost, :ticket_contract_contract_end_at, :ticket_contract_contract_start_at, :job_type_get, :owner_engineer_name, :ticket_status_name, :ticket_status_code, :warranty_type_name, :support_ticket_no, :ticket_type_name, :ticket_type_code,  :ticket_contract_product_amount, :ticket_contract_location, :logged_by_user, :spare_part_counts],
       include: {
         ticket_contract: {
           only: [ :id, :customer_id, :products, :contract_no,:amount, :contract_start_at,:contract_end_at, :season, :accepted_at, :updated_at],
@@ -321,8 +321,16 @@ class Ticket < ActiveRecord::Base
 
   end
 
+  def spare_part_counts
+    {store: ticket_spare_parts.count{|s| s.request_from == "S"}, manufacture: ticket_spare_parts.count{|s| s.request_from == "M"}, non_stock: ticket_spare_parts.count{|s| s.request_from == "NS"}, onloan: ticket_on_loan_spare_parts.count }
+  end
+
   def created_by_user_full_name
     created_by_user.full_name
+  end
+
+  def problem_category_name
+    problem_category.name
   end
 
   def owner_eng_full_name
