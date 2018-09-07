@@ -4,7 +4,7 @@
       = f.input :accessory, input_html: {rows: 1}
   .row{style: "margin-top:20px; margin-bottom:20px;"}
     .col-md-6
-      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_accessory"
+      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_accessory", data: {disable_with: "Please wait..."}
 
 = collapse_wrapper collapse_id: "ticket_accessory_list", labelledby: "tic_accessory_labelledby" do
   - @accessory_all.each_with_index do |accessory, index|

@@ -38,6 +38,10 @@ class ReportsController < ApplicationController
 
     ticket_time = ticket.created_at.strftime(INOCRM_CONFIG['time_format'])
 
+    quotation_date = quotation.created_at.strftime(INOCRM_CONFIG['long_date_format'])
+
+    quotation_time = quotation.created_at.strftime(INOCRM_CONFIG['time_format'])
+
     validity_period = quotation.validity_period
 
     delivery_period = quotation.delivery_period
@@ -243,8 +247,8 @@ class ReportsController < ApplicationController
       address3: address3,
       address4: address4,
       ticket_ref: ticket_ref,
-      created_date: ticket_date,
-      created_time: ticket_time,
+      created_date: quotation_date,
+      created_time: quotation_time,
       validity_period: validity_period,
       delivery_period: delivery_period,
       repeat_data: repeat_data,

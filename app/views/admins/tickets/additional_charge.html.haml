@@ -11,7 +11,7 @@
       = f.input :default_estimated_price
   .row{style: "margin-top:20px; margin-bottom:20px;"}
     .col-md-6
-      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_additional_charge"
+      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_additional_charge", data: {disable_with: "Please wait..."}
 
 = collapse_wrapper collapse_id: "ticket_additional_charge_list", labelledby: "tic_additional_charge_labelledby" do
   - @additional_charge_all.each_with_index do |add_charge, index|

@@ -37,7 +37,7 @@
           = link_to search_grn_admins_searches_path(grn_callback: "select_grn",grn_id: grnitem.grn.id), "role" => "button",class: "btn btn-warning pull-right" do
             Previous Page
         .col-md-3
-          = f.submit "Add New Cost", class: "btn btn-success pull-right"
+          = f.submit "Add New Cost", class: "btn btn-success pull-right", data: {disable_with: "Please wait..."}
           
   .col-md-6
     %table.table.table-hover

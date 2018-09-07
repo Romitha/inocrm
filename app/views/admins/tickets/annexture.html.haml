@@ -15,7 +15,7 @@
 
   .row{style: "margin-top:20px;margin-bottom:20px;"}
     .col-md-6
-      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_annexture"
+      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_annexture", data: {disable_with: "Please wait..."}
 
 = collapse_wrapper collapse_id: "ticket_annexture_list", labelledby: "tic_annexture_labelledby" do
   - @annexture_all.each_with_index do |annexture, index|

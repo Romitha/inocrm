@@ -4,7 +4,7 @@
       = f.input :feedback, input_html: {rows: 1}
   .row{style: "margin-top:20px; margin-bottom:20px;"}
     .col-md-6
-      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_customer_feedback"
+      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_customer_feedback", data: {disable_with: "Please wait..."}
 
 = collapse_wrapper collapse_id: "ticket_customer_feedback_list", labelledby: "tic_customer_feedback_labelledby" do
   - @customer_feedback_all.each_with_index do |ad_feedback, index|

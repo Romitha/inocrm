@@ -9,7 +9,7 @@
 
   .row{style: "margin-top:20px; margin-bottom:20px;"}
     .col-md-6
-      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_industry_type"
+      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_industry_type", data: {disable_with: "Please wait..."}
 
 
 = collapse_wrapper collapse_id: "org_industry_type_list", labelledby: "org_industry_type_labelledby" do

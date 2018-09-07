@@ -96,7 +96,7 @@
 
         .row
           .col-md-12
-            = f.submit "Save", class: "btn btn-success btn-sm", id: "submit_new_brands_and_category", name: "#{params[:edit_more] ? 'update' : 'create'}"
+            = f.submit "Save", class: "btn btn-success btn-sm", id: "submit_new_brands_and_category", name: "#{params[:edit_more] ? 'update' : 'create'}", data: {disable_with: "Please wait..."}
 
 #accordion.panel-group
   - @brands_and_category_all.each_with_index do |brands_and_category, index|

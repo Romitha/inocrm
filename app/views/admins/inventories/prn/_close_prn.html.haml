@@ -34,7 +34,7 @@
           .col-md-2
             = p.link_to_remove "X" unless p.object.hard_deletable?
 
-      = f.submit "Delete", class: "btn btn-sm btn-success"
+      = f.submit "Delete", class: "btn btn-sm btn-success", data: {disable_with: "Please wait..."}
       = link_to "Cancel", "#", data: {dismiss: "modal"}, class: "btn btn-link"
 
 = javascript_tag do
