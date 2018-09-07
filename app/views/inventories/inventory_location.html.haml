@@ -58,7 +58,7 @@
                   %span.glyphicon.glyphicon-plus-sign Add a Shelf
       .row{style: "margin-top:20px;"}
         .col-md-11
-          = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_location"
+          = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_location", data: {disable_with: "Please wait..."}
 #accordion.panel-group
   - @inventory_all_rack.each_with_index do |rack, index|
     .panel.panel-primary

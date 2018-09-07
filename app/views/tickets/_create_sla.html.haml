@@ -8,4 +8,4 @@
     = f.input :description
   .modal-footer
     %button.btn.btn-link{"data-dismiss" => "modal", :type => "button"} Cancel
-    = f.submit "Create", name: "create_sla", class: "btn btn-success"
+    = f.submit "Create", name: "create_sla", class: "btn btn-success", data: {disable_with: "Please wait..."}

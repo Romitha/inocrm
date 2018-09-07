@@ -6,7 +6,7 @@
       = f.input :active, wrapper: :append
   .row{style: "margin-top:20px;margin-bottom:20px;"}
     .col-md-7
-      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_spare_part_description"
+      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_spare_part_description", data: {disable_with: "Please wait..."}
 
 = collapse_wrapper collapse_id: "ticket_start_action_list", labelledby: "tic_start_action_labelledby" do
   - @ticket_start_action_all.each_with_index do |ticket_start_action, index|

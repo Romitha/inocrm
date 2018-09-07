@@ -74,7 +74,7 @@
 
       .row
         .col-md-1
-          = f.submit "Save", class: "btn btn-success btn-sm"
+          = f.submit "Save", class: "btn btn-success btn-sm", data: {disable_with: "Please wait..."}
         .col-md-3
           = label_tag "Invoicing Completed Complete"
           = check_box_tag :invoicing_completed

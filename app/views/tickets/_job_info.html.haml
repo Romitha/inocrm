@@ -12,7 +12,7 @@
       .col-md-12
         = label_tag "Complete update"
         = check_box_tag :update_complete, true, true, onchange: "Tickets.update_complete(this); return false;"
-        = f.submit "Complete update", class: "btn btn-success btn-sm", id: "complete_update_submit"
+        = f.submit "Complete update", class: "btn btn-success btn-sm", id: "complete_update_submit", data: {disable_with: "Please wait..."}
   %hr
 .row
   .col-md-2

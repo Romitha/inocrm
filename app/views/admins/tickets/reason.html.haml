@@ -27,7 +27,7 @@
       = f.input :reason, input_html: {rows: 1, required: true}
   .row{style: "margin-top:20px; margin-bottom:20px;"}
     .col-md-6
-      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_reason"
+      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_reason", data: {disable_with: "Please wait..."}
 
 = collapse_wrapper collapse_id: "ticket_reason_list", labelledby: "tic_reason_labelledby" do
   - @reason_all.each_with_index do |mst_reason, index|

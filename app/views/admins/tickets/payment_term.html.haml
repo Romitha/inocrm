@@ -8,7 +8,7 @@
       = f.input :description
   .row{style: "margin-top:20px;margin-bottom:20px;"}
     .col-md-6
-      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_payment_term"
+      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_payment_term", data: {disable_with: "Please wait..."}
 
 = collapse_wrapper collapse_id: "ticket_payment_term_list", labelledby: "tic_payment_term_labelledby" do
   - @payment_term_all.each_with_index do |payment_term, index|

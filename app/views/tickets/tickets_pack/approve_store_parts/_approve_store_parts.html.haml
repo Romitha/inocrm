@@ -277,7 +277,7 @@
           = f.input :remarks, required: true, input_html: { value: nil}
           = simple_format f.object.remarks
 
-        = f.submit "Save", class: "btn btn-success btn-sm", id: "approve_store_part"
+        = f.submit "Save", class: "btn btn-success btn-sm", id: "approve_store_part", data: {disable_with: "Please wait..."}
 
 #inventory_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "inventory_modal", "aria-hidden" => true}
   .modal-dialog.modal-lg

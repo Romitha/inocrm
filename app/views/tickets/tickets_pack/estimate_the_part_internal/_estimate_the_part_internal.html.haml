@@ -290,7 +290,7 @@
     .col-md-12
       = label_tag "Estimation complete"
       = check_box_tag :estimation_complete_check, true, true
-      = f.submit "Save", class: "btn btn-success btn-sm", onclick: "Tickets.presence_validater(this, {presence: ['.est_internal_supplier', '.est_internal_cost_price', '.est_internal_estimated_price', '.est_internal_warranty']}); return false;"
+      = f.submit "Save", class: "btn btn-success btn-sm", onclick: "Tickets.presence_validater(this, {presence: ['.est_internal_supplier', '.est_internal_cost_price', '.est_internal_estimated_price', '.est_internal_warranty']}); return false;", data: {disable_with: "Please wait..."}
 
 #inventory_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "inventory_modal", "aria-hidden" => true}
   .modal-dialog.modal-lg

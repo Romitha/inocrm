@@ -93,7 +93,7 @@
 
   .row{style: "margin-bottom:20px;"}
     .col-md-8
-      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_product"
+      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_inventory_product", data: {disable_with: "Please wait..."}
 
 #accordion.panel-group
   - @inventory_product_all.each_with_index do |inv_product, index|

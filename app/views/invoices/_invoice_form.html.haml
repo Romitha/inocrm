@@ -188,7 +188,7 @@
             = link_to "#", onclick: "Users.request_printer_application('invoice', '#{invoice.id}', 'invoice_request_type', 'print_ticket_invoice_tag_value', 'print_ticket_invoice', this); false;", id: "ticket_print", data: {disable_with: "Printing..."}, class: "btn btn-default" do
               Print
         .col-md-2
-          = f.submit "Save", class: "btn btn-success" unless ticket.ticket_closed?
+          = f.submit "Save", class: "btn btn-success" unless ticket.ticket_closed?, data: {disable_with: "Please wait..."}
   .row
     .col-md-6.pull-right
       %table.table.table-striped

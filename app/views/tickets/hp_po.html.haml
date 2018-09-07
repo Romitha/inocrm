@@ -78,7 +78,7 @@
           .col-md-12
             = f.link_to_add "Add item", :so_po_items, id: "inventory_po_items", class: "hide"
         .col-md-1
-          = f.submit "Save", class: "btn btn-success btn-sm", id: "submit_create_po"
+          = f.submit "Save", class: "btn btn-success btn-sm", id: "submit_create_po", data: {disable_with: "Please wait..."}
 
 %script{type: "text/html", id: "load_spareparts_output"}
   = render 'load_spareparts'

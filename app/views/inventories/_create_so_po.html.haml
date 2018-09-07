@@ -60,7 +60,7 @@
       = f.input :note
   .row.pull-right{style: "margin-bottom: 10px;"}
     .col-md-3
-      = f.submit "Submit", class: "btn btn-success pull-right", id: "submit_so_po_sales_order"
+      = f.submit "Submit", class: "btn btn-success pull-right", id: "submit_so_po_sales_order", data: {disable_with: "Please wait..."}
     .col-md-3
       = link_to "Cancel","#"
       / = link_to "Cancel","#", onclick: "$('#estimation_wrapper').empty(); return false;"x

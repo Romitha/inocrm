@@ -34,7 +34,7 @@
           Add Q And A
     .row{style: "margin-top:20px;"}
       .col-md-11
-        = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_problem_category", name: "#{params[:edit_more] ? 'update' : 'create'}"
+        = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_problem_category", name: "#{params[:edit_more] ? 'update' : 'create'}", data: {disable_with: "Please wait..."}
 
 = collapse_wrapper collapse_id: "ticket_problem_category_list", labelledby: "tic_problem_category_labelledby" do
   - @problem_category_all.each_with_index do |pc, index|

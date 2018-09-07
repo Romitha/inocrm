@@ -88,7 +88,7 @@
   .row
     .col-md-12
       .pull-right
-        = f.submit "Save", class: "btn btn-success"
+        = f.submit "Save", class: "btn btn-success", data: {disable_with: "Please wait..."}
 
   -if params[:action] == "store_and_branch"
     .row.small_scale_padding-top1

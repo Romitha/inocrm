@@ -90,7 +90,7 @@
                     View Invoice
                   = link_to "#","role" => "button" , class: "col-md-1 btn btn-warning", style: "margin-right:4px;" do
                     Print Invoice
-                  = f.submit "Save", class: "col-md-1 btn btn-success", style: "margin-right:4px;", id: "submit_invoice_for_so_id"
+                  = f.submit "Save", class: "col-md-1 btn btn-success", style: "margin-right:4px;", id: "submit_invoice_for_so_id", data: {disable_with: "Please wait..."}
                   = link_to "#","role" => "button" ,onclick: "Tickets.reset_so_po(); return false;", class: "col-md-1 btn btn-danger" do
                     Cancel
       - else

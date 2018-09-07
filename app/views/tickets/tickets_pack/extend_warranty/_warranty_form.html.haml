@@ -42,4 +42,4 @@
         = f.input :care_pack_reg_no, label: "Care pack reg number"
       .col-md-6
         = f.input :note, input_html: {rows: 1}
-    = f.submit "Save", class: "btn btn-info"
+    = f.submit "Save", class: "btn btn-info", data: {disable_with: "Please wait..."}

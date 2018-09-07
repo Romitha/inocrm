@@ -138,7 +138,7 @@
           .col-md-3
             = link_to "Cancel","#", onclick: "$('#quotation_wrapper').empty(); return false;"
           .col-md-3
-            = f.submit "Save", class: "btn btn-success"
+            = f.submit "Save", class: "btn btn-success", data: {disable_with: "Please wait..."}
 
           - if quotation.persisted?
             .col-md-3

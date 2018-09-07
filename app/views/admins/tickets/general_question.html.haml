@@ -18,7 +18,7 @@
 
   .row{style: "margin-bottom: 20px;"}
     .col-md-8
-      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_general_question"
+      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_general_question", data: {disable_with: "Please wait..."}
 
 = collapse_wrapper collapse_id: "ticket_general_question_list", labelledby: "tic_general_question_labelledby" do
   - @general_question_all.each_with_index do |g_question, index|

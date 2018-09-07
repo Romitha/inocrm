@@ -14,7 +14,7 @@
 
   .row{style: "margin-top:20px; margin-bottom:20px;"}
     .col-md-8
-      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_sla"
+      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_sla", data: {disable_with: "Please wait..."}
 
 #accordion.panel-group
   - @sla_all.each_with_index do |sla, index|
