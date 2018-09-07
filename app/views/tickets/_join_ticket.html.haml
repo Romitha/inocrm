@@ -49,4 +49,4 @@
               = check_box_tag "ticket[joint_tickets_attributes][][joint_ticket_id]", jt.object.joint_ticket_id, joint_tickets.include?(jt.object.joint_ticket_id), class: "checked_row"
     .row
       .col-md-12
-        = f.submit "Join ticket", class: "btn btn-info btn-sm pull-right"
+        = f.submit "Join ticket", class: "btn btn-info btn-sm pull-right", data: {disable_with: "Please wait..."}

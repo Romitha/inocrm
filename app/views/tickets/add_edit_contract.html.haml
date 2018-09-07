@@ -21,7 +21,7 @@
               = f.input :contract_no
           .row{style: "margin-top:20px;"}
             .col-md-11
-              = f.submit "Save", class: "btn btn-success pull-left", id: "submit_new_add_edit_contract"
+              = f.submit "Save", class: "btn btn-success pull-left", id: "submit_new_add_edit_contract", data: {disable_with: "Please wait..."}
 .col-md-12
   #contract_list
     - if @contract_all.present?

@@ -5,7 +5,7 @@
       = f.input :name, input_html: {required: true}
   .row{style: "margin-top:20px; margin-bottom:20px;"}
     .col-md-6
-      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_reason"
+      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_reason", data: {disable_with: "Please wait..."}
 
 = collapse_wrapper collapse_id: "ticket_dispatch_method_list", labelledby: "tic_dispatch_method_labelledby" do
   - @dispatch_method_all.each_with_index do |dm, index|

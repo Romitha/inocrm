@@ -16,7 +16,7 @@
     .col-md-12
       = f.input :note, label: "Inform note"
     .col-md-12
-      = f.submit "Save", class: "btn btn-xs btn-success"
+      = f.submit "Save", class: "btn btn-xs btn-success", data: {disable_with: "Please wait..."}
 
 - InformCustomer.where(ticket_action_id: @ticket.user_ticket_action_ids).each do |i|
   .panel-group

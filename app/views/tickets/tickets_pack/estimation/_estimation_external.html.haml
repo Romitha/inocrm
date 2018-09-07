@@ -197,4 +197,4 @@
             .request_part_check
               = label_tag "Request to deliver unit"
               = check_box_tag :request_deliver_unit, true, (estimation.advance_payment_amount.to_f == 0 or params[:from_where1] != "estimations_quotations")
-        = f.submit "Save", class: "btn btn-success btn-sm"
+        = f.submit "Save", class: "btn btn-success btn-sm", data: {disable_with: "Please wait..."}

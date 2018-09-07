@@ -23,7 +23,7 @@
           %span.glyphicon.glyphicon-plus-sign Add a Rate
   .row{style: "margin-top:20px;margin-bottom:20px;"}
     .col-md-6
-      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_payment_term", name: "#{params[:edit_more] ? 'update' : 'create'}"
+      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_payment_term", name: "#{params[:edit_more] ? 'update' : 'create'}", data: {disable_with: "Please wait..."}
 
 = collapse_wrapper collapse_id: "ticket_tax_list", labelledby: "tax_labelledby" do
   - @tax_all.each_with_index do |tax, index|

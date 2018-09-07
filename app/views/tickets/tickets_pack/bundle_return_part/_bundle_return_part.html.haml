@@ -76,7 +76,7 @@
           = CompanyConfig.first.sup_last_bundle_no + 1.to_i
           %br
           = f.input :note
-          = f.submit "Save", class: "btn btn-sm btn-success"
+          = f.submit "Save", class: "btn btn-sm btn-success", data: {disable_with: "Please wait..."}
     .col-md-12.col-xs-12{style: "margin-top: 20px;"}
       #bundle_return_part_from_undeliver_bundle
 

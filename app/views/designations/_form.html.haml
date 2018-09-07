@@ -10,4 +10,4 @@
         = f.input :name, placeholder: "name of designation",input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Designation name"}
         = f.input :description, placeholder: "description of designation",input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Designation description"}
         = f.input :organization_id, as: :hidden
-        = f.submit "Add new designation", class: "btn btn-success pull-right", id: "submit_new_designation"
+        = f.submit "Add new designation", class: "btn btn-success pull-right", id: "submit_new_designation", data: {disable_with: "Please wait..."}

@@ -4,7 +4,7 @@
       = f.input :description, input_html: {rows: 1, autocomplete: "off"}, label: "Spare Part Description"
   .row{style: "margin-top:20px; margin-bottom:20px;"}
     .col-md-6
-      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_spare_part_description"
+      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_spare_part_description", data: {disable_with: "Please wait..."}
 
 = collapse_wrapper collapse_id: "ticket_spare_part_description_list", labelledby: "tic_spare_part_description_labelledby" do
   - @spare_part_description_all.each_with_index do |sp_description, index|

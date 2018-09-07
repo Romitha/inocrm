@@ -6,4 +6,4 @@
   .toggle_deparment_form
     = simple_form_for organization, url: demote_as_department_organization_path(organization) do |f|
       = f.input :department_org_id, collection: Organization.major_organization(organization.category).reject{|org| org.id==organization.id }
-      = f.submit "Demote", class: "btn btn-success"
+      = f.submit "Demote", class: "btn btn-success", data: {disable_with: "Please wait..."}

@@ -9,7 +9,7 @@
         = f.input :default_amount, as: :float, input_html: {required: true}
     .row{style: "margin-top:20px;margin-bottom:20px;"}
       .col-md-6
-        = f.submit "Save", class: "btn btn-success btn-sm", id: "submit_new_payment_item"
+        = f.submit "Save", class: "btn btn-success btn-sm", id: "submit_new_payment_item", data: {disable_with: "Please wait..."}
 
 = collapse_wrapper collapse_id: "ticket_payment_item_list", labelledby: "tic_payment_item_labelledby" do
   - @payment_item_all.each_with_index do |payment_item, index|

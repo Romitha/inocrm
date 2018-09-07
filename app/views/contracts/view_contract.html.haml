@@ -280,7 +280,7 @@
           .col-md-12
             = f.input :remarks
             = f.input :created_at, as: :hidden, input_html: {value: DateTime.now.strftime("%d-%m-%Y %H:%M")}
-            = f.submit "Save", class: "btn btn-sm btn-success", remote: true
+            = f.submit "Save", class: "btn btn-sm btn-success", remote: true, data: {disable_with: "Please wait..."}
 - if @contract_payment.present?
   %hr
   .row

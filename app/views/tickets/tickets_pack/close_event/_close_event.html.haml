@@ -95,4 +95,4 @@
             = f.input :note, input_html: {value: nil}
             = simple_format f.object.note
           .col-md-12
-            = f.submit "Save", class: "btn btn-success"
+            = f.submit "Save", class: "btn btn-success", data: {disable_with: "Please wait..."}
