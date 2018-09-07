@@ -140,7 +140,7 @@
         = f.input :remarks
       - if @saveable
         .col-md-12
-          = f.submit "Save", class: "btn btn-sm btn-success"
+          = f.submit "Save", class: "btn btn-sm btn-success", data: {disable_with: "Please wait..."}
 
 - else
   = render "admins/searches/gin/search_gin"

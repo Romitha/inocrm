@@ -144,9 +144,9 @@
                   .col-md-2
                     = t.association :supplier, collection: Organization.suppliers, input_html: {class: "est_internal_supplier"}
                 .col-md-3
-                  = t.input :cost_price, label: "Cost Price (#{ticket.ticket_currency.code})", as: :string, input_html: {data: { initValue: t.object.cost_price.to_f }, min: 0, class: "value_class only_float", id: "cost_price_id",oninput: "Inventories.calculate_cost_price(this);Inventories.unit_calculation(this);"}
+                  = t.input :cost_price, label: "Total Cost Price (#{ticket.ticket_currency.code})", as: :string, input_html: {data: { initValue: t.object.cost_price.to_f }, min: 0, class: "value_class only_float", id: "cost_price_id",oninput: "Inventories.calculate_cost_price(this);Inventories.unit_calculation(this);"}
                 .col-md-3
-                  = t.input :estimated_price, label: "Est. Price (#{ticket.ticket_currency.code})", as: :string, input_html: {min: 0, class: "estimation_value only_float", id: "est_price_id",oninput: "Inventories.calculate_cost_price(this); Inventories.unit_calculation(this);", data: { initValue: t.object.estimated_price.to_f }}, label: "Est. price"
+                  = t.input :estimated_price, label: "TotalEst. Price (#{ticket.ticket_currency.code})", as: :string, input_html: {min: 0, class: "estimation_value only_float", id: "est_price_id",oninput: "Inventories.calculate_cost_price(this); Inventories.unit_calculation(this);", data: { initValue: t.object.estimated_price.to_f }}, label: "Est. price"
                 .col-md-2
                   = t.input :warranty_period, input_html: {min: 0, class: "only_float"}, label: "Warranty(Months)"
                 .col-md-2

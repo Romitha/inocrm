@@ -9,7 +9,7 @@
 
   .row{style: "margin-top:20px; margin-bottom:20px;"}
     .col-md-6
-      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_country"
+      = f.submit "Save", class: "btn btn-success pull-right", id: "submit_new_country", data: {disable_with: "Please wait..."}
 
 = collapse_wrapper collapse_id: "org_country_list", labelledby: "org_country_labelledby" do
   - @country_all.each_with_index do |ad_country, index|

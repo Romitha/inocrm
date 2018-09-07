@@ -9,7 +9,7 @@
         = f.input :description
     .row
       .col-md-12
-        = f.submit "Save", class: "btn btn-success btn-sm", id: "submit_new_sla"
+        = f.submit "Save", class: "btn btn-success btn-sm", id: "submit_new_sla", data: {disable_with: "Please wait..."}
 
 = collapse_wrapper collapse_id: "org_sla_list", labelledby: "org_sla_labelledby" do
   - @sla_all.each_with_index do |sla, index|
