@@ -16,5 +16,5 @@
     = f.label :password_confirmation
     %br/
     = f.password_field :password_confirmation, autocomplete: "off"
-  %div= f.submit "Sign up"
+  %div= f.submit "Sign up", data: {disable_with: "Please wait..."}
 = render "users/shared/links"

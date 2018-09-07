@@ -37,4 +37,4 @@
         = f.input :remarks, input_html: {value: nil}
         = simple_format ticket.remarks
       .col-md-12
-        = f.submit "Save", class: "btn btn-success", id: "deliver_unit_submit"
+        = f.submit "Save", class: "btn btn-success", id: "deliver_unit_submit", data: {disable_with: "Please wait..."}

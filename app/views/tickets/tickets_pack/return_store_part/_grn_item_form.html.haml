@@ -55,4 +55,4 @@
       %textarea{class: "text optional form-control", name: "note"}
       = simple_format ticket_spare_part.note
   .row
-    .col-md-1= f.submit "Save", class: "btn btn-success btn-sm"
+    .col-md-1= f.submit "Save", class: "btn btn-success btn-sm", data: {disable_with: "Please wait..."}

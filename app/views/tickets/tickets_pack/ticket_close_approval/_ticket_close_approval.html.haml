@@ -152,5 +152,5 @@
           = f.label "Job Belongs to:"
           = f.select :owner_engineer_id, SbuEngineer.where(active: true).uniq{|e| e.engineer.id}.map{|e| [(e.engineer.first_name ? "#{e.engineer.mst_title.try(:title)} #{e.engineer.first_name}" : e.engineer.email), e.engineer.id]}
         .col-md-6.col-xs-6
-          = f.submit "Save", class: "btn btn-success"
+          = f.submit "Save", class: "btn btn-success", data: {disable_with: "Please wait..."}
           %button.btn.btn-default{:type => "button"} Cancel
