@@ -11,4 +11,4 @@
     = f.association :ticket_repair_type, as: :radio_buttons, label: "Repair Type", wrapper: :append
     = f.input :remarks, input_html: {value: nil} 
     = simple_format ticket.remarks
-    = f.submit "Save", class: "btn btn-success btn-sm"
+    = f.submit "Save", class: "btn btn-success btn-sm", data: {disable_with: "Please wait..."}

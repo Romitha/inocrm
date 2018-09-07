@@ -43,4 +43,4 @@
       .col-md-4
         %strong Hold time duration:
         #{time_ago_in_words(ticket.user_ticket_actions.where(action_id: task_id).last.act_hold.created_at)}
-    = f.submit "Save", class: "btn btn-success"
+    = f.submit "Save", class: "btn btn-success", data: {disable_with: "Please wait..."}

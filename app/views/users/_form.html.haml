@@ -23,4 +23,4 @@
         = f.input :password_confirmation, placeholder: "Confirm new password", input_html: {class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Confirm new password"}, required: true
         = f.association :organization, as: :hidden
       = f.input :is_customer, as: :hidden, input_html: {value: session[:is_customer]}
-      = f.submit "Save", class: "btn btn-xs btn-success"
+      = f.submit "Save", class: "btn btn-xs btn-success", data: {disable_with: "Please wait..."}

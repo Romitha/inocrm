@@ -21,5 +21,5 @@
                   = f.check_box :remember_me
                   Remember me
             .button.small_scale_padding-bottom2
-              = f.submit "Log in", class: "btn btn-primary btn-block btn-lg"
+              = f.submit "Log in", class: "btn btn-primary btn-block btn-lg", data: {disable_with: "Please wait..."}
             / = render "users/share

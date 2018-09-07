@@ -47,4 +47,4 @@
 
         = label_tag "Request to close the Ticket"
         = f.check_box :ticket_close_approval_requested, checked: ( ticket.ticket_fsrs.empty? and ticket.ticket_spare_parts.empty? and ticket.ticket_on_loan_spare_parts.empty?), disabled: ( ticket.ticket_fsrs.empty? and ticket.ticket_spare_parts.empty? and ticket.ticket_on_loan_spare_parts.empty?)
-        = f.submit "Save", class: "btn btn-success"
+        = f.submit "Save", class: "btn btn-success", data: {disable_with: "Please wait..."}

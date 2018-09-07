@@ -11,4 +11,4 @@
     = f.input :cus_chargeable, label: "Customer chargeable", as: :radio_buttons, wrapper_html: {class: "col-md-4"}, wrapper: :append, required: true
     = f.input :remarks, input_html: {value: nil}, wrapper_html: {class: "col-md-12"}
     = simple_format ticket.remarks
-    = f.submit "Save", class: "btn btn-success btn-sm"
+    = f.submit "Save", class: "btn btn-success btn-sm", data: {disable_with: "Please wait..."}

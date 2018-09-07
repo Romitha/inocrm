@@ -36,5 +36,5 @@
     = label_tag "Request to close the Job"
     = check_box_tag :job_close_approval_requested, true, close_approval_required, disabled: !close_approval_required
 
-    = f.submit "Save", class: "btn btn-success", id: "job_finish_submit"
+    = f.submit "Save", class: "btn btn-success", id: "job_finish_submit", data: {disable_with: "Please wait..."}
 
