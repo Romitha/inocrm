@@ -128,13 +128,13 @@ Rails.application.routes.draw do
       post "option_for_vat_number"
       patch "demote_as_department"
       delete "remove_department_org"
-      put "inline_customer_contact_detail"
       post "dealer_types"
     end
     concerns :attachable
 
     collection do
       patch "temp_save_user_profile_image"
+      put "inline_customer_contact_detail"
     end
   end
 

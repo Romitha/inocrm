@@ -40,11 +40,20 @@
             %table.table
               %tbody{class: "text-left"}
                 %tr
-                  %td VAT No :
-                  %td #{ticket.customer.vat_no}
-                %tr
-                  %td SVAT No:
-                  %td #{ticket.customer.svat_no}
+            %td VAT No :
+
+            -if ticket.customer.organization.present?
+              = link_to ticket.customer.vat_no, "#", class: "inline_edit", data: {type: "text", resource: "customer", name: "vat_no", url: inline_customer_contact_detail_organization_path(customer_id: ticket.customer.id), "original-title" => "Update VAT"}
+            -else
+              %td #{ticket.customer.vat_no}
+
+          %tr
+            %td SVAT No:
+
+            -if ticket.customer.organization.present?
+              = link_to ticket.customer.svat_no, "#", class: "inline_edit", data: {type: "text", resource: "customer", name: "svat_no", url: inline_customer_contact_detail_organization_path(customer_id: ticket.customer.id), "original-title" => "Update SVAT"}
+            -else
+              %td #{ticket.customer.svat_no}
       .col-md-9
         %table.table.table-responsive.table-condensed.table-bordered
           %thead
