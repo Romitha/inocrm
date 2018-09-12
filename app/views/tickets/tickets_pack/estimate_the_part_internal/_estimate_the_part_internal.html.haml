@@ -25,7 +25,9 @@
             #{t.object.ticket_spare_part.try(:spare_part_description)}
           .col-md-3
             %strong Part status:
-            #{t.object.ticket_spare_part.try(:spare_part_description)}
+            %span= t.object.ticket_spare_part.try(:spare_part_status_action).try(:name)
+            - if t.object.ticket_spare_part.part_terminated
+              %span.strong.red Terminated
           .col-md-3
             %strong Chargeable:
             = boolean_in_word t.object.ticket_spare_part.cus_chargeable_part, "Yes", "No"
