@@ -26,7 +26,7 @@
 - num = 0
 %hr
 - pending_parts.each_with_index do |pending_part, index|
-  - if pending_part.ticket_spare_part.request_approval_required == false || pending_part.ticket_spare_part.request_approved
+  - if pending_part.ticket_spare_part.request_approval_required == false || pending_part.ticket_spare_part.request_approved && pending_part.ticket_spare_part.part_terminated == false
     .row
       .col-md-1
         - if params[:page]
