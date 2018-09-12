@@ -289,13 +289,13 @@
             %td
               %span VAT No :
 
-              %span= link_to_if can?(:inline_customer_contact_detail, Organization), ticket.customer.vat_no, "#", class: "inline_edit", data: {type: "text", resource: "customer", name: "vat_no", url: inline_customer_contact_detail_organizations_path(customer_id: ticket.customer.id), "original-title" => "Update VAT"}
+              %span= link_to_if can?( :inline_customer_contact_detail, Customer ), ticket.customer.vat_no, "#", class: "inline_edit", data: {type: "text", resource: "customer", name: "vat_no", url: inline_customer_contact_detail_organizations_path(customer_id: ticket.customer.id), "original-title" => "Update VAT"}
 
           %tr
             %td
               %span SVAT No:
 
-              %span= link_to_if can?(:inline_customer_contact_detail, Organization), ticket.customer.svat_no, "#", class: "inline_edit", data: {type: "text", resource: "customer", name: "svat_no", url: inline_customer_contact_detail_organizations_path(customer_id: ticket.customer.id), "original-title" => "Update SVAT"}
+              %span= link_to_if can?( :inline_customer_contact_detail, Customer ), ticket.customer.svat_no, "#", class: "inline_edit", data: {type: "text", resource: "customer", name: "svat_no", url: inline_customer_contact_detail_organizations_path(customer_id: ticket.customer.id), "original-title" => "Update SVAT"}
 
     .col-md-12
       = hidden_field_tag :estimate_low_margin, id: "estimate_low_margin"
