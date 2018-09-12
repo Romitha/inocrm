@@ -15,7 +15,7 @@
     %strong Customer Name
   .col-md-2
     %strong Model No
-  .col-md-2
+  .col-md-1
     %strong No. of days Since Job Completed Date
 - num = 0
 %hr
@@ -27,14 +27,14 @@
         - else
           - num= num+1
           = (num)
-      .col-md-3= ticket.try(:job_finished_at).try(:to_date).try :strftime, INOCRM_CONFIG["short_date_format"]
-      .col-md-3=  [ticket.job_finished_at, ticket.qc_passed_at, ticket.final_invoice.try(:created_at)].compact.max.to_date.try :strftime, INOCRM_CONFIG["short_date_format"]
+      .col-md-2= ticket.try(:job_finished_at).try(:to_date).try :strftime, INOCRM_CONFIG["short_date_format"]
+      .col-md-2=  [ticket.job_finished_at, ticket.qc_passed_at, ticket.final_invoice.try(:created_at)].compact.max.to_date.try :strftime, INOCRM_CONFIG["short_date_format"]
       .col-md-1= ticket.support_ticket_no
       .col-md-2= ticket.customer_name
-      .col-md-1= ticket.products.first.model_no
-      .col-md-1{tooltip: [ticket.job_finished_at, ticket.qc_passed_at, ticket.final_invoice.try(:created_at)].compact.max.strftime(INOCRM_CONFIG["short_date_format"])}
-    - if [ticket.job_finished_at, ticket.qc_passed_at, ticket.final_invoice.try(:created_at)].compact.max.present?
-      = Date.today - [ticket.job_finished_at, ticket.qc_passed_at, ticket.final_invoice.try(:created_at)].compact.max.to_date
-    - else
-      NAN
+      .col-md-2= ticket.products.first.model_no
+      .col-md-2{tooltip: [ticket.job_finished_at, ticket.qc_passed_at, ticket.final_invoice.try(:created_at)].compact.max.strftime(INOCRM_CONFIG["short_date_format"])}
+        - if [ticket.job_finished_at, ticket.qc_passed_at, ticket.final_invoice.try(:created_at)].compact.max.present?
+          = Date.today - [ticket.job_finished_at, ticket.qc_passed_at, ticket.final_invoice.try(:created_at)].compact.max.to_date
+        - else
+          NAN
     %hr
