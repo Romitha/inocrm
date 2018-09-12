@@ -286,20 +286,16 @@
       %table.table
         %tbody{class: "text-left"}
           %tr
-            %td VAT No :
+            %td
+              %span VAT No :
 
-            -if true #ticket.customer.organization.present?
-              = link_to ticket.customer.vat_no, "#", class: "inline_edit", data: {type: "text", resource: "customer", name: "vat_no", url: inline_customer_contact_detail_organizations_path(customer_id: ticket.customer.id), "original-title" => "Update VAT"}
-            -else
-              %td #{ticket.customer.vat_no}
+              %span= link_to_if can?(:inline_customer_contact_detail, Organization), ticket.customer.vat_no, "#", class: "inline_edit", data: {type: "text", resource: "customer", name: "vat_no", url: inline_customer_contact_detail_organizations_path(customer_id: ticket.customer.id), "original-title" => "Update VAT"}
 
           %tr
-            %td SVAT No:
+            %td
+              %span SVAT No:
 
-            -if ticket.customer.organization.present?
-              = link_to ticket.customer.svat_no, "#", class: "inline_edit", data: {type: "text", resource: "customer", name: "svat_no", url: inline_customer_contact_detail_organization_path(ticket.customer.organization, customer_id: ticket.customer.id), "original-title" => "Update SVAT"}
-            -else
-              %td #{ticket.customer.svat_no}
+              %span= link_to_if can?(:inline_customer_contact_detail, Organization), ticket.customer.svat_no, "#", class: "inline_edit", data: {type: "text", resource: "customer", name: "svat_no", url: inline_customer_contact_detail_organizations_path(customer_id: ticket.customer.id), "original-title" => "Update SVAT"}
 
     .col-md-12
       = hidden_field_tag :estimate_low_margin, id: "estimate_low_margin"
