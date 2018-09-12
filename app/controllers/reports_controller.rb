@@ -251,7 +251,7 @@ class ReportsController < ApplicationController
       address3: address3,
       address4: address4,
       vat_no: vat_no,
-      svat_no: svat_no
+      svat_no: svat_no,
       ticket_ref: ticket_ref,
       created_date: quotation_date,
       created_time: quotation_time,
