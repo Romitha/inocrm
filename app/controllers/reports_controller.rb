@@ -32,6 +32,10 @@ class ReportsController < ApplicationController
     address3 = ticket.customer.address3
     address4 = ticket.customer.address4
 
+    vat_no  = ticket.customer.vat_no
+
+    svat_no = ticket.customer.svat_no
+
     ticket_ref = ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG['ticket_no_format'])
 
     ticket_date = ticket.created_at.strftime(INOCRM_CONFIG['long_date_format'])
@@ -246,6 +250,8 @@ class ReportsController < ApplicationController
       address2: address2,
       address3: address3,
       address4: address4,
+      vat_no: vat_no,
+      svat_no: svat_no
       ticket_ref: ticket_ref,
       created_date: quotation_date,
       created_time: quotation_time,
