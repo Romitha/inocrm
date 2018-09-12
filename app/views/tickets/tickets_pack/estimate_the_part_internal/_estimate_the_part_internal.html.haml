@@ -286,8 +286,8 @@
           %tr
             %td VAT No :
 
-            -if ticket.customer.organization.present?
-              = link_to ticket.customer.vat_no, "#", class: "inline_edit", data: {type: "text", resource: "customer", name: "vat_no", url: inline_customer_contact_detail_organization_path(ticket.customer.organization, customer_id: ticket.customer.id), "original-title" => "Update VAT"}
+            -if true #ticket.customer.organization.present?
+              = link_to ticket.customer.vat_no, "#", class: "inline_edit", data: {type: "text", resource: "customer", name: "vat_no", url: inline_customer_contact_detail_organizations_path(customer_id: ticket.customer.id), "original-title" => "Update VAT"}
             -else
               %td #{ticket.customer.vat_no}
 

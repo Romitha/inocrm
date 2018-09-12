@@ -122,7 +122,7 @@ class OrganizationsController < ApplicationController
   end
 
   def inline_customer_contact_detail
-    authorize! :inline_customer_contact_detail, Customer
+    # authorize! :inline_customer_contact_detail, Customer
     @customer = Customer.find params[:customer_id]
     if @customer.update customer_params
       render json: @customer
@@ -297,6 +297,6 @@ class OrganizationsController < ApplicationController
       params.require(:organization_bank_detail).permit(:id, :organization_id, :description, :bank_name, :account_no, :bank_address, :swift_code, :_destroy)
     end
     def customer_params
-      params.require(:customer).permit(:id, :_destroy, :organization_id, :title_id, :name, :address1, :address2, :address3, :address4, :district_id, contact_type_values_attributes: [:id, :contact_type_id, :value, :_destroy])
+      params.require(:customer).permit(:id, :_destroy, :organization_id, :title_id, :name, :address1, :address2, :address3, :address4, :district_id, :vat_no, :svat_no, contact_type_values_attributes: [:id, :contact_type_id, :value, :_destroy])
     end
 end
