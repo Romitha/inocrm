@@ -122,7 +122,7 @@ class OrganizationsController < ApplicationController
   end
 
   def inline_customer_contact_detail
-    # authorize! :inline_customer_contact_detail, Customer
+    authorize! :inline_customer_contact_detail, Customer
     @customer = Customer.find params[:customer_id]
     if @customer.update customer_params
       render json: @customer

@@ -6,13 +6,13 @@
   %dt
     Address:
   %dd
-    = link_to_if can?(:inline_customer_contact_detail, Organization), customer.address1, "#", class: "inline_edit", data: {type: "text", resource: "customer", name: "address1", url: inline_customer_contact_detail_organization_path(customer.organization, customer_id: customer.id), "original-title" => "Update line1"}
+    = link_to_if can?(:inline_customer_contact_detail, inline_customer_contact_detail_organizations_path), customer.address1, "#", class: "inline_edit", data: {type: "text", resource: "customer", name: "address1", url: inline_customer_contact_detail_organizations_path(customer_id: customer.id), "original-title" => "Update line1"}
     %br/
-    = link_to_if can?(:inline_customer_contact_detail, Organization), customer.address2, "#", class: "inline_edit", data: {type: "text", resource: "customer", name: "address2", url: inline_customer_contact_detail_organization_path(customer.organization, customer_id: customer.id), "original-title" => "Update line1"}
+    = link_to_if can?(:inline_customer_contact_detail, inline_customer_contact_detail_organizations_path), customer.address2, "#", class: "inline_edit", data: {type: "text", resource: "customer", name: "address2", url: inline_customer_contact_detail_organizations_path(customer_id: customer.id), "original-title" => "Update line1"}
     %br/
-    = link_to_if can?(:inline_customer_contact_detail, Organization), customer.address3, "#", class: "inline_edit", data: {type: "text", resource: "customer", name: "address3", url: inline_customer_contact_detail_organization_path(customer.organization, customer_id: customer.id), "original-title" => "Update line1"}
+    = link_to_if can?(:inline_customer_contact_detail, inline_customer_contact_detail_organizations_path), customer.address3, "#", class: "inline_edit", data: {type: "text", resource: "customer", name: "address3", url: inline_customer_contact_detail_organizations_path(customer_id: customer.id), "original-title" => "Update line1"}
     %br/
-    = link_to_if can?(:inline_customer_contact_detail, Organization), customer.address4, "#", class: "inline_edit", data: {type: "text", resource: "customer", name: "address4", url: inline_customer_contact_detail_organization_path(customer.organization, customer_id: customer.id), "original-title" => "Update line1"}
+    = link_to_if can?(:inline_customer_contact_detail, inline_customer_contact_detail_organizations_path), customer.address4, "#", class: "inline_edit", data: {type: "text", resource: "customer", name: "address4", url: inline_customer_contact_detail_organizations_path(customer_id: customer.id), "original-title" => "Update line1"}
     %br/
   %dt
     Destrict:
