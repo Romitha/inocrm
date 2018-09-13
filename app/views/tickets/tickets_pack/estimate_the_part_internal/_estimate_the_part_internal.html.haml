@@ -27,7 +27,7 @@
             %strong Part status:
             %span= t.object.ticket_spare_part.try(:spare_part_status_action).try(:name)
             - if t.object.ticket_spare_part.part_terminated
-              %span.strong.red Terminated
+              %span.strong.red (Terminated)
           .col-md-3
             %strong Chargeable:
             = boolean_in_word t.object.ticket_spare_part.cus_chargeable_part, "Yes", "No"
@@ -148,7 +148,7 @@
                 .col-md-3
                   = t.input :cost_price, label: "Total Cost Price (#{ticket.ticket_currency.code})", as: :string, input_html: {data: { initValue: t.object.cost_price.to_f }, min: 0, class: "value_class only_float", id: "cost_price_id",oninput: "Inventories.calculate_cost_price(this);Inventories.unit_calculation(this);"}
                 .col-md-3
-                  = t.input :estimated_price, label: "Total Est. Price (#{ticket.ticket_currency.code})", as: :string, input_html: {min: 0, class: "estimation_value only_float", id: "est_price_id",oninput: "Inventories.calculate_cost_price(this); Inventories.unit_calculation(this);", data: { initValue: t.object.estimated_price.to_f }}, label: "Est. price"
+                  = t.input :estimated_price, label: "Total Est. Price (#{ticket.ticket_currency.code})", as: :string, input_html: {min: 0, class: "estimation_value only_float", id: "est_price_id",oninput: "Inventories.calculate_cost_price(this); Inventories.unit_calculation(this);", data: { initValue: t.object.estimated_price.to_f }}
                 .col-md-2
                   = t.input :warranty_period, input_html: {min: 0, class: "only_float"}, label: "Warranty(Months)"
                 .col-md-2
