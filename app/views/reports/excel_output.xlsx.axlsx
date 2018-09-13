@@ -1,7 +1,7 @@
 spare_part_count = 10
 
 headers = ["Company Name", "Customer Type (Corporate/Walking)", "Problem Category", "Customer Address", "District", 
-  "Customer Email", "Customer Contact No", "Product Brand", "Category", "Model Number", "Product Number", "Product Serial No", "SLA", "Job Number (Partner)", "CASE ID / HP Advisory", "Created at", "Log Date", "Logged by", "Job Finished At", "Customer Support Representative", "Engineer Assign Date", "Start Date", "Start Action", "Problem Description", "Support Group (SBU)", "Engineer Name"]
+  "Customer Email", "Customer Contact No", "Product Brand", "Category", "Model Number", "Product Number", "Product Serial No", "SLA", "Job Number (Partner)", "CASE ID / HP Advisory", "Created at", "Log Date", "Logged by", "Job Finished At", "Engineer Assign Date", "Start Date", "Start Action", "Problem Description", "Support Group (SBU)", "Engineer Name"]
 
 spare_part_headers = ["Part Number", "Part Description", "Event No", "Item Code", "Ordered from manufacture at", "Collected from Manufacture at", "Requested at", "Requested by"]
 total_spare_part_headers = []
@@ -42,7 +42,6 @@ wb.add_worksheet(name: "ERP report") do |sheet|
     ticket_content << ticket.logged_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
     ticket_content << ticket.logged_by_user
     ticket_content << (ticket.job_finished_at and ticket.job_finished_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}"))
-    ticket_content << ticket.ticket_payment_receiveds.map(&:received_by_user_full_name).join(", ")
     ticket_content << (ticket.owner_engineer.present? ? ticket.owner_engineer.created_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") : "")
     ticket_content << (ticket.job_started_at.present? ? ticket.job_started_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") : "")
     ticket_content << ticket.ticket_start_action.try(:action)
@@ -123,9 +122,9 @@ wb.add_worksheet(name: "ERP report") do |sheet|
     ticket_content << ticket.job_completed_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
 
     user_actions = {}
-    ticket.user_ticket_actions.select{|u| [55, 58, 67].include?(u.action_id) }.each do |u|
-      if u.action_id == 58
-        user_actions[u.action_id.to_i] = u.action_by_name
+    ticket.user_ticket_actions.select{|u| [55, 58, 60, 67].include?(u.action_id) }.each do |u|
+      if [58, 60].include?(u.action_id)
+        user_actions[58] = u.action_by_name
       else
         user_actions[u.action_id.to_i] = u.formatted_action_date
       end
