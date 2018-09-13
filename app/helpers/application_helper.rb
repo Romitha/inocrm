@@ -443,6 +443,8 @@ module ApplicationHelper
     address2 = ticket.customer.address2
     address3 = ticket.customer.address3
     address4 = ticket.customer.address4
+    vat_no = ticket.customer.vat_no
+    svat_no = ticket.customer.svat_no
     telephone = ticket.customer.contact_type_values.select{|c| c.contact_type.name == "Telephone"}.first.try(:value)
     mobile = ticket.customer.contact_type_values.select{|c| c.contact_type.mobile}.first.try(:value)
     fax = ticket.customer.contact_type_values.select{|c| c.contact_type.name == "Fax"}.first.try(:value)
@@ -690,6 +692,8 @@ module ApplicationHelper
       "ADDRESS2=#{address2}",
       "ADDRESS3=#{address3}",
       "ADDRESS4=#{address4}",
+      "VAT_NUMBER=#{vat_no}",
+      "SVAT_NUMBER=#{svat_no}",
       "TICKET_REF=#{ticket_ref}",
       "CREATED_DATE=#{invoice_date}",
       "CREATED_TIME=#{invoice_time}",
