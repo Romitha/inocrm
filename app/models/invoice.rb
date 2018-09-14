@@ -215,3 +215,6 @@ class ContractPaymentReceived < ActiveRecord::Base
   self.table_name = "spt_contract_payment_received"
   belongs_to :ticket_contract, foreign_key: :contract_id
 end
+class InvoiceType < ActiveRecord::Base
+  self.table_name = "mst_spt_invoice_type"
+end
