@@ -919,12 +919,12 @@ class ReportsController < ApplicationController
         organization = Organization.find(organization_id)
         anchestor_ids = organization.anchestors.map{|o| o[:member].id }
         search_ticket["customer.organization_id"] = "(#{anchestor_ids.join(' OR ')})" if anchestor_ids.any?
-        puts search_ticket["customer.organization_id"]
       end
+
+      search_ticket['status_id'] = "(#{params[:status_ids].map { |e| e if e.present? }.compact.join(' OR ')})" if params[:status_ids].present?
 
       refined_search_ticket = search_ticket.map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
 
-      refined_search_ticket << " AND status_id: (#{params[:status_ids].map { |e| e if e.present? }.compact.join(' OR ')})" if params[:status_ids].present?
       params[:range_from] ||= ( Date.today - 3.months ).strftime("%Y-%m-%d")
       params[:range_to] ||= Date.today.strftime("%Y-%m-%d")
     end

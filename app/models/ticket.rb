@@ -148,11 +148,11 @@ class Ticket < ActiveRecord::Base
       query do
         boolean do
           must { string params[:query] } if params[:query].present?
-          must { range :created_at, lte: params[:range_to].to_date } if params[:range_to].present?
-          must { range :created_at, gte: params[:range_from].to_date } if params[:range_from].present?
+          must { range :created_at, lte: params[:range_to].to_date.beginning_of_day } if params[:range_to].present?
+          must { range :created_at, gte: params[:range_from].to_date.end_of_day } if params[:range_from].present?
 
-          must { range :logged_at, lte: params[:l_range_to].to_date } if params[:l_range_to].present?
-          must { range :logged_at, gte: params[:l_range_from].to_date } if params[:l_range_from].present?
+          must { range :logged_at, lte: params[:l_range_to].to_date.beginning_of_day } if params[:l_range_to].present?
+          must { range :logged_at, gte: params[:l_range_from].to_date.end_of_day } if params[:l_range_from].present?
 
           if not params[:report].present?
             must { range :ticket_contract_contract_start_at, gte: params[:ticket_contract_contract_start_at].to_date.beginning_of_day } if params[:ticket_contract_contract_start_at].present?
@@ -322,7 +322,29 @@ class Ticket < ActiveRecord::Base
   end
 
   def spare_part_counts
-    {store: ticket_spare_parts.count{|s| s.request_from == "S"}, manufacture: ticket_spare_parts.count{|s| s.request_from == "M"}, non_stock: ticket_spare_parts.count{|s| s.request_from == "NS"}, onloan: ticket_on_loan_spare_parts.count }
+
+    request_from_count = ticket_spare_parts.group(:request_from).count
+
+    spare_part_counts_hash = { manufacture: 0, store: 0, non_stock: 0, onloan: 0 }
+
+    request_from_count.each do |k, v|
+
+      case k
+      when 'M'
+        spare_part_counts_hash[:manufacture] = v
+      when 'S'
+        spare_part_counts_hash[:store] = v
+      when 'NS'
+        spare_part_counts_hash[:non_stock] = v
+  
+      end
+
+    end
+
+    spare_part_counts_hash[:onloan] = ticket_on_loan_spare_parts.count
+
+    spare_part_counts_hash
+
   end
 
   def created_by_user_full_name
