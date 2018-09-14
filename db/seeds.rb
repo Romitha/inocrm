@@ -408,3 +408,9 @@ end
   EmailTemplate.create_with(subject: t[1], active: t[2], default_enable: t[3], body: t[4]).find_or_create_by(code: t[0])
 
 end
+mst_spt_invoice_type = [
+  ['INV', 'Invoice', 'INVOICE', 1],
+  [ 'PR', 'Proforma Invoice', 'PROFORMA INVOICE', 1],
+  ['TX', 'Tax Invoice', 'TAX INVOICE', 1],
+].each{ |t| InvoiceType.create_with(name: t[1], print_name: t[2], active: t[3]).find_or_create_by(code: t[0])}
+end
