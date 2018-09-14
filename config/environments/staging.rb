@@ -95,7 +95,7 @@ Rails.application.configure do
 
   config.action_mailer.smtp_settings = {
     :address              => ENV.fetch("INOCRM_EMAIL_ADDRESS") { 'mail.vsis.lk' },
-    :authentication       => :plain,
+    :authentication       => ENV.fetch("INOCRM_EMAIL_AUTHENTICATION") { 'login' },,
     :enable_starttls_auto => true,
     :port                 => ENV.fetch("INOCRM_EMAIL_PORT") { '587' },
     :domain               => ENV.fetch("INOCRM_EMAIL_DOMAIN") { 'vsis.lk' },
