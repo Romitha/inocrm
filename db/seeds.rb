@@ -226,10 +226,10 @@ mst_spt_action = [
   ["87", "Close the ticket", "", false],
   ["88", 'Finish the Job', '3', false],
   ["89", 'Approve Spare Part from Manufacture', '16', false],
-  ["90", 'Reject Spare Part from Manufacture', '16', false]
-  ["91", 'Collect the Product for In-house repair (On-Site Job)', '3', false]
-  ["92", 'Return the Product after In-house repair (On-Site Job)', '3', false]
-  ["93", 'Manufacture Part Order Approval Requested', '9', false]
+  ["90", 'Reject Spare Part from Manufacture', '16', false],
+  ["91", 'Collect the Product for In-house repair (On-Site Job)', '3', false],
+  ["92", 'Return the Product after In-house repair (On-Site Job)', '3', false],
+  ["93", 'Manufacture Part Order Approval Requested', '9', false],
 ].each{ |t| TaskAction.create_with(action_description: t[1], task_id: t[2], hide: t[3]).find_or_create_by(action_no: t[0]) }
 
 Product
@@ -408,9 +408,8 @@ end
   EmailTemplate.create_with(subject: t[1], active: t[2], default_enable: t[3], body: t[4]).find_or_create_by(code: t[0])
 
 end
-mst_spt_invoice_type = [
+[
   ['INV', 'Invoice', 'INVOICE', 1],
   [ 'PR', 'Proforma Invoice', 'PROFORMA INVOICE', 1],
   ['TX', 'Tax Invoice', 'TAX INVOICE', 1],
 ].each{ |t| InvoiceType.create_with(name: t[1], print_name: t[2], active: t[3]).find_or_create_by(code: t[0])}
-end
