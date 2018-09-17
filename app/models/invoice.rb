@@ -18,6 +18,7 @@ class TicketInvoice < ActiveRecord::Base
 
   belongs_to :payment_term
   belongs_to :ticket
+  belongs_to :invoice_type
   belongs_to :currency
   belongs_to :created_by_ch_eng, class_name: "User", foreign_key: :created_by
   belongs_to :organization,-> { where(refers: "CRM_OWNER") }, foreign_key: :print_organization_id
@@ -217,4 +218,5 @@ class ContractPaymentReceived < ActiveRecord::Base
 end
 class InvoiceType < ActiveRecord::Base
   self.table_name = "mst_spt_invoice_type"
+  has_many :invoice
 end
