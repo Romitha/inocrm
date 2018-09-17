@@ -43,6 +43,7 @@
         %th{colspan: 5} Total
       %tr
         %th No
+        %th Invoice Type
         %th Created by
         %th Created at
         %th Customer sent
@@ -59,6 +60,7 @@
     %tbody
       %tr
         %td= ticket.final_invoice.invoice_no.to_s.rjust(6, INOCRM_CONFIG["invoice_no_format"])
+        %td= ticket.final_invoice.invoice_type.try(:print_name)
         %td= ticket.final_invoice.created_by_ch_eng.try(:full_name)
 
         %td= ticket.final_invoice.created_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
