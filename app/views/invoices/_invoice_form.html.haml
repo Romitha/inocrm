@@ -13,11 +13,13 @@
       .col-md-3
         %strong Invoice no   #{ (invoice.invoice_no || CompanyConfig.first.sup_last_invoice_no.to_i+1).to_s.rjust(6, INOCRM_CONFIG["invoice_no_format"])}
         %br
+        = f.association :invoice_type,collection: InvoiceType.where(active: true), label: "Invoice Type : #{invoice.invoice_type.try(:print_name)}"
+        %br
         %strong Currency
         = ticket.ticket_currency.code
         %br/
         = f.input :deducted_amount, as: :string, input_html: {id: "deducted_amount" }
-        = f.association :payment_term,collection: PaymentTerm.where(active: true), label: "Payment term", required: true
+        = f.association :payment_term,collection: PaymentTerm.where(active: true), label: "Organization : #{invoice.organization.try(:name)}"
         = f.input :note, label: "Invoice Note"
         = f.input :remark, label: "Invoice Remark", input_html: {value: nil}
         = simple_format f.object.remark
