@@ -428,8 +428,8 @@ class TicketsController < ApplicationController
           @new_customer.address4 = address.city
           @new_customer.organization_id = organization.id
           @new_customer.name = organization.name
-          @new_customer.vat_no = organization.vat_no
-          @new_customer.svat_no = organization.svat_no
+          @new_customer.vat_no = organization.account.try(:vat_number)
+          @new_customer.svat_no = organization.account.try(:svat_no)
 
           if @new_customer.save!
             # @product.update(owner_customer_id: organization.id)
