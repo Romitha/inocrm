@@ -8,7 +8,7 @@
   .col-md-2
     %strong Job Finished Date
   .col-md-2
-    %strong Job Completed Date 
+    %strong Job Completed Date
   .col-md-1
     %strong Ticket No
   .col-md-2
@@ -34,7 +34,7 @@
       .col-md-2= ticket.products.first.model_no
       .col-md-2{tooltip: [ticket.job_finished_at, ticket.qc_passed_at, ticket.final_invoice.try(:created_at)].compact.max.strftime(INOCRM_CONFIG["short_date_format"])}
         - if [ticket.job_finished_at, ticket.qc_passed_at, ticket.final_invoice.try(:created_at)].compact.max.present?
-          = Date.today - [ticket.job_finished_at, ticket.qc_passed_at, ticket.final_invoice.try(:created_at)].compact.max.to_date
+          = Date.today - [ticket.job_finished_at, ticket.qc_passed_at, ticket.final_invoice.try(:created_at)].compact.max.to_date.to_i
         - else
           NAN
     %hr

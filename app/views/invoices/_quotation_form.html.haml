@@ -149,6 +149,22 @@
               = link_to "Print PDF", quotation_reports_path(quotation_id: quotation.id, format: :pdf), target: "_blank", class: "btn btn-sm btn-info"
 
       .row
+        .col-md-2
+          %table.table
+            %tbody{class: "text-left"}
+              %tr
+                %td
+                  %span VAT No :
+
+                  %span= link_to_if can?( :inline_customer_contact_detail, Customer ), ticket.customer.vat_no, "#", class: "inline_edit", data: {type: "text", resource: "customer", name: "vat_no", url: inline_customer_contact_detail_organizations_path(customer_id: ticket.customer.id), "original-title" => "Update VAT"}
+
+              %tr
+                %td
+                  %span SVAT No:
+
+                  %span= link_to_if can?( :inline_customer_contact_detail, Customer ), ticket.customer.svat_no, "#", class: "inline_edit", data: {type: "text", resource: "customer", name: "svat_no", url: inline_customer_contact_detail_organizations_path(customer_id: ticket.customer.id), "original-title" => "Update SVAT"}
+
+      .row
         .col-md-6.pull-right
           %table.table.table-striped
             %tbody{class: "text-right"}
