@@ -218,5 +218,5 @@ class ContractPaymentReceived < ActiveRecord::Base
 end
 class InvoiceType < ActiveRecord::Base
   self.table_name = "mst_spt_invoice_type"
-  has_many :invoice
+  has_many :ticket_invoices
 end
