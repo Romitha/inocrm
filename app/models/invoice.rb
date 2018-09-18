@@ -36,10 +36,18 @@ class TicketInvoice < ActiveRecord::Base
 
   has_many :ticket_invoice_total_taxes, foreign_key: :invoice_id
   accepts_nested_attributes_for :ticket_invoice_total_taxes, allow_destroy: true
-  has_many :taxes,through: :ticket_invoice_total_taxes
+  has_many :taxes, through: :ticket_invoice_total_taxes
 
   def currency_type
     currency.code
+  end
+
+  def formatted_invoice_no
+    invoice_no.to_s.rjust(6, INOCRM_CONFIG["invoice_no_format"])
+  end
+
+  def payment_term_name
+    payment_term.name
   end
 
   before_save do |ticket_invoice|
@@ -129,12 +137,72 @@ end
 class CustomerQuotation < ActiveRecord::Base
   self.table_name = "spt_ticket_customer_quotation"
 
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+
+  mapping do
+    indexes :ticket, type: "nested", include_in_parent: true
+    indexes :payment_term, type: "nested", include_in_parent: true
+    indexes :profit, type: "double",  index: :not_analyzed, include_in_all: false
+  end
+
+  def self.search(params)  
+    tire.search(page: (params[:page] || 1), per_page: (params[:per_page] || 10)) do
+      query do
+        boolean do
+          must { string params[:query] } if params[:query].present?
+          # must { range :published_at, lte: Time.zone.now }
+          # must { term :author_id, params[:author_id] } if params[:author_id].present?
+          if params[:profit_min_range].present? or params[:profit_max_range].present?
+            must { range :profit, gte: params[:profit_min_range].to_i } if params[:profit_min_range].present?
+            must { range :profit, lte: params[:profit_max_range].to_i } if params[:profit_max_range].present?
+          end
+        end
+      end
+      sort { by :created_at, "desc" } if params[:query].blank?
+    end
+      # query { string params[:query] } if params[:query].present?
+
+      # filter :range, published_at: { lte: Time.zone.now} 
+      # raise to_curl
+  end
+
+  def to_indexed_json
+    Warranty
+    TicketEstimation
+    Tax
+    to_json(
+      only: [:id, :created_by, :created_at, :validity_period, :note, :canceled ],
+      methods: [:formatted_quotation_no, :total_quoted_sub_sum, :total_cost_sub_sum, :total_tax, :profit, :created_by_full_name],
+      include: {
+        ticket: {
+          only: [:id, :customer_id],
+          methods: [:customer_name, :support_ticket_no],
+          include: {
+            ticket_currency: {
+              only: [:id, :code, :currency]
+            },
+            final_invoice: {
+              only: [ :id, :total_amount, :formatted_invoice_no, :total_advance_recieved, :net_total_amount ],
+              methods: [:payment_term_name]
+            }
+          }
+        },
+        payment_term: {
+          only: [:id, :name]
+        }
+      }
+    )
+
+  end
+
   belongs_to :ticket
   belongs_to :payment_term
   belongs_to :currency
   belongs_to :organization, foreign_key: :print_organization_id
   belongs_to :organization_bank_detail, foreign_key: :print_bank_detail_id
   belongs_to :print_currency, class_name: "Currency"
+  belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
 
   has_many :ticket_payment_receiveds
   accepts_nested_attributes_for :ticket_payment_receiveds, allow_destroy: true
@@ -170,6 +238,49 @@ class CustomerQuotation < ActiveRecord::Base
       data.data_value = (value.class==Fixnum ? value : value.strip)
       data.save
     end
+  end
+
+  def formatted_quotation_no
+    customer_quotation_no.to_s.rjust(11, INOCRM_CONFIG["quotation_no_format"])
+  end
+
+  def customer_id
+    customer_quotation_no.to_s.rjust(11, INOCRM_CONFIG["quotation_no_format"])
+  end
+
+  def created_by_full_name
+    created_by_user.try(:full_name)
+  end
+
+  def total_tax
+    ticket_estimations.to_a.sum do |estimation|
+      if estimation.approval_required
+        estimation.ticket_estimation_externals.to_a.sum{|e| e.ticket_estimation_external_taxes.sum(:approved_tax_amount) } + estimation.ticket_estimation_parts.to_a.sum{|e| e.ticket_estimation_part_taxes.sum(:approved_tax_amount) } + estimation.ticket_estimation_additionals.to_a.sum{|e| e.ticket_estimation_additional_taxes.sum(:approved_tax_amount) }
+      else
+        estimation.ticket_estimation_externals.to_a.sum{|e| e.ticket_estimation_external_taxes.sum(:estimated_tax_amount) } + estimation.ticket_estimation_parts.to_a.sum{|e| e.ticket_estimation_part_taxes.sum(:estimated_tax_amount) } + estimation.ticket_estimation_additionals.to_a.sum{|e| e.ticket_estimation_additional_taxes.sum(:estimated_tax_amount) }
+      end
+    end
+  end
+
+  def total_quoted_sub_sum
+    ticket_estimations.to_a.sum do |estimation|
+      if estimation.approval_required
+        estimation.ticket_estimation_externals.sum(:approved_estimated_price) + estimation.ticket_estimation_parts.sum(:approved_estimated_price) + estimation.ticket_estimation_additionals.sum(:approved_estimated_price)
+      else
+        estimation.ticket_estimation_externals.sum(:estimated_price) + estimation.ticket_estimation_parts.sum(:estimated_price) + estimation.ticket_estimation_additionals.sum(:estimated_price)
+      end
+      
+    end
+  end
+
+  def total_cost_sub_sum
+    ticket_estimations.to_a.sum do |estimation|
+      estimation.ticket_estimation_externals.sum(:cost_price) + estimation.ticket_estimation_parts.sum(:cost_price) + estimation.ticket_estimation_additionals.sum(:cost_price)
+    end
+  end
+
+  def profit
+    total_cost_sub_sum == 0 ? 0 : (total_quoted_sub_sum - total_cost_sub_sum)*100/total_cost_sub_sum
   end
 
 end

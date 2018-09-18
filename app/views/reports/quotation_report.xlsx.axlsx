@@ -1,0 +1,34 @@
+wb = xlsx_package.workbook
+
+headers = ["No", "Quotation", "Customer Name", "Quoted by", "Quotation Created date", "Ticket No", "Quotation Validity Period", "Cost Price", "Quoted Price", "Description", "Profit %", "Cancelled", "Payment Term", "Currency", "Invoiced amount", "Total received amount", "Amount to be paid"]
+
+
+wb.add_worksheet(name: "Quotation report") do |sheet|
+  sheet.add_row headers
+
+  @quotations.each_with_index do |quotation, index|
+		quotation_content = [
+			"#{index+1}",
+			quotation.formatted_quotation_no,
+			quotation.ticket.customer_name,
+			quotation.created_by_full_name,
+			quotation.created_at.to_date.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}"),
+			quotation.ticket.support_ticket_no,
+			quotation.validity_period,
+			quotation.total_cost_sub_sum,
+			quotation.total_quoted_sub_sum,
+			quotation.note,
+			standard_currency_format(quotation.profit),
+			boolean_in_word(quotation.canceled, "Yes", "False"),
+			quotation.ticket.final_invoice.try(:payment_term_name),
+			quotation.ticket.ticket_currency.code,
+			quotation.ticket.final_invoice.try(:total_amount),
+			quotation.ticket.final_invoice.try(:total_advance_recieved),
+			quotation.ticket.final_invoice.try(:net_total_amount),
+		]
+
+	  sheet.add_row quotation_content
+
+  end
+
+end

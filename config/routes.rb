@@ -79,6 +79,9 @@ Rails.application.routes.draw do
       get "parts_order_history"
       get "case_list"
 
+      get "quotation_report"
+      get "parts_report"
+
     end
   end
 
