@@ -810,7 +810,7 @@ class InvoicesController < ApplicationController
     end
 
     def invoice_params
-      params.require(:ticket_invoice).permit(:id, :deducted_amount, :customer_sent, :canceled, :note, :payment_term_id, :total_amount, :total_advance_recieved, :total_deduction, :net_total_amount, :print_organization_id, :print_bank_detail_id, :print_currency_id, :print_exchange_rate, :remark, :delivery_address , :so_number , :po_number , :delivery_number_date)
+      params.require(:ticket_invoice).permit(:id, :deducted_amount, :customer_sent, :canceled, :note, :payment_term_id, :total_amount, :total_advance_recieved, :total_deduction, :net_total_amount, :print_organization_id, :print_bank_detail_id, :print_currency_id, :print_exchange_rate, :remark, :delivery_address , :so_number , :po_number , :delivery_number_date, :invoice_type)
     end
 
     def inform_customer_params
