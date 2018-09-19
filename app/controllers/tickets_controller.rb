@@ -5037,7 +5037,7 @@ class TicketsController < ApplicationController
           #Call BPM
 
           @ticket.user_ticket_actions.create(action_id: TaskAction.find_by_action_no(55).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count, action_engineer_id: engineer_id) 
-
+          @ticket.update_index
           # bpm output variables
           bpm_variables = view_context.initialize_bpm_variables.merge(supp_engr_user: current_user.id, d7_close_approval_requested: (close_approval_requested ? "Y" : "N") )
 
