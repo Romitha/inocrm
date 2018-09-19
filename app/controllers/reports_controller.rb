@@ -34,7 +34,7 @@ class ReportsController < ApplicationController
 
     cus_contact_person = ticket.send("contact_person#{ticket.inform_cp}").full_name
 
-    cus_contact_info = ticket.send("contact_person#{ticket.inform_cp}").contact_person_contact_types.map(&:contact_info)}}
+    cus_contact_info = ticket.send("contact_person#{ticket.inform_cp}").contact_person_contact_types.map(&:contact_info)
 
     vat_no  = ticket.customer.vat_no
 
@@ -254,8 +254,8 @@ class ReportsController < ApplicationController
       address2: address2,
       address3: address3,
       address4: address4,
-      cus_contact_person: cus_contact_person
-      cus_contact_info: cus_contact_info
+      cus_contact_person: cus_contact_person,
+      cus_contact_info: cus_contact_info,
       vat_no: vat_no,
       svat_no: svat_no,
       ticket_ref: ticket_ref,
