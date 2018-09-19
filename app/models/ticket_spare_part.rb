@@ -62,6 +62,7 @@ class TicketSparePart < ActiveRecord::Base
   end
 
   def flush_cache
+    self.ticket.update_index
     Rails.cache.delete([self.ticket.id, :ticket_spare_parts])
   end
 
