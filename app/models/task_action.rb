@@ -69,11 +69,13 @@ class UserTicketAction < ActiveRecord::Base
     )
 
   end
+
   def feedback_reopen
     Invoice
     customer_feedback.try(:re_opened) ? true : false
     
   end
+
   def formatted_action_date
     action_at.strftime(INOCRM_CONFIG["short_date_format"])
   end
@@ -81,9 +83,15 @@ class UserTicketAction < ActiveRecord::Base
   def action_by_name
     user_id.try(:full_name)
   end
+
   def action_engineer_by_name
     action_engineer.try(:full_name)
   end
+
+  def terminate_reason
+    request_spare_part.try(:part_terminate_reason_name)
+  end
+
   belongs_to :action_engineer, class_name: "TicketEngineer", foreign_key: :action_engineer_id
 
   belongs_to :user_id, class_name: "User", foreign_key: :action_by
@@ -368,6 +376,10 @@ class RequestSparePart < ActiveRecord::Base
 
   belongs_to :reject_return_part_reason, -> { where(reject_returned_part: true) }, class_name: "Reason", foreign_key: :reject_return_part_reason_id
   belongs_to :part_terminate_reason, class_name: "Reason", foreign_key: :part_terminate_reason_id
+
+  def part_terminate_reason_name
+    part_terminate_reason.try(:reason)
+  end
 
 end
 
