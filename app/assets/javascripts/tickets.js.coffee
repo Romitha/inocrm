@@ -1258,7 +1258,7 @@ window.Tickets =
       modi_month = '0'+month
     else
       modi_month = month
-    someFormattedDate = (modi_day) + '-' + (modi_month) + '-' + (year+1)
+    someFormattedDate = (year+1) + '-' + (modi_month) + '-' + (modi_day)
     # finaldate = new Date(someFormattedDate)
     $("#ticket_contract_contract_end_at").val(someFormattedDate)
 
