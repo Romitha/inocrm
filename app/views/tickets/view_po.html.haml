@@ -63,6 +63,6 @@
                   - po.so_po_items.each do |so|
                     = so.ticket_spare_part.ticket.support_ticket_no#try(:ticket_spare_part).try(:ticket).try(:ticket_id)
                     / = so.support_ticket_no
-                %td= po.ticket.user_ticket_actions.select{|u| u.action_id == 31}.first.try(:formatted_action_date)  
+                / %td= po.ticket.user_ticket_actions.select{|u| u.action_id == 31}.first.try(:formatted_action_date)  
           = paginate @pos, remote: false, method: :get
           %hr
