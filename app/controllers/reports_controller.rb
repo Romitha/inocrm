@@ -1081,7 +1081,45 @@ class ReportsController < ApplicationController
     end
   end
 
-  def parts_report
+  def manufacture_part_order_report
+    render_xls = (params[:render_xls].present? and params[:render_xls].to_bool)
+    rendon_no = params[:random_no].to_i
+    if params[:search].present?
+      Invoice
+      quotation_params = params[:search_quotation]
+      refined_search_quotation = quotation_params.map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
 
+      params[:per_page] = 5
+      params[:query] = refined_search_quotation
+      @quotations = CustomerQuotation.search(params)
+      render_xls ||=  (@quotations.total_pages < 2 )
+      @random_no = rand(100)
+      Rails.cache.fetch( [ @random_no, :search_quotation_params ] ){ quotation_params }
+
+    elsif params[:export]
+      quotation_params = Rails.cache.fetch( [ params[:randon_no].to_i, :search_quotation_params ] )
+      refined_search_quotation = quotation_params.map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+      params[:per_page] = 5
+      params[:query] = refined_search_quotation
+      @quotations = CustomerQuotation.search(params)
+      render_xls = true
+
+    elsif params[:reset]
+      Rails.cache.delete( [ params[:randon_no].to_i, :search_quotation_params ] )
+      render_xls = false
+
+    else
+      render_xls = false
+
+    end
+
+    if render_xls
+      render xlsx: "manufacture_part_order_report"
+
+    else
+      respond_to do |format|
+        format.html
+      end
+    end
   end
 end

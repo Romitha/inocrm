@@ -2166,7 +2166,10 @@ class TicketsController < ApplicationController
 
       if params[:manufacture_part]
 
+        ticket_spare_part_ids = []
         TicketSparePartManufacture.where(id: params[:manufacture_part]).each do |ticket_spare_part_manufacture|
+
+          ticket_spare_part_id = ticket_spare_part_manufacture.ticket_spare_part.id
 
           if ticket_spare_part_manufacture.ticket_spare_part.part_terminated
             ticket_spare_part_manufacture.update(collected_manufacture: false, collect_pending_manufacture: false)
@@ -2177,13 +2180,12 @@ class TicketsController < ApplicationController
             ticket_spare_part_manufacture.ticket_spare_part.ticket_spare_part_status_actions.create(status_id: ticket_spare_part_manufacture.ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
 
             user_ticket_action = ticket_spare_part_manufacture.ticket_spare_part.ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(36).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: ticket_spare_part_manufacture.ticket_spare_part.ticket.re_open_count)
-            user_ticket_action.build_request_spare_part(ticket_spare_part_id: ticket_spare_part_manufacture.ticket_spare_part.id)
+            user_ticket_action.build_request_spare_part(ticket_spare_part_id: ticket_spare_part_id)
             user_ticket_action.save
 
           end
 
           ticket_id = ticket_spare_part_manufacture.ticket_spare_part.ticket.id
-          ticket_spare_part_id = ticket_spare_part_manufacture.ticket_spare_part.id
           process = TicketWorkflowProcess.where(spare_part_id: ticket_spare_part_id, ticket_id: ticket_id, process_name: "SPPT_MFR_PART_REQUEST").last
 
           if process
@@ -2195,7 +2197,12 @@ class TicketsController < ApplicationController
 
           update_headers("SPPT", ticket_spare_part_manufacture.ticket_spare_part.ticket)
 
+          ticket_spare_part_ids << ticket_spare_part_id
+
         end
+
+        TicketSparePart.import(Ticket.where(id: ticket_spare_part_ids) )
+
         flash[:notice] = "Successfully updated."
       end
 
@@ -2417,6 +2424,7 @@ class TicketsController < ApplicationController
 
         @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
+
         if @bpm_response[:status].upcase == "SUCCESS"
 
           WebsocketRails[:posts].trigger 'new', {task_name: "Spare part", task_id: spt_ticket_spare_part.id, task_verb: "received and issued.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
@@ -2435,6 +2443,8 @@ class TicketsController < ApplicationController
         end
 
       end
+
+      spt_ticket_spare_part.update_index
 
     else
       flash[:error]= "Unable to update. Bpm error"
@@ -2531,6 +2541,8 @@ class TicketsController < ApplicationController
 
       @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
+      spt_ticket_spare_part.update_index
+
       if @bpm_response[:status].upcase == "SUCCESS"
 
         if !spt_ticket_spare_part.returned_part_accepted
@@ -2547,6 +2559,7 @@ class TicketsController < ApplicationController
     else
       flash[:error]= "Unable to update. Bpm error"
     end
+
     redirect_to todos_url
 
   end
@@ -4379,7 +4392,6 @@ class TicketsController < ApplicationController
     Ticket
     @ticket = Ticket.find(params[:ticket_id])
     spt_ticket_spare_part = TicketSparePart.find params[:request_spare_part_id]
-    # @ticket = spt_ticket_spare_part.ticket
     spt_ticket_spare_part.attributes = ticket_spare_part_params(spt_ticket_spare_part)
 
     update_without_order = (params[:update_without_order].present? and params[:update_without_order].to_bool)
@@ -4430,7 +4442,7 @@ class TicketsController < ApplicationController
 
         bpm_variables = view_context.initialize_bpm_variables.merge(d30_parts_collection_pending: d30_parts_collection_pending)
 
-        @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
+        @ticket.update(status_id: TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
 
         @bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
 
@@ -4612,6 +4624,8 @@ class TicketsController < ApplicationController
         user_ticket_action.save
 
         @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
+
+        ticket_spare_part.update_index
 
         if (spt_ticket_spare_part.ticket_spare_part_manufacture)
           spt_ticket_spare_part.ticket_spare_part_manufacture.update po_required: false

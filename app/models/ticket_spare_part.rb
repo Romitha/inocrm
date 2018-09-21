@@ -1,6 +1,60 @@
 class TicketSparePart < ActiveRecord::Base
   self.table_name = "spt_ticket_spare_part"
 
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+
+  mapping do
+    indexes :ticket_spare_part_status_actions, type: "nested", include_in_parent: true
+    indexes :ticket, type: "nested", include_in_parent: true
+    indexes :ticket_spare_part_manufacture, type: "nested", include_in_parent: true
+    indexes :engineer, type: "nested", include_in_parent: true
+  end
+
+  def self.search(params)  
+    tire.search(page: (params[:page] || 1), per_page: (params[:per_page] || 1000)) do
+      query do
+        boolean do
+          must { string params[:query] } if params[:query].present?
+          # must { range :published_at, lte: Time.zone.now }
+          # must { term :author_id, params[:author_id] } if params[:author_id].present?
+        end
+      end
+      sort { by :action_at, "desc" } if params[:query].blank?
+    end
+  end
+
+  def to_indexed_json
+    Ticket
+    TicketSparePart
+    TaskAction
+    to_json(
+      only: [:id, :spare_part_no, :spare_part_description, :request_from, :part_returned, :part_terminated, :part_returned_by, :payment_expected_manufacture, :add_bundle_by, :add_bundle_at],
+      methods: [:engineer_name, :ticket_status, :ticket_use_status],
+      include: {
+        ticket_spare_part_manufacture: {
+          only: [:id, :spare_part_id, :event_no, :order_no, :collect_pending_manufacture, :order_pending, :updated_at],
+          methods: [:return_part_bundle_no]
+        },
+        ticket: {
+          only: [:id],
+          methods:[:support_ticket_no],
+          include: {
+            user_ticket_actions: {
+              only: [:id, :action_id],
+              methods: [:formatted_action_date, :action_by_name, :action_engineer_by_name, :terminate_reason],
+            }
+          },
+        },
+        engineer: {
+          only: [:id],
+          methods: [:sbu_name, :full_name ]
+        }
+      },
+    )
+
+  end
+
   belongs_to :ticket
   accepts_nested_attributes_for :ticket, allow_destroy: true
 
@@ -77,9 +131,15 @@ class TicketSparePart < ActiveRecord::Base
   def ticket_status
     ticket.ticket_status.name
   end
+
+  def ticket_use_status
+    spare_part_status_use.try(:name)
+  end
+
   def ticket_serial_no
     ticket.ticket_product_serial_no
   end
+
   def engineer_name
     engineer.full_name
   end
@@ -407,6 +467,10 @@ class TicketSparePartManufacture < ActiveRecord::Base
   belongs_to :manufacture_currency, class_name: "Currency", foreign_key: :manufacture_currency_id
 
   has_many :so_po_items, foreign_key: :ticket_spare_part_item_id
+
+  def return_part_bundle_no
+    return_parts_bundle.try(:bundle_no)
+  end
 
 end
 
