@@ -3,6 +3,7 @@ window.Reports =
   setup: ->
     @restrict_date_on_erp()
     @search_registered_customers()
+    @suggestion_data()
     return
 
   restrict_date_on_erp: ->
@@ -30,4 +31,20 @@ window.Reports =
       else
         $("#check_children_wrapper").addClass("hide")
         $("#check_children_wrapper input[type=checkbox]").prop(":checked", false)
+
+  suggestion_data: ->
+
+    states = new Bloodhound(
+      datumTokenizer: Bloodhound.tokenizers.whitespace
+      queryTokenizer: Bloodhound.tokenizers.whitespace
+      prefetch:
+        url: '/reports/customers.json'
+        cache: true
+    )
+    $('#search_quotation_customer_name').typeahead {
+      highlight: true
+      limit: 10
+    },
+      name: 'state'
+      source: states
 

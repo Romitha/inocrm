@@ -1081,6 +1081,11 @@ class ReportsController < ApplicationController
     end
   end
 
+  def customers
+    customers = Customer.select(:name).distinct.map(&:name)
+    render json: customers
+  end
+
   def manufacture_part_order_report
     render_xls = (params[:render_xls].present? and params[:render_xls].to_bool)
     rendon_no = params[:random_no].to_i

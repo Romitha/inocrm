@@ -50,6 +50,10 @@ class TicketInvoice < ActiveRecord::Base
     payment_term.name
   end
 
+  def invoice_type_name
+    invoice_type.try(:name)
+  end
+
   before_save do |ticket_invoice|
    if ticket_invoice.persisted? and ticket_invoice.remark_changed? and ticket_invoice.remark.present?
       ticket_invoice_remark = "#{ticket_invoice.remark} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(ticket_invoice.current_user_id).try(:full_name)}</span><br/>#{ticket_invoice.remark_was}"
@@ -173,7 +177,7 @@ class CustomerQuotation < ActiveRecord::Base
     Tax
     to_json(
       only: [:id, :created_by, :created_at, :validity_period, :note, :canceled ],
-      methods: [:formatted_quotation_no, :total_quoted_sub_sum, :total_cost_sub_sum, :total_tax, :profit, :created_by_full_name],
+      methods: [:formatted_quotation_no, :total_quoted_sub_sum, :total_cost_sub_sum, :total_tax, :profit, :created_by_full_name, :old_customer_approved_at],
       include: {
         ticket: {
           only: [:id, :customer_id],
@@ -184,7 +188,7 @@ class CustomerQuotation < ActiveRecord::Base
             },
             final_invoice: {
               only: [ :id, :total_amount, :formatted_invoice_no, :total_advance_recieved, :net_total_amount ],
-              methods: [:payment_term_name]
+              methods: [ :payment_term_name, :invoice_type_name ]
             }
           }
         },
@@ -280,7 +284,11 @@ class CustomerQuotation < ActiveRecord::Base
   end
 
   def profit
-    total_cost_sub_sum == 0 ? 0 : (total_quoted_sub_sum - total_cost_sub_sum)*100/total_cost_sub_sum
+    total_cost_sub_sum == 0 ? 0 : (total_cost_sub_sum - total_quoted_sub_sum)*100/total_cost_sub_sum
+  end
+
+  def old_customer_approved_at
+    ticket_estimations.order("cust_approved_at asc").map(&:cust_approved_at).compact.first.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
   end
 
 end

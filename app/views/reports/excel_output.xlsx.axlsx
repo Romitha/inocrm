@@ -1,14 +1,14 @@
 spare_part_count = 10
 
-headers = ["Company Name", "Customer Type (Corporate/Walking)", "Problem Category", "Warranty type", "Customer Address", "District", 
-  "Customer Email", "Customer Contact No", "Product Brand", "Category", "Model Number", "Product Number", "Product Serial No", "SLA", "Job Number (Partner)", "CASE ID / HP Advisory", "Created at", "Created by", "Log Date", "Logged by", "Job Finished At", "Engineer Assign Date", "Start Date", "Start Action", "Problem Description", "Support Group (SBU)", "Engineer Name"]
+headers = ["Company Name", "Customer Type (Corporate/Walking)", "Problem Category", "Warranty Type", "Customer Address", "District", 
+  "Customer Email", "Customer Contact No", "Product Brand", "Category", "Model Number", "Product Number", "Product Serial No", "SLA", "Job Number (Partner)", "CASE ID / HP Advisory", "Created At", "Created By", "Log Date", "Logged By", "Job Finished At", "Engineer Assign Date", "Start Date", "Start Action", "Problem Description", "Support Group (SBU)", "Engineer Name"]
 
-spare_part_headers = ["Part Number", "Part Description", "Event No", "Item Code", "Ordered from manufacture at", "Collected from Manufacture at", "Requested at", "Requested by"]
+spare_part_headers = ["Part Number", "Part Description", "Event No", "Item Code", "Ordered From Manufacture At", "Collected From Manufacture At", "Requested At", "Requested By"]
 total_spare_part_headers = []
 spare_part_count.times.each{|s| spare_part_headers.each{|d| total_spare_part_headers << "#{s+1} - #{d}" } }
 
 headers.concat(total_spare_part_headers)
-headers.concat(["Engrs Finished Date & Time", "Call Status", "Hold", "Hold Reason", "Re-Open Count", "Chargeable", "Total Amount", "Final Resolution", 'Last part received by engineer', "No Of Used Manufacture Parts", "No Of Used Store Parts", "No Of Used OnLoan Parts",  "Resolved Date", "Close Approval Request Date", "Last Customer Feedback Taken By", "QC Reject Date", "QC Approval Date"])
+headers.concat(["Engrs Finished Date & Time", "Call Status", "Hold", "Hold Reason", "Re-Open Count", "Chargeable", "Total Amount", "Final Resolution", 'Last Part Received By Engineer', "No Of Used Manufacture Parts", "No Of Used Store Parts", "No Of Used OnLoan Parts",  "Resolved Date", "Close Approval Request Date", "Last Customer Feedback Taken By", "QC Reject Date", "QC Approval Date"])
 
 wb = xlsx_package.workbook
 
