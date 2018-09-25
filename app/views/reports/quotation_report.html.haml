@@ -18,12 +18,18 @@
                 = label_tag "Quotated by"
                 = select_tag "search_quotation[created_by]", options_from_collection_for_select(User.all, :id, :full_name),include_blank: true, id: "search_contracts_brand_name",class: "form-control"
               .col-md-2.small_scale_margin-top2
+                = label_tag "Ticket No"
                 = text_field_tag "search_quotation[ticket.support_ticket_no]", nil, :placeholder => "Ticket No", class: "form-control"
+              .col-md-3.small_scale_margin-top2
+                = label_tag "Customer Name"
+                = text_field_tag "search_quotation[ticket.customer_name]", nil, :placeholder => "Customer Name", class: "form-control", id: "search_quotation_customer_name"
 
             .row
               .col-md-2.small_scale_margin-top2
+                = label_tag "Profit From"
                 = text_field_tag "profit_min_range", 0, :placeholder => "Profit Min Range", class: "form-control"
               .col-md-2.small_scale_margin-top2
+                = label_tag "Profit To"
                 = text_field_tag "profit_max_range", 100, :placeholder => "Profit Max Range", class: "form-control"
             .row.small_scale_margin-top1
               .col-md-1

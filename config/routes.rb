@@ -81,6 +81,7 @@ Rails.application.routes.draw do
 
       get "quotation_report"
       get "parts_report"
+      get "customers"
 
     end
   end

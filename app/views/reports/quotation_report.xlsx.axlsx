@@ -1,6 +1,6 @@
 wb = xlsx_package.workbook
 
-headers = ["No", "Quotation", "Customer Name", "Quoted by", "Quotation Created date", "Ticket No", "Quotation Validity Period", "Cost Price", "Quoted Price", "Description", "Profit %", "Cancelled", "Payment Term", "Currency", "Invoiced amount", "Total received amount", "Amount to be paid"]
+headers = ["No", "Quotation", "Customer Name", "Quoted By", "Quotation Created date", "Ticket No", "Quotation Validity Period", "Cost Price", "Quoted Price", "Description", "Customer Approved Date", "Profit %", "Cancelled", "Payment Term", "Currency", "Invoice No", "Invoice Type", "Invoiced amount", "Total received amount", "Amount to be paid"]
 
 
 wb.add_worksheet(name: "Quotation report") do |sheet|
@@ -18,10 +18,13 @@ wb.add_worksheet(name: "Quotation report") do |sheet|
 			quotation.total_cost_sub_sum,
 			quotation.total_quoted_sub_sum,
 			quotation.note,
+			quotation.old_customer_approved_at,
 			standard_currency_format(quotation.profit),
 			boolean_in_word(quotation.canceled, "Yes", "False"),
 			quotation.ticket.final_invoice.try(:payment_term_name),
 			quotation.ticket.ticket_currency.code,
+			quotation.ticket.final_invoice.try(:formatted_invoice_no),
+			quotation.ticket.final_invoice.try(:invoice_type_name),
 			quotation.ticket.final_invoice.try(:total_amount),
 			quotation.ticket.final_invoice.try(:total_advance_recieved),
 			quotation.ticket.final_invoice.try(:net_total_amount),

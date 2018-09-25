@@ -428,9 +428,7 @@ class Ticket < ActiveRecord::Base
   def ticket_type_name
     ticket_type.name
   end
-  # def ticket_type_code
-  #   ticket_type.code
-  # end
+
   def ticket_product_serial_no
     products.first.try(:serial_no)
   end
