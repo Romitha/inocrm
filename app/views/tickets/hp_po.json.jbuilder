@@ -4,7 +4,6 @@ json.spare_parts @ticket_spare_part_manufactures do |ticket_spare_part_manufactu
   count += 1
   json.index count
   json.event_no ticket_spare_part_manufacture.event_no
-  json.event_closed_date ticket_spare_part_manufacture.issued_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
   json.order_no ticket_spare_part_manufacture.order_no
   json.issued_at ticket_spare_part_manufacture.issued_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
   json.part_no ticket_spare_part_manufacture.ticket_spare_part.spare_part_no
@@ -16,4 +15,8 @@ json.spare_parts @ticket_spare_part_manufactures do |ticket_spare_part_manufactu
   json.part_id ticket_spare_part_manufacture.ticket_spare_part.id
   json.currency_id ticket_spare_part_manufacture.ticket_spare_part.ticket.products.first.product_brand.currency_id
   json.currency_code ticket_spare_part_manufacture.ticket_spare_part.ticket.products.first.product_brand.currency.code
+  json.parts_ordered_date ticket.user_ticket_actions.select{|u| u.action_id == 31}.first.try(:formatted_action_date) 
+  json.event_closed_date ticket.user_ticket_actions.select{|u| u.action_id == 44}.first.try(:formatted_action_date)
+
+
 end
