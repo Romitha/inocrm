@@ -15,13 +15,15 @@
         %th
           Order No
         %th
-          Date Ordered
+          Date Ordered (By Cordinator)
+        %th
+          Event Closed Date
         %th
           Part No
         %th
           Item no
         %th
-          Serial No 
+          Serial No
         %th
           Actual Amount
         %th
@@ -37,7 +39,11 @@
             %td
               = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:order_no)
             %td
-              = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:issued_at).try(:strftime, INOCRM_CONFIG['short_date_format'])
+              = po_item.ticket_spare_part.ticket.user_ticket_actions.select{|u| u.action_id == 31}.first.try(:formatted_action_date)
+            %td
+              = po_item.ticket_spare_part.ticket.user_ticket_actions.select{|u| u.action_id == 44}.first.try(:formatted_action_date)
+            / %td
+            /   = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:issued_at).try(:strftime, INOCRM_CONFIG['short_date_format'])
             %td
               = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:spare_part_no)
             %td
