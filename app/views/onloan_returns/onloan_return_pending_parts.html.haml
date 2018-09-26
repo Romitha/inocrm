@@ -14,7 +14,7 @@
               = select_tag "search_return_part[requested_by]", options_from_collection_for_select(User.select{|u| u.roles.any?{|r| r.bpm_module_roles.any?{|b| b.code == "supp_engr"} } }, :id, :full_name,(params[:search_return_part] and params[:search_return_part][:requested_by])), include_blank: true, class: "form-control"
             .col-md-4
               = label_tag "Part Issued By: "
-              = select_tag "search_return_part[issued_by]", options_from_collection_for_select(User.select{|u| u.roles.any?{|r| r.bpm_module_roles.any?{|b| b.code == "supp_coord"} } }, :id, :full_name,(params[:search_return_part] and params[:search_return_part][:issued_by])), include_blank: true, class: "form-control"
+              = select_tag "search_return_part[issued_by]", options_from_collection_for_select(User.select{|u| u.roles.any?{|r| r.bpm_module_roles.any?{|b| b.code == "supp_sk"} } }, :id, :full_name,(params[:search_return_part] and params[:search_return_part][:issued_by])), include_blank: true, class: "form-control"
           .row  
             .col-md-4
               = label_tag "Part Issued From", "Part Issued From"
