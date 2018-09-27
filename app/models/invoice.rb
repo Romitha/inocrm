@@ -155,7 +155,8 @@ class CustomerQuotation < ActiveRecord::Base
       query do
         boolean do
           must { string params[:query] } if params[:query].present?
-          # must { range :published_at, lte: Time.zone.now }
+          must { range :created_at, gte: params[:created_at_from].to_date.end_of_day } if params[:created_at_from].present?
+          must { range :created_at, lte: params[:created_at_to].to_date.beginning_of_day } if params[:created_at_to].present?
           # must { term :author_id, params[:author_id] } if params[:author_id].present?
           if params[:profit_min_range].present? or params[:profit_max_range].present?
             must { range :profit, gte: params[:profit_min_range].to_i } if params[:profit_min_range].present?
@@ -284,7 +285,7 @@ class CustomerQuotation < ActiveRecord::Base
   end
 
   def profit
-    total_cost_sub_sum == 0 ? 0 : (total_cost_sub_sum - total_quoted_sub_sum)*100/total_cost_sub_sum
+    total_cost_sub_sum == 0 ? 0 : (total_quoted_sub_sum - total_cost_sub_sum)*100/total_cost_sub_sum
   end
 
   def old_customer_approved_at

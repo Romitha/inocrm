@@ -20,7 +20,8 @@ class TicketSparePart < ActiveRecord::Base
           # must { term :author_id, params[:author_id] } if params[:author_id].present?
         end
       end
-      sort { by :action_at, "desc" } if params[:query].blank?
+      sort { by :created_at, {order: "desc", ignore_unmapped: true} }
+
     end
   end
 
@@ -29,15 +30,15 @@ class TicketSparePart < ActiveRecord::Base
     TicketSparePart
     TaskAction
     to_json(
-      only: [:id, :spare_part_no, :spare_part_description, :request_from, :part_returned, :part_terminated, :part_returned_by, :payment_expected_manufacture, :add_bundle_by, :add_bundle_at],
+      only: [:id, :spare_part_no, :spare_part_description, :request_from, :part_returned, :part_terminated, :part_returned_by],
       methods: [:engineer_name, :ticket_status, :ticket_use_status],
       include: {
         ticket_spare_part_manufacture: {
-          only: [:id, :spare_part_id, :event_no, :order_no, :collect_pending_manufacture, :order_pending, :updated_at],
+          only: [:id, :spare_part_id, :event_no, :order_no, :collect_pending_manufacture, :order_pending, :updated_at, :payment_expected_manufacture, :add_bundle_by, :add_bundle_at],
           methods: [:return_part_bundle_no]
         },
         ticket: {
-          only: [:id],
+          only: [:id, :status_id],
           methods:[:support_ticket_no],
           include: {
             user_ticket_actions: {
@@ -48,7 +49,7 @@ class TicketSparePart < ActiveRecord::Base
         },
         engineer: {
           only: [:id],
-          methods: [:sbu_name, :full_name ]
+          methods: [:sbu_name, :sbu_id, :full_name ]
         }
       },
     )

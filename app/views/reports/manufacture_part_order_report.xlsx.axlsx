@@ -9,34 +9,37 @@ wb.add_worksheet(name: "Quotation report") do |sheet|
     part_order_content = [ (index+1), part_order.spare_part_no, part_order.ticket.support_ticket_no, part_order.ticket_spare_part_manufacture.event_no, part_order.spare_part_description, part_order.ticket_status ]
 
     part_action = {}
-    part_order.ticket.user_ticket_actions.select{|u| [14, 31, 34, 36, 37, 38, 42, 43, 44, 55 ].include?(u.action_id) }.each do |u|
-      part_action[u.action_id] = {date: u.formatted_action_date, by: u.action_by_name, terminate_reason: u.terminate_reason}
+    part_order.ticket.user_ticket_actions.select{ |u| [ 14, 31, 34, 36, 37, 38, 42, 43, 44, 55 ].include?(u.action_id) }.each do |u|
+      part_action[u.action_id] = { date: u.formatted_action_date, by: u.action_by_name, terminate_reason: u.terminate_reason }
     end
 
-    [14, 31, 36, 37, 38 ].each{ |e| part_action[e] ||= {date: '', by: '', terminate_reason: ''}  }
-    part_order_content.concat(Hash[part_action.except(34, 42, 43, 44, 55).sort].values[:date])
 
-    part_order_content << boolean_in_word(part_action.part_terminated, "Yes", "False")
+    [ 14, 31, 34, 36, 37, 38, 42, 43, 44, 55 ].each{ |e| part_action[e] ||= { date: '', by: '', terminate_reason: ''} }
+
+    part_order_content.concat(Hash[part_action.except(34, 42, 43, 44, 55).sort].values.map { |e| e[:date] })
+    part_order_content << boolean_in_word(part_order.part_terminated, "Yes", "No")
     part_order_content << part_action[34][:by]
     part_order_content << part_action[34][:terminate_reason]
     part_order_content << part_action[34][:date]
-    part_order_content << part_action.ticket_use_status
+    part_order_content << part_order.ticket_use_status
     part_order_content << part_action[42][:date]
     part_order_content << part_action[42][:by]
     part_order_content << part_action[43][:date]
     part_order_content << part_action[43][:by]
     part_order_content << part_action[44][:date]
     part_order_content << part_action[44][:by]
-    part_order_content << part_action.payment_expected_manufacture
-    part_order_content << User.cached_find_by_id( part_action.add_bundle_by).try(:full_name)
+    part_order_content << part_order.payment_expected_manufacture
+    part_order_content << User.cached_find_by_id( part_order.ticket_spare_part_manufacture.add_bundle_by).try(:full_name)
     part_order_content << part_action[55][:date]
-    part_order_content << part_action.ticket_spare_part_manufacture.return_part_bundle_no
-    part_order_content << (part_action.add_bundle_at.present? and part_action.add_bundle_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']}"))
+    part_order_content << part_order.ticket_spare_part_manufacture.return_part_bundle_no
+    part_order_content << (part_order.ticket_spare_part_manufacture.add_bundle_at.present? ? part_order.ticket_spare_part_manufacture.add_bundle_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']}") : "")
     part_order_content << ""
     part_order_content << ""
     part_order_content << ""
     part_order_content << ""
     part_order_content << ""
+
+    sheet.add_row part_order_content
 
   end
 end

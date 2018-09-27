@@ -80,7 +80,7 @@ Rails.application.routes.draw do
       get "case_list"
 
       get "quotation_report"
-      get "parts_report"
+      get "manufacture_part_order_report"
       get "customers"
 
     end

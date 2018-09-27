@@ -1,1 +1,39 @@
-man
+.row
+  .col-md-12
+    %fieldset
+      %legend Search Manufacture Parts
+      #search_frame
+        = form_tag manufacture_part_order_report_reports_path, method: :get, class: "form-horizontal" do
+
+          .row.small_scale_margin-top1
+            / .col-md-2
+            /   = label_tag "Requested Date"
+            /   = text_field_tag "search_manufacture[requested_date]", nil, :placeholder => "Requested Date", class: "form-control"
+            / .col-md-2
+            /   = label_tag "Ordered Date"
+            /   = text_field_tag "search_manufacture[ordered_date]", nil, :placeholder => "Ordered Date", class: "form-control"
+            / .col-md-2
+            /   = label_tag "Collected Date"
+            /   = text_field_tag "search_manufacture[collected_date]", nil, :placeholder => "Collected Date", class: "form-control"
+            .col-md-3
+              = label_tag "Ticket No"
+              = text_field_tag "search_manufacture_part[ticket.support_ticket_no]", nil, :placeholder => "Ticket No", class: "form-control"
+            .col-md-3
+              = label_tag "Spare Part No"
+              = text_field_tag "search_manufacture_part[spare_part_no]", nil, :placeholder => "Ticket No", class: "form-control"
+            .col-md-3
+              = label_tag "SBU"
+              = select_tag "search_manufacture_part[engineer.sbu_id]", options_from_collection_for_select(Sbu.all, :id, :sbu), include_blank: true, id: "search_contracts_brand_name",class: "form-control"
+            .col-md-3
+              = label_tag "Engineer"
+              = select_tag "search_manufacture_part[engineer.id]", options_from_collection_for_select(TicketEngineer.all, :id, :full_name), include_blank: true, id: "search_contracts_brand_name",class: "form-control"
+            .col-md-3
+              = label_tag "Part Status"
+              = select_tag "search_manufacture_part[ticket.status_id]", options_from_collection_for_select(TicketStatus.all, :id, :name), include_blank: true, id: "search_contracts_brand_name",class: "form-control"
+            .col-md-3
+              = label_tag "Created to"
+              = text_field_tag "created_at_to", nil, :placeholder => "Created to", class: "form-control datepicker"
+          .row.small_scale_margin-top1
+            .col-md-1
+              .search
+                = submit_tag "Search", class: "btn btn-sm btn-warning", name: "search"

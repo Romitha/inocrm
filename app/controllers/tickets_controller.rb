@@ -2201,7 +2201,7 @@ class TicketsController < ApplicationController
 
         end
 
-        TicketSparePart.import(Ticket.where(id: ticket_spare_part_ids) )
+        TicketSparePart.import(Ticket.where(id: ticket_spare_part_ids) ) if ticket_spare_part_ids.present?
 
         flash[:notice] = "Successfully updated."
       end

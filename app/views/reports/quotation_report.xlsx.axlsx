@@ -20,7 +20,7 @@ wb.add_worksheet(name: "Quotation report") do |sheet|
 			quotation.note,
 			quotation.old_customer_approved_at,
 			standard_currency_format(quotation.profit),
-			boolean_in_word(quotation.canceled, "Yes", "False"),
+			boolean_in_word(quotation.canceled, "Yes", "No"),
 			quotation.ticket.final_invoice.try(:payment_term_name),
 			quotation.ticket.ticket_currency.code,
 			quotation.ticket.final_invoice.try(:formatted_invoice_no),
