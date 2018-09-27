@@ -1040,31 +1040,36 @@ class ReportsController < ApplicationController
   end
 
   def quotation_report
-    render_xls = (params[:render_xls].present? and params[:render_xls].to_bool)
+    # render_xls = (params[:render_xls].present? and params[:render_xls].to_bool)
     rendon_no = params[:random_no].to_i
     if params[:search].present?
       Invoice
       quotation_params = params[:search_quotation]
+
+      params[:created_at_to] ||= Date.today.strftime("%Y-%m-%d")
+      params[:created_at_from] = ( params[:created_at_to].to_date - 3.months ).strftime("%Y-%m-%d")
+
       refined_search_quotation = quotation_params.map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
 
-      params[:per_page] = 5
-      params[:query] = refined_search_quotation
-      @quotations = CustomerQuotation.search(params)
-      render_xls ||=  (@quotations.total_pages < 2 )
-      @random_no = rand(100)
-      Rails.cache.fetch( [ @random_no, :search_quotation_params ] ){ quotation_params }
-
-    elsif params[:export]
-      quotation_params = Rails.cache.fetch( [ params[:randon_no].to_i, :search_quotation_params ] )
-      refined_search_quotation = quotation_params.map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
-      params[:per_page] = 5
+      params[:per_page] = 500
       params[:query] = refined_search_quotation
       @quotations = CustomerQuotation.search(params)
       render_xls = true
+      # render_xls ||=  (@quotations.total_pages < 2 )
+      # @random_no = rand(100)
+      # Rails.cache.fetch( [ @random_no, :search_quotation_params ] ){ quotation_params }
 
-    elsif params[:reset]
-      Rails.cache.delete( [ params[:randon_no].to_i, :search_quotation_params ] )
-      render_xls = false
+      # elsif params[:export]
+      #   quotation_params = Rails.cache.fetch( [ params[:randon_no].to_i, :search_quotation_params ] )
+      #   refined_search_quotation = quotation_params.map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+      #   params[:per_page] = 500
+      #   params[:query] = refined_search_quotation
+      #   @quotations = CustomerQuotation.search(params)
+      #   render_xls = true
+
+      # elsif params[:reset]
+      #   Rails.cache.delete( [ params[:randon_no].to_i, :search_quotation_params ] )
+      #   render_xls = false
 
     else
       render_xls = false
@@ -1087,31 +1092,23 @@ class ReportsController < ApplicationController
   end
 
   def manufacture_part_order_report
-    render_xls = (params[:render_xls].present? and params[:render_xls].to_bool)
+    Ticket
     rendon_no = params[:random_no].to_i
     if params[:search].present?
       Invoice
-      quotation_params = params[:search_quotation]
-      refined_search_quotation = quotation_params.map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+      manufacture_part_params = params[:search_manufacture_part]
+      manufacture_part_params[:request_from] = "M"
 
-      params[:per_page] = 5
-      params[:query] = refined_search_quotation
-      @quotations = CustomerQuotation.search(params)
-      render_xls ||=  (@quotations.total_pages < 2 )
-      @random_no = rand(100)
-      Rails.cache.fetch( [ @random_no, :search_quotation_params ] ){ quotation_params }
+      params[:created_at_to] = (params[:created_at_to].present? ? params[:created_at_to] : Date.today.strftime("%Y-%m-%d"))
+      puts params[:created_at_to]
+      params[:created_at_from] = ( params[:created_at_to].to_date - 3.months ).strftime("%Y-%m-%d")
 
-    elsif params[:export]
-      quotation_params = Rails.cache.fetch( [ params[:randon_no].to_i, :search_quotation_params ] )
-      refined_search_quotation = quotation_params.map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
-      params[:per_page] = 5
-      params[:query] = refined_search_quotation
-      @quotations = CustomerQuotation.search(params)
+      refined_search_manufacture_part = manufacture_part_params.map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+
+      params[:per_page] = 500
+      params[:query] = refined_search_manufacture_part
+      @part_orders = TicketSparePart.search(params)
       render_xls = true
-
-    elsif params[:reset]
-      Rails.cache.delete( [ params[:randon_no].to_i, :search_quotation_params ] )
-      render_xls = false
 
     else
       render_xls = false

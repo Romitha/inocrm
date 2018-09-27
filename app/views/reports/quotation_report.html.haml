@@ -3,35 +3,38 @@
     %fieldset
       %legend Search Quotation
       #search_frame
-        - if @quotations.present? and (@quotations.total_pages > 1)
-          = form_tag quotation_report_reports_path, method: :get do
-            = label_tag "Select Page"
-            = hidden_field_tag 'randon_no', @random_no
-            = select_tag "page", options_for_select(@random_no.times.map { |e| (e+1) })
-            = submit_tag "Export", class: "btn btn-sm btn-success", name: "export"
-            = submit_tag "Reset", class: "btn btn-sm btn-warning", name: "reset"
-        - else
-          = form_tag quotation_report_reports_path, method: :get, class: "form-horizontal" do
+        / - if @quotations.present? and (@quotations.total_pages > 1)
+        /   = form_tag quotation_report_reports_path, method: :get do
+        /     = label_tag "Select Page"
+        /     = hidden_field_tag 'randon_no', @random_no
+        /     = select_tag "page", options_for_select(@random_no.times.map { |e| (e+1) })
+        /     = submit_tag "Export", class: "btn btn-sm btn-success", name: "export"
+        /     = submit_tag "Reset", class: "btn btn-sm btn-warning", name: "reset"
+        / - else
+        = form_tag quotation_report_reports_path, method: :get, class: "form-horizontal" do
+          %strong Quotation data is just 3 months prior records from 'Create to' date or default Today
+          .row.small_scale_margin-top1
+            .col-md-3
+              = label_tag "Quotated by"
+              = select_tag "search_quotation[created_by]", options_from_collection_for_select(User.all, :id, :full_name),include_blank: true, id: "search_contracts_brand_name",class: "form-control"
+            .col-md-2
+              = label_tag "Ticket No"
+              = text_field_tag "search_quotation[ticket.support_ticket_no]", nil, :placeholder => "Ticket No", class: "form-control"
+            .col-md-3
+              = label_tag "Customer Name"
+              = text_field_tag "search_quotation[ticket.customer_name]", nil, :placeholder => "Customer Name", class: "form-control", id: "search_quotation_customer_name"
+            .col-md-3
+              = label_tag "Created to"
+              = text_field_tag "created_at_to", nil, :placeholder => "Created Until", class: "form-control datepicker"
 
-            .row.small_scale_margin-top1
-              .col-md-3
-                = label_tag "Quotated by"
-                = select_tag "search_quotation[created_by]", options_from_collection_for_select(User.all, :id, :full_name),include_blank: true, id: "search_contracts_brand_name",class: "form-control"
-              .col-md-2.small_scale_margin-top2
-                = label_tag "Ticket No"
-                = text_field_tag "search_quotation[ticket.support_ticket_no]", nil, :placeholder => "Ticket No", class: "form-control"
-              .col-md-3.small_scale_margin-top2
-                = label_tag "Customer Name"
-                = text_field_tag "search_quotation[ticket.customer_name]", nil, :placeholder => "Customer Name", class: "form-control", id: "search_quotation_customer_name"
-
-            .row
-              .col-md-2.small_scale_margin-top2
-                = label_tag "Profit From"
-                = text_field_tag "profit_min_range", 0, :placeholder => "Profit Min Range", class: "form-control"
-              .col-md-2.small_scale_margin-top2
-                = label_tag "Profit To"
-                = text_field_tag "profit_max_range", 100, :placeholder => "Profit Max Range", class: "form-control"
-            .row.small_scale_margin-top1
-              .col-md-1
-                .search
-                  = submit_tag "Search", class: "btn btn-sm btn-warning", name: "search"
+          .row
+            .col-md-2.small_scale_margin-top2
+              = label_tag "Profit From"
+              = text_field_tag "profit_min_range", 0, :placeholder => "Profit Min Range", class: "form-control"
+            .col-md-2.small_scale_margin-top2
+              = label_tag "Profit To"
+              = text_field_tag "profit_max_range", 100, :placeholder => "Profit Max Range", class: "form-control"
+          .row.small_scale_margin-top1
+            .col-md-1
+              .search
+                = submit_tag "Search", class: "btn btn-sm btn-warning", name: "search"
