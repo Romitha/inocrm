@@ -15,8 +15,8 @@ json.spare_parts @ticket_spare_part_manufactures do |ticket_spare_part_manufactu
   json.part_id ticket_spare_part_manufacture.ticket_spare_part.id
   json.currency_id ticket_spare_part_manufacture.ticket_spare_part.ticket.products.first.product_brand.currency_id
   json.currency_code ticket_spare_part_manufacture.ticket_spare_part.ticket.products.first.product_brand.currency.code
-  json.parts_ordered_date ticket.user_ticket_actions.select{|u| u.action_id == 31}.first.try(:formatted_action_date) 
-  json.event_closed_date ticket.user_ticket_actions.select{|u| u.action_id == 44}.first.try(:formatted_action_date)
+  json.parts_ordered_date ticket_spare_part_manufacture.ticket_spare_part.ticket.user_ticket_actions.select{|u| u.action_id == 31}.first.try(:formatted_action_date)
+  json.event_closed_date ticket_spare_part_manufacture.ticket_spare_part.ticket.user_ticket_actions.select{|u| u.action_id == 44}.first.try(:formatted_action_date)
 
 
 end
