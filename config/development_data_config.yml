@@ -68,11 +68,11 @@ spt_part_quotation_pdf: "vsis"
 
 contact_type_values_map:
   1: 1
-  2: 2
-  3: 4
-  4: 3
-  5: 3
-  6: 2
+  2: 3
+  3: 2
+  4: 1
+  5: 1
+  6: 1
 
 spt_quotation_no_annual_reset: true
 

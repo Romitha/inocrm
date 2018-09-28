@@ -257,7 +257,7 @@
             = check_box_tag :request_spare_part, true, (estimation.advance_payment_amount.to_f == 0)
 
         - disable_save = (CompanyConfig.first.sup_estimation_quotation_required and !estimation.customer_quotations.non_canceled_quotations.any?)
-        = f.submit "Save", class: "btn btn-success btn-sm", disabled: disable_save
+        = f.submit "Save", class: "btn btn-success btn-sm", data: {disable_with: "Please wait..."}, disabled: disable_save
         - if disable_save
           %h4.red Need quotation for customer approval or No non cancelled quotation.
 
