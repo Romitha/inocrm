@@ -1046,7 +1046,7 @@ class ReportsController < ApplicationController
       Invoice
       quotation_params = params[:search_quotation]
 
-      params[:created_at_to] ||= Date.today.strftime("%Y-%m-%d")
+      params[:created_at_to] = (params[:created_at_to].present? ? params[:created_at_to] : Date.today.strftime("%Y-%m-%d"))
       params[:created_at_from] = ( params[:created_at_to].to_date - 3.months ).strftime("%Y-%m-%d")
 
       refined_search_quotation = quotation_params.map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")

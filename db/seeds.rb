@@ -301,7 +301,7 @@ workflow_mappings = [
   ["SPPT", "customer_advance_payment", "/tickets/customer_advance_payment", "SPT_SC_27", "Support - Customer Advance Payment", "h1", "ticket_id", nil],
   ["SPPT", "quality_control", "/tickets/quality_control", "SPT_SC_28", "Support - Quality Control", "h1", "ticket_id,supp_engr_user", nil],
   ["SPPT", "invoice_advance_payment", "/tickets/invoice_advance_payment", "SPT_SC_29", "Support - Advance Payment Invoice", "h1", "ticket_id,advance_payment_estimation_id", nil],
-  ["SPPT_MFR_PART_RETURN", "close_event", "/tickets/close_event", "SPT_SC_30", "Support - Close Event", "h1", "ticket_id,request_spare_part_id", nil],
+  ["SPPT_MFR_PART_RETURN", "close_event", "/tickets/close_event", "SPT_SC_30", "Support - Close Event", "h3", "ticket_id,request_spare_part_id", nil],
   ["SPPT", "approve_foc", "/tickets/terminate_job_foc_approval", "SPT_SC_31", "Support - FOC Approval", "h1", "ticket_id", nil],
   ["SPPT", "final_job_estimate", "/tickets/estimate_job_final", "SPT_SC_33", "Support - Final Job Estimation", "h1", "ticket_id", nil],
   ["SPPT_MFR_PART_REQUEST", "approve_manufacture_part", "/tickets/approve_manufacture_parts", "SPT_SC_37", "Support - Approve Part (Manufacture)", "h3", "ticket_id,request_spare_part_id,supp_engr_user", nil]

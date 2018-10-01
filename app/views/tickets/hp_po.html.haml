@@ -65,8 +65,8 @@
           = f.simple_fields_for :so_po_items , html: {class: "validate_form"} do |p|
             = p.input :ticket_spare_part_id, as: :hidden, input_html: {class: "spare_part_class"}
             = p.input :spt_so_po_id, as: :hidden, input_html: {value: 1}# have to solve
-            = p.input :item_no, as: :hidden, input_html: {value: 1}# have to solve
-
+            / = p.input :item_no, as: :hidden, input_html: {value: 1}# have to solve
+            = p.input :ticket_spare_part_item_id, as: :hidden, input_html: {class: "manufacture_part_class"}
             .row
               .single_extra_info
             .row

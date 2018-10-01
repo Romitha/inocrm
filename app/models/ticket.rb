@@ -470,6 +470,10 @@ class Ticket < ActiveRecord::Base
     ticket_no.to_s.rjust(6, INOCRM_CONFIG["ticket_no_format"])
   end
 
+  def product_info
+    products.first.attributes.select{|k, v| ['id', 'model_no', 'serial_no', 'product_no'].include?(k) }
+  end
+
   def update_on_create_ticket_info
     Organization
     company_config = CompanyConfig.first
