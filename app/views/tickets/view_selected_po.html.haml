@@ -51,7 +51,7 @@
             %td
               = po_item.ticket_spare_part.try(:spare_part_no)
             %td
-              = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:payment_expected_manufacture)
+              = po_item.amount
             %td
               = po_item.ticket_spare_part.try(:spare_part_description)
             %td
