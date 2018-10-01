@@ -5979,7 +5979,7 @@ class TicketsController < ApplicationController
     end
 
     def po_params
-      tspt_params = params.require(:so_po).permit(:id, :created_at, :created_by, :so_no, :po_no, :po_date, :amount, :invoiced, :currency_id, :product_brand_id, :note, so_po_items_attributes: [ :id, :_destroy, :spt_so_po_id, :item_no, :amount, :ticket_spare_part_id, :description])
+      tspt_params = params.require(:so_po).permit(:id, :created_at, :created_by, :so_no, :po_no, :po_date, :amount, :invoiced, :currency_id, :product_brand_id, :note, so_po_items_attributes: [ :id, :_destroy, :spt_so_po_id, :item_no, :amount, :ticket_spare_part_id, :ticket_spare_part_item_id, :description])
       tspt_params
     end
 

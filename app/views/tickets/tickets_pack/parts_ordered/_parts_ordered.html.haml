@@ -26,6 +26,7 @@
       - @store_chargeable = (ticket_spare_part.ticket_spare_part_store and ticket_spare_part.cus_chargeable_part)
       - @non_stock_warranty = (ticket_spare_part.ticket_spare_part_non_stock and not ticket_spare_part.cus_chargeable_part)
       - @non_stock_chargeable = (ticket_spare_part.ticket_spare_part_non_stock and ticket_spare_part.cus_chargeable_part)
+      - @mpop = (ticket_spare_part.ticket_spare_part_manufacture and ticket_spare_part.ticket_spare_part_manufacture.order_pending == 1) #Manufacture part order pending updated
 
       - @rce = ticket_spare_part.spare_part_status_action.code == "RCE" #Received by Engineer
       - @rpr = ticket_spare_part.spare_part_status_action.code == "RPR" #Returned Part Reject

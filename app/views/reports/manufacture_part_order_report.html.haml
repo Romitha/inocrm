@@ -29,7 +29,7 @@
               = select_tag "search_manufacture_part[engineer.id]", options_from_collection_for_select(TicketEngineer.all, :id, :full_name), include_blank: true, id: "search_contracts_brand_name",class: "form-control"
             .col-md-3
               = label_tag "Part Status"
-              = select_tag "search_manufacture_part[ticket.status_id]", options_from_collection_for_select(TicketStatus.all, :id, :name), include_blank: true, id: "search_contracts_brand_name",class: "form-control"
+              = select_tag "search_manufacture_part[status_action_id]", options_from_collection_for_select(SparePartStatusAction.all, :id, :name), include_blank: true, id: "search_contracts_brand_name",class: "form-control"
             .col-md-3
               = label_tag "Created to"
               = text_field_tag "created_at_to", nil, :placeholder => "Created to", class: "form-control datepicker"

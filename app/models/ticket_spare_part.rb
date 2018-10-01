@@ -30,19 +30,24 @@ class TicketSparePart < ActiveRecord::Base
     TicketSparePart
     TaskAction
     to_json(
-      only: [:id, :spare_part_no, :spare_part_description, :request_from, :part_returned, :part_terminated, :part_returned_by],
-      methods: [:engineer_name, :ticket_status, :ticket_use_status],
+      only: [:id, :spare_part_no, :spare_part_description, :request_from, :part_returned, :part_terminated, :part_returned_by, :requested_at, :requested_by, :note, :status_action_id],
+      methods: [:engineer_name, :ticket_status, :ticket_use_status, :status_action_name],
       include: {
         ticket_spare_part_manufacture: {
-          only: [:id, :spare_part_id, :event_no, :order_no, :collect_pending_manufacture, :order_pending, :updated_at, :payment_expected_manufacture, :add_bundle_by, :add_bundle_at],
-          methods: [:return_part_bundle_no]
+          only: [:id, :spare_part_id, :event_no, :order_no, :collect_pending_manufacture, :order_pending, :updated_at, :payment_expected_manufacture, :add_bundle_by, :add_bundle_at, :order_pending_at, :order_pending_by],
+          methods: [:return_part_bundle_no],
+          include: {
+            return_parts_bundle: {
+              only: [:id, :created_at, :delivered_at]
+            }
+          }
         },
         ticket: {
           only: [:id, :status_id],
-          methods:[:support_ticket_no],
+          methods:[:support_ticket_no, :product_info],
           include: {
             user_ticket_actions: {
-              only: [:id, :action_id],
+              only: [:id, :action_id, :action_at],
               methods: [:formatted_action_date, :action_by_name, :action_engineer_by_name, :terminate_reason],
             }
           },
@@ -50,6 +55,10 @@ class TicketSparePart < ActiveRecord::Base
         engineer: {
           only: [:id],
           methods: [:sbu_name, :sbu_id, :full_name ]
+        },
+        so_po_items: {
+          only: [:id, :amount],
+          methods: [:po_info]
         }
       },
     )
@@ -145,6 +154,10 @@ class TicketSparePart < ActiveRecord::Base
     engineer.full_name
   end
 
+  def status_action_name
+    spare_part_status_action.name
+  end
+
   def spare_part_type
 
     label_type = case request_from
@@ -182,10 +195,15 @@ class SoPoItem < ActiveRecord::Base
   self.table_name = "spt_so_po_item"
 
   belongs_to :ticket_spare_part
-  belongs_to :so_po
-  belongs_to :ticket_spare_part_manufacture
+  belongs_to :so_po, foreign_key: :spt_so_po_id
+  belongs_to :ticket_spare_part_manufacture, foreign_key: :ticket_spare_part_item_id
 
   # validates_presence_of :amount
+
+  def po_info
+    so_po.present? ? {'created_at' => so_po.created_at, 'created_by' => so_po.created_by, 'po_no_format' => so_po.po_no_format, 'amount' => so_po.amount} : {}
+  end
+
 end
 
 class SoPo < ActiveRecord::Base

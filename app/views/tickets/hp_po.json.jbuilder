@@ -3,6 +3,7 @@ count = 0
 json.spare_parts @ticket_spare_part_manufactures do |ticket_spare_part_manufacture|
   count += 1
   json.index count
+  json.id ticket_spare_part_manufacture.id
   json.event_no ticket_spare_part_manufacture.event_no
   json.order_no ticket_spare_part_manufacture.order_no
   json.issued_at ticket_spare_part_manufacture.issued_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
