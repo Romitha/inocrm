@@ -24,7 +24,7 @@
 - num = 0
 %hr
 - user_ticket_actions.each_with_index do |user_ticket_action, index|
-  - if user_ticket_action.request_spare_part.ticket_spare_part.part_returned == false && user_ticket_action.request_spare_part.ticket_spare_part.close_approved == false
+  - if user_ticket_action.request_spare_part.ticket_spare_part.returned_part_accepted == false && user_ticket_action.request_spare_part.ticket_spare_part.close_approved == false
     .row
       .col-md-1
         - if params[:page]
