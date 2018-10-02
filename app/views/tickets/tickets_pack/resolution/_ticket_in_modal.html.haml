@@ -4,10 +4,10 @@
 .modal-body
   .row
     .col-md-3
-      %strong Faulty Serial No
+      %strong Faulty/ Received Serial No
       = @fa
     .col-md-3
-      %strong Faulty CT No
+      %strong Faulty/ Received CT No
       = @ct
   %table.table.table-striped
     %thead
@@ -17,6 +17,8 @@
         %th Requested by
         %th Faulty Serial No
         %th Faulty CT No
+        %th Received Serial No
+        %th Received CT No
         %th Ticket No
         %th Customer
         %th Ticket Date
@@ -29,6 +31,8 @@
           %td= User.cached_find_by_id(spare_part.requested_by).try(:full_name)
           %td #{spare_part.try(:faulty_serial_no)}
           %td #{spare_part.try(:faulty_ct_no)}
+          %td #{spare_part.try(:received_part_serial_no)}
+          %td #{spare_part.try(:received_part_ct_no)}
           %td #{spare_part.ticket.ticket_no.to_s.rjust(5, INOCRM_CONFIG["ticket_no_format"])}
           %td #{spare_part.ticket.customer.try(:name)}
           %td #{spare_part.ticket.logged_at.to_date}
