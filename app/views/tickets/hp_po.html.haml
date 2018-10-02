@@ -55,7 +55,7 @@
                 %strong Amount
               .col-md-1
                 %strong Description
-              .col-md-2
+              .col-md-1
                 %strong Note
               .col-md-1
                 %strong Ticket No
@@ -68,7 +68,9 @@
             / = p.input :item_no, as: :hidden, input_html: {value: 1}# have to solve
             = p.input :ticket_spare_part_item_id, as: :hidden, input_html: {class: "manufacture_part_class"}
             .row
-              .single_extra_info
+              .single_extra_info.col-md-11
+              .col-md-1
+                = p.link_to_remove "remove", onclick: "Tickets.hp_po_remove(this); return false;", class: "remove"
             .row
               .gg
                 .col-md-3
@@ -77,8 +79,6 @@
                   = p.input :item_no, required: true, input_html: {min: "0", class: "item_no_class only_float"}
                 .col-md-5
                   = p.input :description, id: "po_description", input_html: {class: "po_description_class"}, label: "PO description"
-                .col-md-2
-                  = p.link_to_remove "remove", onclick: "Tickets.hp_po_remove(this); return false;", class: "remove"
             %hr
           .col-md-12
             = f.link_to_add "Add item", :so_po_items, id: "inventory_po_items", class: "hide"
