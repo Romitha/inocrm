@@ -898,6 +898,8 @@ class TicketsController < ApplicationController
           @ticket.product_inside = 1 if @ticket.ticket_type_code == "IH"
           if @ticket.save!
 
+            @ticket.update(contract_available: @ticket.ticket_contract.present?)
+
             @ticket.products << @product
             @product.update_attribute :last_ticket_id, @ticket.id
             @ticket.customer.update_attribute :last_ticket_id, @ticket.id
@@ -2201,7 +2203,7 @@ class TicketsController < ApplicationController
 
         end
 
-        TicketSparePart.import(TicketSparePart.where(id: ticket_spare_part_ids) ) if ticket_spare_part_ids.present?
+        TicketSparePart.index.import(TicketSparePart.where(id: ticket_spare_part_ids) ) if ticket_spare_part_ids.present?
 
         flash[:notice] = "Successfully updated."
       end
