@@ -61,6 +61,7 @@
                 %strong Ticket No
               .col-md-1
                 %strong Serial No
+              .col-md-1
           %hr
           = f.simple_fields_for :so_po_items , html: {class: "validate_form"} do |p|
             = p.input :ticket_spare_part_id, as: :hidden, input_html: {class: "spare_part_class"}
