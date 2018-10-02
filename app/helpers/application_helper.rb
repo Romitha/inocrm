@@ -445,7 +445,9 @@ module ApplicationHelper
     address4 = ticket.customer.address4
     vat_no = ticket.customer.vat_no
     svat_no = ticket.customer.svat_no
-    invoice_type= invoice.invoice_type.try(:print_name)
+    invoice_type = invoice.invoice_type.try(:print_name)
+    # warranty2 = ticket.estimation.ticket_estimation_externals.first.warranty_period
+    # warranty = ticker.customer_quotations.non_canceled_quotations.first.try(:warranty)
     telephone = ticket.customer.contact_type_values.select{|c| c.contact_type.name == "Telephone"}.first.try(:value)
     mobile = ticket.customer.contact_type_values.select{|c| c.contact_type.mobile}.first.try(:value)
     fax = ticket.customer.contact_type_values.select{|c| c.contact_type.name == "Fax"}.first.try(:value)
@@ -476,6 +478,7 @@ module ApplicationHelper
     payment_term = invoice.try(:payment_term).try(:name)
     special_note = ticket.note
     invoice_note = invoice.note
+    # invoice_note = "#{invoice.note} - #{warranty}"
     created_by = invoice.created_by_ch_eng.full_name
     delivery_address = invoice.delivery_address
     so_number = invoice.so_number
