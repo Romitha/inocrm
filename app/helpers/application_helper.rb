@@ -446,8 +446,6 @@ module ApplicationHelper
     vat_no = ticket.customer.vat_no
     svat_no = ticket.customer.svat_no
     invoice_type = invoice.invoice_type.try(:print_name)
-    # warranty2 = ticket.estimation.ticket_estimation_externals.first.warranty_period
-    # warranty = ticker.customer_quotations.non_canceled_quotations.first.try(:warranty)
     telephone = ticket.customer.contact_type_values.select{|c| c.contact_type.name == "Telephone"}.first.try(:value)
     mobile = ticket.customer.contact_type_values.select{|c| c.contact_type.mobile}.first.try(:value)
     fax = ticket.customer.contact_type_values.select{|c| c.contact_type.name == "Fax"}.first.try(:value)
@@ -478,7 +476,6 @@ module ApplicationHelper
     payment_term = invoice.try(:payment_term).try(:name)
     special_note = ticket.note
     invoice_note = invoice.note
-    # invoice_note = "#{invoice.note} - #{warranty}"
     created_by = invoice.created_by_ch_eng.full_name
     delivery_address = invoice.delivery_address
     so_number = invoice.so_number
@@ -549,7 +546,7 @@ module ApplicationHelper
       if ticket_invoice_estimation.ticket_estimation.ticket_estimation_parts.present?
         estimation_part = ticket_invoice_estimation.ticket_estimation.ticket_estimation_parts.first
         item_index += 1
-        description = "Part No: #{estimation_part.ticket_spare_part.spare_part_no} #{estimation_part.ticket_spare_part.spare_part_description}"
+        description = "Part No: #{estimation_part.ticket_spare_part.spare_part_no} #{estimation_part.ticket_spare_part.spare_part_description}" + "#{' (Warr: ' + estimation_part.warranty_period.to_s + ' M)' if estimation_part.warranty_period.present? }"
         item_code = estimation_part.ticket_spare_part.ticket_spare_part_store.present? ? estimation_part.ticket_spare_part.ticket_spare_part_store.approved_inventory_product.generated_item_code : ""
 
         totalprice = ticket_invoice_estimation.ticket_estimation.approval_required ? estimation_part.approved_estimated_price.to_f : estimation_part.estimated_price.to_f
