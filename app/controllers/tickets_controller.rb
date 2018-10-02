@@ -32,7 +32,8 @@ class TicketsController < ApplicationController
     ticket_id = params[:ticket_id]
     @ticket = Ticket.find params[:ticket_id]
 
-    ticket_spare_part = TicketSparePart.where("faulty_ct_no like ? and faulty_serial_no like ?", "#{ct}%", "#{fa}%")
+    # ticket_spare_part = TicketSparePart.where("faulty_ct_no like ? and faulty_serial_no like ?", "#{ct}%", "#{fa}%")
+    ticket_spare_part = TicketSparePart.where("(faulty_ct_no like ? and faulty_serial_no like ?) or (received_part_ct_no like ? and received_part_serial_no like ?)", "#{ct}%", "#{fa}%", "#{ct}%", "#{fa}%")
     @filtered_ticket_spare_part = ticket_spare_part.select{|s| s.ticket_id != @ticket.id }
     render "tickets/tickets_pack/resolution/ticket_in_modal"
   end
