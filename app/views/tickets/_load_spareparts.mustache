@@ -15,12 +15,13 @@
     %strong Amount
   .col-md-1
     %strong Description
-  .col-md-2
+  .col-md-1
     %strong Note
   .col-md-1
     %strong Ticket No
   .col-md-1
     %strong Serial No
+  .col-md-1  
 %hr
 #sparepart_list{data: {addedcount: 1}}
   {{#spare_parts}}
@@ -38,7 +39,7 @@
           {{currency_code}}
           %span.now_amount_default {{amount}}
         .col-md-1.now_class {{spare_part_description}}
-        .col-md-2
+        .col-md-1
           <a href="#" class="has-popover" data-content="{{{note}}}" data-placement="bottom" data-toggle="popover" data-html="true" "title"="this is sample text">View Note</a>
 
         .col-md-1 {{ticket_no}}
