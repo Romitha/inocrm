@@ -41,11 +41,10 @@
         .col-md-1.now_class {{spare_part_description}}
         .col-md-1
           <a href="#" class="has-popover" data-content="{{{note}}}" data-placement="bottom" data-toggle="popover" data-html="true" "title"="this is sample text">View Note</a>
-
         .col-md-1 {{ticket_no}}
         .col-md-1 {{serial_no}}
-      .col-md-1
-        <a href="#" onclick="Tickets.hp_po_add('{{ticket_id}}','{{part_id}}', this); return false;" data-value="{{part_no}}" data-manufactureid="{{id}}" id="add_{{part_no}}">add</a>
+        .col-md-1
+          <a href="#" onclick="Tickets.hp_po_add('{{ticket_id}}','{{part_id}}', this); return false;" data-value="{{part_no}}" data-manufactureid="{{id}}" id="add_{{part_no}}">add</a>
     %hr
 
   {{/spare_parts}}
