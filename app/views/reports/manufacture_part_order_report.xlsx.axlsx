@@ -1,19 +1,18 @@
 wb = xlsx_package.workbook
 user_ticket_action_list = [ 16, 17, 19, 31, 34, 36, 37, 38, 42, 43, 44, 56 ]
 
-
-headers = ["No", "Order Date & Time (Eng)", "Order Updated Time (Sup.cor)", "Order Time by (Sup.cor)", "Collected Time (Del.cor)", "Receive Date & Time (Sup.cor)", "Issue Date & Time (Sup.cor)", "Receive Date & Time (Eng)", "Spare Part Description", "Spare Part No", "Ticket No", "Event No (11)", "Machine Model", "Machine product", "Machine Serial No", "SBU", "Engineer", "Part Status", "Terminated Status", "Terminated By", "Terminated Date & Time", "Terminated Reason", "Part Used Status", "Last Return Date By Eng", "Last Return Part Rejected Date", "Return Part Accepted Date", "Return part Accepted By", "Part Note", "Event Close Date (Sup.cor)", "Event Close by (Sup.cor)", "Expected PO Amount", "Bundled By", "Ticket Close Approval Date", "Bundle No", "Bundle Date", "Bundle Delivery Date", "PO Create Date", "PO No", "Actual PO Amount", "PO Created By"]
+headers = {1 => "No", 2 => "Order Date & Time (Eng)", 3 => "Order Updated Time (Sup.cor)", 4 => "Order Time by (Sup.cor)", 5 => "Collected Time (Del.cor)", 6 => "Receive Date & Time (Sup.cor)", 7 => "Issue Date & Time (Sup.cor)", 8 => "Receive Date & Time (Eng)", 9 => "Spare Part Description", 10 => "Spare Part No", 11 => "Ticket No", 12 => "Event No", 13 => "Machine Model", 14 => "Machine product", 15 => "Machine Serial No", 16 => "SBU", 17 => "Engineer", 18 => "Part Status", 19 => "Terminated Status", 20 => "Terminated By", 21 => "Terminated Date & Time", 22 => "Terminated Reason", 23 => "Part Used Status", 24 => "Last Return Date By Eng", 25 => "Last Return Part Rejected Date (Sup.Cord)", 26 => "Return Part Accepted Date (Deliv.Cord)", 27 => "Return part Accepted By", 28 => "Part Note", 29 => "Event Close Date (Sup.cor)", 30 => "Event Close by (Sup.cor)", 31 => "Expected PO Amount", 32 => "Bundled By", 33 => "Ticket Close Approval Date", 34 => "Bundle No", 35 => "Bundle Date", 36 => "Bundle Delivery Date", 37 => "PO Create Date", 38 => "PO No", 39 => "Actual PO Amount", 40 => "PO Created By", 41 => "Created At"}
 
 wb.add_worksheet(name: "Quotation report") do |sheet|
-  sheet.add_row headers
+  sheet.add_row Hash[headers.sort].values
 
   @part_orders.each_with_index do |part_order, index|
 
-    part_order_content = [ (index+1), part_order.spare_part_description, part_order.spare_part_no, part_order.ticket.support_ticket_no, part_order.ticket_spare_part_manufacture.event_no, part_order.ticket.product_info['model_no'], part_order.ticket.product_info['serial_no'], part_order.ticket.product_info['product_no'], part_order.engineer.sbu_name, part_order.engineer.full_name, part_order.status_action_name, boolean_in_word(part_order.part_terminated, "Yes", "No") ]
-    part_order_content.insert(1, (part_order.requested_at.present? ? part_order.requested_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") : '' ))
+    part_order_content = { 1 => (index+1), 9 => part_order.spare_part_description, 10 => part_order.spare_part_no, 11 => part_order.ticket.support_ticket_no, 12 => part_order.ticket_spare_part_manufacture.event_no, 13 => part_order.ticket.product_info['model_no'], 14 => part_order.ticket.product_info['product_no'], 15 => part_order.ticket.product_info['serial_no'], 16 => part_order.engineer.sbu_name, 17 => part_order.engineer.full_name, 18 => part_order.status_action_name, 19 => boolean_in_word(part_order.part_terminated, "Yes", "No") }
+    part_order_content[2] = (part_order.requested_at.present? ? part_order.requested_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") : '' )
 
-    part_order_content.insert(2, (part_order.ticket_spare_part_manufacture.order_pending_at.present? ? part_order.ticket_spare_part_manufacture.order_pending_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") : '' ))
-    part_order_content.insert(3,  User.cached_find_by_id(part_order.ticket_spare_part_manufacture.order_pending_by).try(:full_name))
+    part_order_content[3] = (part_order.ticket_spare_part_manufacture.order_pending_at.present? ? part_order.ticket_spare_part_manufacture.order_pending_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") : '' )
+    part_order_content[4] =  User.cached_find_by_id(part_order.ticket_spare_part_manufacture.order_pending_by).try(:full_name)
 
     part_action = {}
     part_order.ticket.user_ticket_actions.select{ |u| user_ticket_action_list.include?(u.action_id) }.each do |u|
@@ -31,51 +30,47 @@ wb.add_worksheet(name: "Quotation report") do |sheet|
     user_ticket_action_list.each do |e|
       case e
       when 36 # collected
-        part_order_content.insert(4, part_action[e][:date])
+        part_order_content[5] = part_action[e][:date]
       when 37 # received by sco
-        part_order_content.insert(5, part_action[e][:date])
+        part_order_content[6] = part_action[e][:date]
       when 38 # issued
-        part_order_content.insert(6, part_action[e][:date])
+        part_order_content[7] = part_action[e][:date]
       when 16 # received by eng
-        part_order_content.insert(4, part_action[e][:by])
+        part_order_content[8]= part_action[e][:by]
       when 19 # Terminated at
-        part_order_content.insert(16, part_action[e][:by], part_action[e][:date])
-        
+        part_order_content.merge!({20 => part_action[e][:by], 21 => part_action[e][:date]})
       end
     end
 
-    part_order_content << part_action[19][:terminate_reason]
+    part_order_content[22] = part_action[19][:terminate_reason]
 
-    part_order_content << part_order.ticket_use_status
+    part_order_content[23] = part_order.ticket_use_status
 
-    part_order_content << part_action[17][:date] # last return date
-    part_order_content << part_action[42][:date] # last return part reject date
+    part_order_content[24] = part_action[17][:date] # last return date
+    part_order_content[25] = part_action[42][:date] # last return part reject date
 
-    part_order_content << part_action[43][:date] # return part accepted date
-    part_order_content << part_action[43][:by] # return part accepted by
+    part_order_content[26] = part_action[43][:date] # return part accepted date
+    part_order_content[27] = part_action[43][:by] # return part accepted by
 
-    part_order_content << strip_tags(part_order.note)
-    part_order_content << part_action[44][:date] # event closed at
-    part_order_content << part_action[44][:by] # event closed by
-    part_order_content << (part_order.ticket_spare_part_manufacture.payment_expected_manufacture || '') # Expected PO Amount
-    part_order_content << User.cached_find_by_id( part_order.ticket_spare_part_manufacture.add_bundle_by).try(:full_name)
-    part_order_content << part_action[56][:date]
-    part_order_content << part_order.ticket_spare_part_manufacture.return_part_bundle_no
-    part_order_content << (part_order.ticket_spare_part_manufacture.add_bundle_at.present? ? part_order.ticket_spare_part_manufacture.add_bundle_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") : "")
-    part_order_content << (part_order.ticket_spare_part_manufacture.return_parts_bundle.try(:delivered_at).present? ? part_order.ticket_spare_part_manufacture.return_parts_bundle.delivered_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") : "")
+    part_order_content[28] = strip_tags(part_order.note)
+    part_order_content[29] = part_action[44][:date] # event closed at
+    part_order_content[30] = part_action[44][:by] # event closed by
+    part_order_content[31] = (part_order.ticket_spare_part_manufacture.payment_expected_manufacture || '') # Expected PO Amount
+    part_order_content[32] = User.cached_find_by_id( part_order.ticket_spare_part_manufacture.add_bundle_by).try(:full_name)
+    part_order_content[33] = part_action[56][:date]
+    part_order_content[34] = part_order.ticket_spare_part_manufacture.return_part_bundle_no
+    part_order_content[35] = (part_order.ticket_spare_part_manufacture.add_bundle_at.present? ? part_order.ticket_spare_part_manufacture.add_bundle_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") : "")
+    part_order_content[36] = (part_order.ticket_spare_part_manufacture.return_parts_bundle.try(:delivered_at).present? ? part_order.ticket_spare_part_manufacture.return_parts_bundle.delivered_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") : "")
 
     if part_order.so_po_items.any?
-      part_order_content << part_order.so_po_items.first.po_info.created_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
-      part_order_content << part_order.so_po_items.first.po_info['po_no_format']
-      part_order_content << part_order.so_po_items.first.po_info['amount']
-      part_order_content << User.cached_find_by_id(part_order.so_po_items.first.po_info['created_by']).try(:full_name)
-    else
-      part_order_content << ''
-      part_order_content << ''
-      part_order_content << ''
+      part_order_content[37] = part_order.so_po_items.first.po_info.created_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
+      part_order_content[38] = part_order.so_po_items.first.po_info['po_no_format']
+      part_order_content[39] = part_order.so_po_items.first.po_info['amount']
+      part_order_content[40] = User.cached_find_by_id(part_order.so_po_items.first.po_info['created_by']).try(:full_name)
+      part_order_content[41] = part_order.created_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
     end
 
-    sheet.add_row part_order_content
+    sheet.add_row Hash[part_order_content.sort].values
 
   end
 end
