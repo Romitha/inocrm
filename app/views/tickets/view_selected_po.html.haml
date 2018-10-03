@@ -21,13 +21,13 @@
         %th
           Part No
         %th
+          Description
+        %th
           Item no
         %th
           Serial No
         %th
           Actual Amount
-        %th
-          Description
         %th
           Note
     %tbody
@@ -45,14 +45,14 @@
             / %td
             /   = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:issued_at).try(:strftime, INOCRM_CONFIG['short_date_format'])
             %td
-              = po_item.ticket_spare_part.ticket_spare_part_manufacture.try(:spare_part_no)
+              =po_item.ticket_spare_part.try(:spare_part_no)
+            %td
+              = po_item.ticket_spare_part.try(:spare_part_description)
             %td
               = po_item.item_no
             %td
-              = po_item.ticket_spare_part.try(:spare_part_no)
+              = po_item.ticket_spare_part.ticket.product.try(:serial_no)
             %td
               = po_item.amount
-            %td
-              = po_item.ticket_spare_part.try(:spare_part_description)
             %td
               = simple_format po_item.ticket_spare_part.try(:note)

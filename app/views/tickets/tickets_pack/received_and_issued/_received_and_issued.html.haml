@@ -50,12 +50,14 @@
   .col-md-4
     %strong Requested quantity:
     = spare_part.ticket_spare_part_manufacture.try(:requested_quantity)
-  .col-md-3
+
+.row
+  .col-md-4
     %strong Requested By:
     = User.cached_find_by_id(spare_part.requested_by).try(:full_name)
-  .col-md-3
+  .col-md-4
     %strong Requested at:
-    = spare_part.requested_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+    = spare_part.requested_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")}
 
 .row{style: "margin-top:10px;"}
   = simple_nested_form_for spare_part, url: update_received_and_issued_tickets_path, method: :post do |f|

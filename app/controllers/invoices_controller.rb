@@ -323,8 +323,8 @@ class InvoicesController < ApplicationController
             email_to2 = @ticket.contact_person2.contact_person_contact_types.find_by_contact_type_id(ContactType.find_by_email(true).id).try(:value) if @ticket.contact_person2.present?
             email_to3 = @ticket.report_person.contact_person_contact_types.find_by_contact_type_id(ContactType.find_by_email(true).id).try(:value) if @ticket.report_person.present?
 
-            email_to = email_to1+','+email_to2.to_s+','+email_to3.to_s
-            email_to = "#{email_to1}, #{email_to2.to_s}, #{email_to3.to_s}"
+            # email_to = email_to1.to_s+','+email_to2.to_s+','+email_to3.to_s
+            email_to = "#{email_to1}, #{email_to2}, #{email_to3}"
 
             if email_to1.present? || email_to2.present? || email_to3.present?
               view_context.send_email(email_to: email_to, ticket_id: @ticket.id, email_code: "COMPLETE_JOB")

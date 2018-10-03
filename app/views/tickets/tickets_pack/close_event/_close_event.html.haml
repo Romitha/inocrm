@@ -5,6 +5,7 @@
 .row
   .col-md-12
     %strong Activity: Close Event
+%br
 .row
   .col-md-3
     %strong Spare Part No:
@@ -66,17 +67,22 @@
   .col-md-3
     %strong Part Returned Date :
     #{spare_part.part_returned_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")}
-  .col-md-3
-    %strong Problem Description :
-    #{ticket.problem_description}
 
 .row
   .col-md-3
     %strong Part Bundled Date :
-    #{ticket.user_ticket_actions.select{|u| u.action_id == 45}.first.try(:formatted_action_date)}
+    #{ticket.user_ticket_actions.select{|u| u.action_id == 45}.first.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")}
   .col-md-3
     %strong Bundle Deliver Date :
-    #{ticket.user_ticket_actions.select{|u| u.action_id == 46}.first.try(:formatted_action_date)}
+    #{ticket.user_ticket_actions.select{|u| u.action_id == 46}.first.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")}
+  .col-md-3
+    %strong Ticket Assigned Date :
+    #{ticket.owner_engineer.job_assigned_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")}
+
+.row
+  .col-md-12
+    %strong Problem Description :
+    #{ticket.problem_description}
 
 .row.small_scale_margin-top1
   .col-md-12
