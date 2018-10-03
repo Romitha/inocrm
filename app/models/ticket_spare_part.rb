@@ -16,6 +16,8 @@ class TicketSparePart < ActiveRecord::Base
       query do
         boolean do
           must { string params[:query] } if params[:query].present?
+          must { range :created_at, gte: params[:created_at_from].to_date.end_of_day } if params[:created_at_from].present?
+          must { range :created_at, lte: params[:created_at_to].to_date.beginning_of_day } if params[:created_at_to].present?
           # must { range :published_at, lte: Time.zone.now }
           # must { term :author_id, params[:author_id] } if params[:author_id].present?
         end
@@ -30,7 +32,7 @@ class TicketSparePart < ActiveRecord::Base
     TicketSparePart
     TaskAction
     to_json(
-      only: [:id, :spare_part_no, :spare_part_description, :request_from, :part_returned, :part_terminated, :part_returned_by, :requested_at, :requested_by, :note, :status_action_id],
+      only: [:id, :spare_part_no, :spare_part_description, :request_from, :part_returned, :part_terminated, :part_returned_by, :requested_at, :requested_by, :note, :status_action_id, :created_at],
       methods: [:engineer_name, :ticket_status, :ticket_use_status, :status_action_name],
       include: {
         ticket_spare_part_manufacture: {
@@ -47,7 +49,7 @@ class TicketSparePart < ActiveRecord::Base
           methods:[:support_ticket_no, :product_info],
           include: {
             user_ticket_actions: {
-              only: [:id, :action_id, :action_at],
+              only: [:id, :action_id, :action_at, :action_by],
               methods: [:formatted_action_date, :action_by_name, :action_engineer_by_name, :terminate_reason],
             }
           },

@@ -1093,14 +1093,31 @@ class ReportsController < ApplicationController
 
   def manufacture_part_order_report
     Ticket
+    TicketSparePart
     rendon_no = params[:random_no].to_i
     if params[:search].present?
       Invoice
       manufacture_part_params = params[:search_manufacture_part]
-      manufacture_part_params[:request_from] = "M"
+      manufacture_part_params['request_from'] = "M"
+
+      if params['collected_date'].present?
+        manufacture_part_params['ticket.user_ticket_actions.action_id'] = 36
+        manufacture_part_params['ticket.user_ticket_actions.action_at'] = params['collected_date']
+      end
+
+      if params['return_part_accepted_date'].present? or params['return_part_accepted_by'].present?
+        manufacture_part_params['ticket.user_ticket_actions.action_id'] = 43
+        manufacture_part_params['ticket.user_ticket_actions.action_at'] = params['return_part_accepted_date'] if params['return_part_accepted_date'].present?
+        manufacture_part_params['ticket.user_ticket_actions.action_by_name'] = params['return_part_accepted_by'] if params['return_part_accepted_by'].present?
+      end
+
+      if params['event_closed_by'].present?
+        manufacture_part_params['ticket.user_ticket_actions.action_id'] = 44
+        manufacture_part_params['ticket.user_ticket_actions.action_by'] = params['event_closed_by']
+      end
 
       params[:created_at_to] = (params[:created_at_to].present? ? params[:created_at_to] : Date.today.strftime("%Y-%m-%d"))
-      puts params[:created_at_to]
+
       params[:created_at_from] = ( params[:created_at_to].to_date - 3.months ).strftime("%Y-%m-%d")
 
       refined_search_manufacture_part = manufacture_part_params.map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
