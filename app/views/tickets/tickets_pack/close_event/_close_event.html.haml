@@ -96,7 +96,7 @@
           .col-md-6
             = tm.input :po_required, label: "PO Required", wrapper: :append, input_html: { checked: true }
           .col-md-12
-            = tm.input :payment_expected_manufacture, label: "Payment Expected (#{product.product_brand.currency.try(:code)})", input_html: {class: "only_float"}
+            = tm.input :payment_expected_manufacture, label: "Payment Expected (#{product.product_brand.currency.try(:code)})"
           .col-md-12
             = f.input :note, input_html: {value: nil}
             = simple_format f.object.note
