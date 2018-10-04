@@ -75,9 +75,6 @@
   .col-md-3
     %strong Bundle Deliver Date :
     #{ticket.user_ticket_actions.select{|u| u.action_id == 46}.first.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")}
-  .col-md-3
-    %strong Ticket Assigned Date :
-    #{ticket.owner_engineer.job_assigned_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")}
 
 .row
   .col-md-12

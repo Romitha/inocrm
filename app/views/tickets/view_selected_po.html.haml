@@ -51,7 +51,7 @@
             %td
               = po_item.item_no
             %td
-              = po_item.ticket_spare_part.ticket.product.try(:serial_no)
+              = po_item.ticket_spare_part.ticket.products.first.try(:serial_no)
             %td
               = po_item.amount
             %td
