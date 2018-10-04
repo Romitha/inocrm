@@ -547,7 +547,7 @@ module ApplicationHelper
         estimation_part = ticket_invoice_estimation.ticket_estimation.ticket_estimation_parts.first
         item_index += 1
         description = "Part No: #{estimation_part.ticket_spare_part.spare_part_no} #{estimation_part.ticket_spare_part.spare_part_description}" + "#{' (Warr: ' + estimation_part.warranty_period.to_s + ' M)' if estimation_part.warranty_period.present? }"
-        item_code = estimation_part.ticket_spare_part.ticket_spare_part_store.present? ? estimation_part.ticket_spare_part.ticket_spare_part_store.approved_inventory_product.try(:generated_item_code) : ""
+        item_code = estimation_part.ticket_spare_part.ticket_spare_part_store.present? ? (estimation_part.ticket_spare_part.ticket_spare_part_store.approved_inventory_product.try(:generated_item_code) || estimation_part.ticket_spare_part.ticket_spare_part_store.inventory_product.try(:generated_item_code)) : ""
 
         totalprice = ticket_invoice_estimation.ticket_estimation.approval_required ? estimation_part.approved_estimated_price.to_f : estimation_part.estimated_price.to_f
 
