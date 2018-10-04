@@ -240,7 +240,10 @@ class TicketsController < ApplicationController
             @product_category = @new_product.product_category
             # session[:ticket_initiated_attributes].merge!({sla_id: (@product_category.sla_id || @product_brand.sla_id)})
 
+            old_ticket = Rails.cache.read([:new_ticket, request.remote_ip.to_s, @ticket_time_now])
+            t_attributes = old_ticket.attributes
             ticket_attr = Rails.cache.fetch([:ticket_initiated_attributes, @ticket_time_now ])
+            ticket_attr.merge!(t_attributes)
             Rails.cache.write([:ticket_initiated_attributes, @ticket_time_now ], ticket_attr.merge({sla_id: (@new_product.sla_id || @product_category.sla_id || @product_brand.sla_id)}))
 
             @product = @new_product
