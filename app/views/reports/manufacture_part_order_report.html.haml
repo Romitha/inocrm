@@ -35,7 +35,7 @@
               = select_tag "search_manufacture_part[engineer.sbu_id]", options_from_collection_for_select(Sbu.all, :id, :sbu), include_blank: true, id: "search_contracts_brand_name",class: "form-control"
             .col-md-4
               = label_tag "Engineer"
-              = select_tag "search_manufacture_part[engineer.id]", options_from_collection_for_select(TicketEngineer.all, :id, :full_name), include_blank: true, id: "search_contracts_brand_name",class: "form-control"
+              = select_tag "search_manufacture_part[engineer.user_id]", options_from_collection_for_select(TicketEngineer.all.to_a.uniq{|t| t.user_id }, :user_id, :full_name), include_blank: true, id: "search_contracts_brand_name",class: "form-control"
             .col-md-4
               = label_tag "Part Status"
               = select_tag "search_manufacture_part[status_action_id]", options_from_collection_for_select(SparePartStatusAction.all, :id, :name), include_blank: true, id: "search_contracts_brand_name",class: "form-control"

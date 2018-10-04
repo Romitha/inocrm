@@ -55,7 +55,7 @@ class TicketSparePart < ActiveRecord::Base
           },
         },
         engineer: {
-          only: [:id],
+          only: [:id, :user_id],
           methods: [:sbu_name, :sbu_id, :full_name ]
         },
         so_po_items: {

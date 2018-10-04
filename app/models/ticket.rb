@@ -313,7 +313,7 @@ class Ticket < ActiveRecord::Base
           only: [:id, :customer_quotation_no],
         },
         user_ticket_actions: {
-          only: [:id, :action_id],
+          only: [:id, :action_id, :action_at],
           methods: [:formatted_action_date, :action_by_name, :action_engineer_by_name, :feedback_reopen],
         },
       }
