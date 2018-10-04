@@ -121,21 +121,21 @@ wb.add_worksheet(name: "ERP report") do |sheet|
     ticket_content << ticket.spare_part_counts[:manufacture]
     ticket_content << ticket.spare_part_counts[:store]
     ticket_content << ticket.spare_part_counts[:onloan]
-    ticket_content << ticket.job_completed_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") if ticket.job_completed_at.present?
+    ticket_content << (ticket.job_completed_at.present? ? ticket.job_completed_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") : "")
 
     user_actions = {}
     ticket.user_ticket_actions.select{|u| [55, 58, 60, 67].include?(u.action_id) }.each do |u|
       if [58, 60].include?(u.action_id)
         user_actions[58] = u.action_by_name
       else
-        user_actions[u.action_id.to_i] = u.formatted_action_date
+        user_actions[u.action_id.to_i] = u.action_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
       end
     end
 
     [55, 58, 67].each{ |e| user_actions[e] ||= ''  }
     ticket_content.concat(Hash[user_actions.sort].values)
 
-    ticket_content << ticket.qc_passed_at.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
+    ticket_content << ( ticket.qc_passed_at.present? ? ticket.qc_passed_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") : "" )
 
     sheet.add_row ticket_content
   end
