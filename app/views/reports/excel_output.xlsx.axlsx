@@ -121,7 +121,7 @@ wb.add_worksheet(name: "ERP report") do |sheet|
     ticket_content << ticket.spare_part_counts[:manufacture]
     ticket_content << ticket.spare_part_counts[:store]
     ticket_content << ticket.spare_part_counts[:onloan]
-    ticket_content << (ticket.job_completed_at.present? ? ticket.job_completed_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") : "")
+    ticket_content << (ticket.job_closed_at.present? ? ticket.job_closed_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") : "")
 
     user_actions = {}
     ticket.user_ticket_actions.select{|u| [55, 58, 60, 67].include?(u.action_id) }.each do |u|
