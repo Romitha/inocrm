@@ -15,7 +15,7 @@ window.Warranties =
 
   update_datepicker: ->
     $('.datepicker').datepicker
-      format: $(":selected", this).val()
+      format: $(".selectpicker:selected").val()
 
     $('.selectpicker').change ->
       format_value = $(this).val()
