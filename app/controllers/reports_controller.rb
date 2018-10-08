@@ -379,6 +379,7 @@ class ReportsController < ApplicationController
   def non_contract_ticket_report
     Ticket
     Invoice
+    authorize! :non_contract_ticket_report, Ticket
     if params[:search].present?
       params[:from_where] = "job_ticket"
 
@@ -443,6 +444,7 @@ class ReportsController < ApplicationController
   def customer_product_report
     Ticket
     Invoice
+    authorize! :customer_product_report, Product
     if params[:search].present?
       params[:from_where] = "customer_product"
 
@@ -555,10 +557,7 @@ class ReportsController < ApplicationController
 
       refined_contract = refined_contract.map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
 
-
-
       refined_search = [refined_contract].map{|v| v if v.present? }.compact.join(" AND ")
-
 
       request.format = "xls"
     end
@@ -585,16 +584,6 @@ class ReportsController < ApplicationController
       not_need_index << {id: contract.id, not_need_index: need_index_boolean}
 
     end
-    # if @contracts.present?
-    #   t_ids = []
-    #   not_need_index.uniq{|n| n[:id]}.each do |n_index|
-    #     t_ids << n_index[:id]
-    #     # if !n_index[:not_need_index]
-    #     #   # Ticket.find(n_index[:id]).update_index
-    #     # end
-    #   end
-    #   TicketContract.index.import Product.where(id: t_ids) if t_ids.present?
-    # end
     if @contracts.present?
 
       not_need_index.uniq{|n| n[:id]}.each do |n_index|
@@ -623,7 +612,7 @@ class ReportsController < ApplicationController
         format.html
       end
     end
-    TicketContract.index.import TicketContract.all
+    # TicketContract.index.import TicketContract.all
   end
   
 
@@ -670,12 +659,13 @@ class ReportsController < ApplicationController
         format.html
       end
     end
-    TicketContract.index.import TicketContract.all
+    # TicketContract.index.import TicketContract.all
   end
 
   def warranty_expire
     Ticket
     Invoice
+    authorize! :warranty_expire_report, Warranty
     if params[:date_from].present?
       @warranty_expired_list = Warranty.all.select{|w| w.end_at.to_date < params[:date_from].to_date.beginning_of_day}
       @warranty_expireds = @warranty_expired_list.sort_by{|e| e[:end_at]}.reverse
@@ -749,7 +739,7 @@ class ReportsController < ApplicationController
   def contract_expire
     Ticket
     Invoice
-    authorize! :contract_report, TicketContract
+    authorize! :contract_expire, TicketContract
     if params[:time_period] == "1"
       @time_to_expire = 30
     else

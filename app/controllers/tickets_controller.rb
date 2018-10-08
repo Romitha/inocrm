@@ -1616,10 +1616,11 @@ class TicketsController < ApplicationController
 
     @ticket = Ticket.find params[:ticket_id]
     @product = Product.find product_id
+    @product.current_user_id = current_user.id
 
     @product.attributes = product_params[product_id]
 
-    @product.pop_note = "#{@product.pop_note} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@product.pop_note_was}" if @product.pop_note_changed?
+    # @product.pop_note = "#{@product.pop_note} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{current_user.email}</span><br/>#{@product.pop_note_was}" if @product.pop_note_changed?
     warranty_constraint = true
 
     @continue = view_context.bpm_check params[:task_id], params[:process_id], params[:owner]

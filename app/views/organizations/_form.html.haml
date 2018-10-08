@@ -129,10 +129,10 @@
       %ul.nav.nav-tabs{role: "tablist"}
         - tapbar.each do |link_info|
           - if organization.id == Organization.owner.id
-            - if [tapbar[5], tapbar[7]].include? link_info
+            - if [tapbar[5]].include? link_info
               %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"} unless(Organization::TYPES[2,3].include?(organization.category))
-            - elsif [tapbar[7]].include? link_info
-              %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"} if organization.refers=="CRM_OWNER"
+            - elsif [tapbar[7]].include?(link_info)
+              / %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"}
             - else
               %li= link_to link_info[0], link_info[1], role: "tab", data: {toggle: "tab"}
           - else

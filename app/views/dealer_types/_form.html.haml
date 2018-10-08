@@ -1,4 +1,4 @@
-- if organization.accounts_dealer_types.any?
+- if organization.accounts_dealer_types.any? and can?(:dealer_types, Organization)
   - d_odd = organization.accounts_dealer_types.first.dealer_type.id.odd?
   .col-md-12
     = form_tag dealer_types_organization_path(organization), :method => :post do
@@ -9,3 +9,5 @@
           = check_box_tag "dealer_type_ids[]", d.id, organization.accounts_dealer_types.pluck(:dealer_types_id).include?(d.id), disabled: (organization.accounts_dealer_types.pluck(:dealer_types_id).include?(d.id)? true : false), class: "dealer_type_check"
       .row
         = submit_tag "Save", class: "btn btn-success pull-left hide", id: "save_dealer_type"
+- else
+  Please make sure that dealer types are available or permission is given to access the information

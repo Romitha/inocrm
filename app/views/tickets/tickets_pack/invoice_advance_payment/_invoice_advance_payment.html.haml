@@ -84,7 +84,8 @@
   .row
     .col-md-2
       %strong Payment type:
-      = TicketPaymentReceivedType::TYPES.key(ticket_payment_received.payment_type)
+      / = TicketPaymentReceivedType::TYPES.key(ticket_payment_received.payment_type)
+      = INOCRM_CONFIG['TicketPaymentReceivedType'].key(ticket_payment_received.payment_type)
     .col-md-6
       %strong Payment note:
       = ticket_payment_received.payment_note

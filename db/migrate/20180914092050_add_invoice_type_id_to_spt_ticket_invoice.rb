@@ -7,20 +7,3 @@ class AddInvoiceTypeIdToSptTicketInvoice < ActiveRecord::Migration
 
   end
 end
-
-
-
-
-			# 		UPDATE TABLE `inocrm`.`spt_ticket_invoice` (
-			# …..
-			#   `invoice_type_id` INT UNSIGNED NULL,
-			# …..
-			#   INDEX `ind_spt_ticket_invoice_invoice_type_id` (`invoice_type_id` ASC),
-			 
-			# …..
-			#   CONSTRAINT `fk_spt_ticket_invoice_invoice_type_id`
-			#     FOREIGN KEY (`invoice_type_id`)
-			#     REFERENCES `inocrm`.`mst_spt_invoice_type` (`id`)
-			#     ON DELETE NO ACTION
-			#     ON UPDATE NO ACTION)
-			# ENGINE = InnoDB
