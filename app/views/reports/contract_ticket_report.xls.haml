@@ -1,34 +1,4 @@
 %h3 Contract - Ticket Report
-
-/ %br
-/ %h4 Search Critaria
-/ %table{:border => "1"}
-/   %thead
-/     %tr
-/       %th Customer Name
-/       %th Service Provider
-/       %th Account manager
-/       %th Season
-/       %th Contract Date From
-/       %th Contract Date To
-/       %th Brand
-/       %th Category
-/       %th Contract type
-/       %th Currency
-/   %tbody
-/     %tr
-/       %td= @customer_name
-/       %td= @service_provider
-/       %td= @account_manager
-/       %td= @season
-/       %td= @date_from
-/       %td= @date_to
-/       %td= @brand_name
-/       %td= @category_name
-/       %td= @contract_type
-/       %td= @currnecy
-/ %br
-/ %br
 %table{:border => "1"}
   %thead
     %tr
@@ -49,9 +19,6 @@
       %th Job Type
       %th Start Date
       %th Start Action
-      / %th Engineer Name
-      / %th Engineers Assign Date
-      / %th Engineer Finished Date
       %th Re-Open Count
       %th Chargeable
       %th Final Resolution
@@ -91,7 +58,7 @@
         %td= ticket.ticket_contract.try(:organization).try(:account).try(:get_account_manager)
         %td= ticket.ticket_contract.try(:brand_name)
         %td= ticket.products.first.try(:name)
-        %td= ticket.ticket_contract.try(:location_address_full)
+        %td= ticket.ticket_contract_location
         %td= ticket.products.first.try(:serial_no)
         %td= ticket.ticket_contract.try(:ticket_currency).try(:code)
         %td= standard_currency_format ticket.ticket_contract_product_amount.to_f

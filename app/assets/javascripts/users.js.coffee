@@ -56,6 +56,7 @@ window.Users =
         ),
         error: (error) =>
           alert error.statusText
+          $(e).text("Re-Print")
 
   update_database_after_printer_application: (action, print_object_id)->
     $.ajax

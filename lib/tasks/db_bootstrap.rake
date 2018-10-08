@@ -95,6 +95,7 @@ task seed_roles_permissions: :environment do
   # SubjectAction.delete_all
   # Rpermission.delete_all
   # SubjectAttribute.delete_all
+  Role.all.each{|r| r.flush_cache }
 
   permission_file = File.join Rails.root, "config", "permissions_list.yaml"
   permissions = YAML.load File.open(permission_file)

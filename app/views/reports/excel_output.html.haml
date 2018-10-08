@@ -6,13 +6,13 @@
         = form_tag excel_output_reports_path, method: :get, class: "form-horizontal" do
           .row.small_scale_margin-top1
             .col-md-3
-              = text_field_tag "range_from", (params[:range_from] || ( Date.today - 3.months ).strftime("%Y-%m-%d")), class: "form-control date_restrict has-tooltip", placeholder: "Select From date", data: {affectdataclass: "date_restrict_affect", toggle: "tooltip", placement: "left"}, title: "Range From"
+              = text_field_tag "range_from", (params[:range_from] || ( Date.today - 3.months ).strftime("%Y-%m-%d")), class: "form-control date_restrict has-tooltip", placeholder: "Select From date", data: {affectdataclass: "date_restrict_affect", toggle: "tooltip", placement: "left"}, title: "Range From", label: "Select From Date"
             .col-md-3
-              = text_field_tag "range_to", (params[:range_to] || Date.today.strftime("%Y-%m-%d")), class: "form-control date_restrict_affect", placeholder: "Select To date", disabled: true, title: "Range To", data: {toggle: "tooltip", placement: "left"}
+              = text_field_tag "range_to", (params[:range_to] || Date.today.strftime("%Y-%m-%d")), class: "form-control date_restrict_affect", placeholder: "Select To date", disabled: true, title: "Range To", label: "Select To Date", data: {toggle: "tooltip", placement: "left"}
             .col-md-3
-              = text_field_tag "l_range_from", params[:l_range_from], class: "form-control date_restrict_affect date_restrict_log_affect", placeholder: "Select From logged date", disabled: true, data: {affectdataclass: "date_restrict_log_affect_to"}
+              = text_field_tag "l_range_from", params[:l_range_from], class: "form-control date_restrict_affect date_restrict_log_affect", placeholder: "Select From logged date", label: "Select From Log Date", disabled: true, data: {affectdataclass: "date_restrict_log_affect_to"}
             .col-md-3
-              = text_field_tag "l_range_to", params[:l_range_to], class: "form-control datepicker date_restrict_log_affect_to", placeholder: "Select To logged date", disabled: true
+              = text_field_tag "l_range_to", params[:l_range_to], class: "form-control datepicker date_restrict_log_affect_to", placeholder: "Select To logged date", disabled: true, label: "Select To Log Date"
           .row.small_scale_margin-top1
             .col-md-3
               = label_tag "Brand"

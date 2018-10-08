@@ -4,6 +4,8 @@ class Product < ActiveRecord::Base
   include Tire::Model::Search
   include Tire::Model::Callbacks
 
+  attr_accessor :current_user_id
+
   mapping do
     indexes :tickets, type: "nested", include_in_parent: true
   end
@@ -126,8 +128,20 @@ class Product < ActiveRecord::Base
 
   # after_save :strip_serial_no
 
-  def append_pop_status
-    self.pop_note = "#{self.pop_note} <span class='pop_note_e_time'>(edited on #{Time.now.strftime('%d %b, %Y at %H:%M:%S')})</span><br/>#{pop_note_was}"
+  # def append_pop_status
+  #   self.pop_note = "#{self.pop_note} <span class='pop_note_e_time'>(edited on #{Time.now.strftime('%d %b, %Y at %H:%M:%S')})</span><br/>#{pop_note_was}"
+  # end
+
+  before_save do |product|
+
+    if product.persisted? and product.pop_note_changed? and product.pop_note.present?
+      product_pop_note = "#{product.pop_note} <span class='pop_note_e_time'> on #{Time.now.strftime('%d/ %m/%Y at %H:%M:%S')}</span> by <span class='pop_note_created_by'> #{User.cached_find_by_id(product.current_user_id).full_name}</span><br/>#{product.pop_note_was}"
+    elsif product.new_record?
+      product_pop_note = product.pop_note  
+    else
+      product_pop_note = product.pop_note_was
+    end
+    product.pop_note = product_pop_note
   end
 
   def cannot_removable_from_contract?(contract_id)

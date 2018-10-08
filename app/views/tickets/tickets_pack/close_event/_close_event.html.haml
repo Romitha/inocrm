@@ -80,6 +80,11 @@
         %strong
           Bundle Delivered Date:
           = u.action_at.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
+    - if u.action_id == 2
+      .col-md-3
+        %strong
+          Ticket Assigned Date:
+          = u.action_at.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
 .row
   .col-md-12
     %strong Problem Description :

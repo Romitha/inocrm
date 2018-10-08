@@ -52,6 +52,11 @@
                   .strong Job type
                   = f.select :job_type_id, options_from_collection_for_select(JobType.where(active: true), :id, :name), {}, {class: "form-control"}
 
+        - if @re_assignment
+          = f.simple_fields_for :products do |p|
+            .row
+              .col-md-6
+                = p.association :product_pop_status, collection: ProductPopStatus.where(active: true)
         .row
           .col-md-12
             = f.input :remarks, input_html: {value: nil}, placeholder: "Please enter remarks"

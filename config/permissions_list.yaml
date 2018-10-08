@@ -38,12 +38,6 @@ Organization:
     system_module:
       name: Organization
 
-  # View parent organization:
-  #   actions:
-  #     - asdf
-  # Modify parent organization:
-  #   actions:
-  #     - asdf
   Assign dealer type:
     actions:
       - dealer_types
@@ -505,9 +499,18 @@ Ticket:
       - excel_output
     system_module:
       name: Ticket
+
   Access Onloan Return Pending Parts:
     actions:
       - onloan_return_pending_parts
+    attributes:
+      []
+    system_module:
+      name: Ticket
+
+  Generate Non Contract Report:
+    actions:
+      - non_contract_ticket_report
     attributes:
       []
     system_module:
@@ -569,6 +572,12 @@ TicketContract:
     system_module:
       name: Contract
 
+  Generate Contract Expire report:
+    actions:
+      - contract_expire
+    system_module:
+      name: Contract
+
 ReturnPartsBundle:
   View delivered bundle:
     actions:
@@ -615,3 +624,21 @@ Customer:
       []
     system_module:
       name: Organization
+
+Warranty:
+  Generate Warranty Expire Report:
+    actions:
+      - warranty_expire_report
+    attributes:
+      []
+    system_module:
+      name: Organization
+
+Product:
+  Generate Customer Product Report:
+    actions:
+      - customer_product_report
+    attributes:
+      []
+    system_module:
+      name: Ticket
