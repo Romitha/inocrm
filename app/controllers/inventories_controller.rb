@@ -2048,48 +2048,48 @@ class InventoriesController < ApplicationController
     estimation = TicketEstimation.find params[:part_estimation_id]
     @ticket = Ticket.find params[:ticket_id]
     t_est_price = 0
+    @jump_next = params[:approval_complete_check].to_bool if params[:approval_complete_check].present?
 
-    continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
-    @continue = continue
-    if continue
+    if estimation.estimation_status.code == 'RQS'
 
-      if estimation.estimation_status.code == 'RQS'
+      if estimation.ticket_estimation_parts.any? { |p| p.ticket_spare_part.spare_part_status_action.code == "CLS" }
+        estimation.update status_id: EstimationStatus.find_by_code("CLS").id
+        @jump_next = true
+        flash[:notice]= "Requested Part is terminated."
+      else
+        estimation.update estimation_params
 
-        if estimation.ticket_estimation_parts.any? { |p| p.ticket_spare_part.spare_part_status_action.code == "CLS" }
-          estimation.update status_id: EstimationStatus.find_by_code("CLS").id
-          @jump_next = true
-          flash[:notice]= "Requested Part is terminated."
+        t_est_price = estimation.ticket_estimation_parts.sum(:approved_estimated_price).to_f + estimation.ticket_estimation_additionals.sum(:approved_estimated_price).to_f
+
+        if t_est_price > 0
+          estimation.update_attribute(:cust_approval_required, true)
         else
-          estimation.update estimation_params
-
-          t_est_price = estimation.ticket_estimation_parts.sum(:approved_estimated_price).to_f + estimation.ticket_estimation_additionals.sum(:approved_estimated_price).to_f
-
-          if t_est_price > 0
-            estimation.update_attribute(:cust_approval_required, true)
-          else
-            estimation.update_attribute(:cust_approval_required, false)
-          end
-
-          @jump_next = params[:approval_complete_check].to_bool if params[:approval_complete_check].present?
-          if @jump_next
-
-            estimation.ticket_estimation_parts.each do |p|
-              p.ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("ECM").id) #Estimation Completed
-              p.ticket_spare_part.ticket_spare_part_status_actions.create(status_id: p.ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
-            end
-
-            @ticket.update_attribute(:status_resolve_id, TicketStatusResolve.find_by_code("EST").id)# (Estimated).
-            estimation.update status_id: EstimationStatus.find_by_code('EST').id, approved: true, approved_at: DateTime.now, approved_by: current_user.id
-
-            #Set Action (75) Part Estimation Customer Aproved, DB.spt_act_job_estimate
-            user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(75).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
-            user_ticket_action.build_act_job_estimation(ticket_estimation_id: estimation.id)
-            user_ticket_action.save
-
-          end
+          estimation.update_attribute(:cust_approval_required, false)
         end
 
         if @jump_next
+
+          estimation.ticket_estimation_parts.each do |p|
+            p.ticket_spare_part.update(status_action_id: SparePartStatusAction.find_by_code("ECM").id) #Estimation Completed
+            p.ticket_spare_part.ticket_spare_part_status_actions.create(status_id: p.ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
+          end
+
+          @ticket.update_attribute(:status_resolve_id, TicketStatusResolve.find_by_code("EST").id)# (Estimated).
+          estimation.update status_id: EstimationStatus.find_by_code('EST').id, approved: true, approved_at: DateTime.now, approved_by: current_user.id
+
+          #Set Action (75) Part Estimation Customer Aproved, DB.spt_act_job_estimate
+          user_ticket_action = @ticket.user_ticket_actions.build(action_id: TaskAction.find_by_action_no(75).id, action_at: DateTime.now, action_by: current_user.id, re_open_index: @ticket.re_open_count)
+          user_ticket_action.build_act_job_estimation(ticket_estimation_id: estimation.id)
+          user_ticket_action.save
+
+        end
+      end
+
+      if @jump_next
+        continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
+        @continue = continue
+
+        if continue
           # bpm output variables
           bpm_variables = view_context.initialize_bpm_variables
 
@@ -2189,17 +2189,18 @@ class InventoriesController < ApplicationController
             flash[:error]= "Estimate part is updated. but Bpm error"
           end
         else
-          flash[:error] = "Estimate updated. But not completed."
+          flash[:error]= "Bpm error"
         end
-
       else
-        flash[:error] = "Already estimated."
-        bpm_variables = view_context.initialize_bpm_variables
-        bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
+        flash[:error] = "Estimate updated. But not completed."
       end
+
     else
-      flash[:error]= "Unable to update. Bpm error"
+      flash[:error] = "Already estimated."
+      bpm_variables = view_context.initialize_bpm_variables
+      bpm_response = view_context.send_request_process_data complete_task: true, task_id: params[:task_id], query: bpm_variables
     end
+
     redirect_to todos_url
 
   end
