@@ -173,7 +173,7 @@
                             = number_with_precision ee.object.estimated_tax_amount, precision: 2
 
                       .col-md-4#ddd
-                        = ee.input :approved_tax_amount, label: "Approved tax amount (#{ticket.ticket_currency.code})", as: :string, input_html: {min: 0, class: "estimated_tax_amount_class only_float", id:"approved_tax_amount_id", oninput: "Inventories.calculate_tax_price(this); return false;", value: ee.object.estimated_tax_amount.to_f, data: {initvalue: ee.object.estimated_tax_amount.to_f }}, wrapper_html: {class: "inline-input"}
+                        = ee.input :approved_tax_amount, label: "Approved tax amount (#{ticket.ticket_currency.code})", as: :string, input_html: {min: 0, class: "estimated_tax_amount_class only_float", id:"approved_tax_amount_id", oninput: "Inventories.calculate_tax_price(this); return false;", value: ee.object.estimated_tax_amount.to_f, data: {initvalue: (ee.object.approved_tax_amount || ee.object.estimated_tax_amount.to_f) }}, wrapper_html: {class: "inline-input"}
 
                       .add_sign.col-md-3{style: "padding-top:2.5%;"}
                         = ee.link_to_remove id: "remove_tag_id", class: "remove_c_t_v_link", onclick: "Inventories.remove_function(this); return false;" do
@@ -214,7 +214,7 @@
                   .panel-body.small_scale_padding2
                     .est_estimated_amount= number_with_precision ta.object.estimated_price, precision: 2
               .col-md-2.col-xs-2.col-sm-2
-                = ta.input :approved_estimated_price, as: :string, input_html: { data: {initvalue: ta.object.estimated_price.to_f }, class: "estimation_value only_float", oninput: "Inventories.calculate_cost_price(this);", value: ta.object.estimated_price }, label: "Approved estimated price (#{estimate_currency})"
+                = ta.input :approved_estimated_price, as: :string, input_html: { data: {initvalue: ta.object.estimated_price.to_f }, class: "estimation_value only_float", oninput: "Inventories.calculate_cost_price(this);", value: (ta.object.approved_estimated_price || ta.object.estimated_price) }, label: "Approved estimated price (#{estimate_currency})"
               .col-md-2.col-xs-2.col-sm-2
                 %strong
                   Profit(%):
@@ -242,7 +242,7 @@
                                 = number_with_precision e.object.estimated_tax_amount, precision: 2
                           .col-md-4#ddd
 
-                            = e.input :approved_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class", oninput: "Inventories.calculate_tax_price(this); return false;", value: e.object.estimated_tax_amount.to_f, data: {initvalue: e.object.estimated_tax_amount.to_f }}, label: "Approved tax amount (#{estimate_currency})"
+                            = e.input :approved_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class", oninput: "Inventories.calculate_tax_price(this); return false;", value: e.object.estimated_tax_amount.to_f, data: {initvalue: (e.object.approved_tax_amount || e.object.estimated_tax_amount.to_f) }}, label: "Approved tax amount (#{estimate_currency})"
 
                             / = e.input :approved_tax_amount, as: :string, input_html: {class: "estimated_tax_amount_class", value: e.object.estimated_tax_amount}, label: "Approved tax amount (#{estimate_currency})"
 
