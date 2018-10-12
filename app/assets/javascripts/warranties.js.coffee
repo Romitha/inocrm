@@ -14,13 +14,16 @@ window.Warranties =
     $.post "warranties/create", {warranty_id: warranty_id}
 
   update_datepicker: ->
-    $('.datepicker').datepicker
-      format: $(".selectpicker:selected").val()
+    $('#warranty_start_at').datepicker 'remove'
+    $('#warranty_start_at').datepicker
+      format: $(".selectpicker :selected").val()
+      todayBtn: true
+      todayHighlight: true
 
     $('.selectpicker').change ->
       format_value = $(this).val()
-      $('.datepicker').datepicker 'remove'
-      $('.datepicker').datepicker
+      $('#warranty_start_at').datepicker 'remove'
+      $('#warranty_start_at').datepicker
         format: format_value
         todayBtn: true
         todayHighlight: true

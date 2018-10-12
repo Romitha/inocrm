@@ -33,7 +33,7 @@ class TicketSparePart < ActiveRecord::Base
     TaskAction
     to_json(
       only: [:id, :spare_part_no, :spare_part_description, :request_from, :part_returned, :part_terminated, :part_returned_by, :requested_at, :requested_by, :note, :status_action_id, :created_at],
-      methods: [:engineer_name, :ticket_status, :ticket_use_status, :status_action_name],
+      methods: [:engineer_name, :ticket_status, :ticket_use_status, :status_action_name, :spare_part_type],
       include: {
         ticket_spare_part_manufacture: {
           only: [:id, :spare_part_id, :event_no, :order_no, :collect_pending_manufacture, :order_pending, :updated_at, :payment_expected_manufacture, :add_bundle_by, :add_bundle_at, :order_pending_at, :order_pending_by],
@@ -45,7 +45,7 @@ class TicketSparePart < ActiveRecord::Base
           }
         },
         ticket: {
-          only: [:id, :status_id],
+          only: [:id, :status_id, :logged_at],
           methods:[:support_ticket_no, :product_info],
           include: {
             user_ticket_actions: {
@@ -148,8 +148,12 @@ class TicketSparePart < ActiveRecord::Base
     spare_part_status_use.try(:name)
   end
 
-  def ticket_serial_no
+  def ticket_product_serial_no
     ticket.ticket_product_serial_no
+  end
+
+  def ticket_serial_no
+    ticket.support_ticket_no
   end
 
   def engineer_name

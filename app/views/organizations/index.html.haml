@@ -7,14 +7,16 @@
   %h2
     %span
       - if params[:category] == "CUS"
-        Organization Customers
+        Organizational Customers
       - if params[:category] == "INDCUS"
         Individual Customers
       - if params[:category] == "SUP"
-        Organization Suppliers
+        Organizational Suppliers
       - if params[:category] == "INDSUP"
         Individual Suppliers
-    %strong (#{accounts.count})
+    %strong (#{@total_count})
   .organization_list
     - accounts.each do |account|
-      = render "organization", organization: account.organization if account.organization.present?
+      = render "organization", organization: account
+
+    = paginate accounts, method: :get, remote: false

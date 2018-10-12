@@ -31,6 +31,7 @@ module Admins
     def sbu
       User
       authorize! :sbu, Sbu
+      @sbu_all = []
 
       if params[:edit]
         if params[:engineer_id]
@@ -56,6 +57,8 @@ module Admins
           if @sbu.save
             params[:create] = nil
             @sbu = Sbu.new
+            @sbu_all = Sbu.order(updated_at: :desc).select{|i| i.persisted? }
+
           end
 
         elsif params[:edit_more]
@@ -66,12 +69,14 @@ module Admins
           if @sbu.update sbu_params
             params[:update] = nil
             @sbu = Sbu.new
+            @sbu_all = Sbu.order(updated_at: :desc).select{|i| i.persisted? }
+
           end
 
         else
           @sbu = Sbu.new
+          @sbu_all = Sbu.order(updated_at: :desc).select{|i| i.persisted? }
         end
-        @sbu_all = Sbu.order(updated_at: :desc).select{|i| i.persisted? }
       end
     end
 

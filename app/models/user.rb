@@ -453,6 +453,7 @@ class SbuEngineer < ActiveRecord::Base
   def cached_ticket_engineers
     Rails.cache.fetch([:sbu_engineer, self.id ]){ ticket_engineers }
   end
+
 end
 
 class Sbu < ActiveRecord::Base
@@ -467,6 +468,18 @@ class Sbu < ActiveRecord::Base
     TaskAction
     engineers.any? or user_assign_ticket_actions.any?
   end
+
+  after_save  :flush_cache
+
+  def flush_cache
+    Rails.cache.delete([ :sbu_engineers, self.id ])
+
+  end
+
+  def cached_sbu_engineers
+    Rails.cache.fetch([:sbu_engineers, self.id ]){ sbu_engineers }
+  end
+
 end
 
 class Feedback < ActiveRecord::Base

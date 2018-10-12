@@ -1,11 +1,12 @@
 - part_histories = @part_histories
 - serial_no = @serial_no
-- date_before_year = (Date.today - 1.year)
 %h3 Parts Order History
-%strong from #{date_before_year} to #{Date.today}
 %br
 %br
 - num = 0
+
+= paginate part_histories, method: :get, remote: false
+
 %table.table
   %thead
     %tr
@@ -25,24 +26,24 @@
 
   %tbody
     - part_histories.each_with_index do |part_history, index|
-      - if serial_no == part_history.ticket.ticket_product_serial_no.to_s
-        %tr
-          %td
-            - if params[:page]
-              = (index+1)+ 10*(params[:page].to_i-1)
-            - else
-              - num= num+1
-              = (num)
-          %td= part_history.ticket.support_ticket_no
-          %td= part_history.ticket.logged_at.strftime(INOCRM_CONFIG["short_date_format"])
-          %td= part_history.ticket.problem_description
-          %td= part_history.ticket_status
-          %td= part_history.spare_part_no
-          %td= part_history.spare_part_description
-          %td= part_history.spare_part_type
-          %td= part_history.requested_at.strftime(INOCRM_CONFIG["short_date_format"])
-          %td= User.cached_find_by_id(part_history.requested_by).full_name
-          %td= part_history.try(:ticket_spare_part_manufacture).try(:event_no)
-          %td= part_history.spare_part_status_use.name
-          %td= part_history.spare_part_status_action.name
+      %tr
+        %td
+          - if params[:page]
+            = (index+1)+ 100*(params[:page].to_i-1)
+          - else
+            - num= num+1
+            = (num)
+        %td= part_history.ticket.support_ticket_no
+        %td= part_history.ticket.logged_at.strftime(INOCRM_CONFIG["short_date_format"])
+        %td= part_history.ticket.problem_description
+        %td= part_history.ticket_status
+        %td= part_history.spare_part_no
+        %td= part_history.spare_part_description
+        %td= part_history.spare_part_type
+        %td= part_history.requested_at.to_datetime.strftime(INOCRM_CONFIG["short_date_format"])
+        %td= User.cached_find_by_id(part_history.requested_by).full_name
+        %td= part_history.try(:ticket_spare_part_manufacture).try(:event_no)
+        %td= part_history.ticket_use_status
+        %td= part_history.status_action_name
     %hr
+= paginate part_histories, method: :get, remote: false

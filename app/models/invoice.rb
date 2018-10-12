@@ -289,7 +289,12 @@ class CustomerQuotation < ActiveRecord::Base
   end
 
   def old_customer_approved_at
-    ticket_estimations.order("cust_approved_at asc").map(&:cust_approved_at).compact.first.try(:strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
+    obj = ticket_estimations.order("cust_approved_at asc").limit(1).map(&:cust_approved_at).compact.first
+    if obj.present?
+      {datetime: obj.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") , approved: (obj.cust_approved.nil? ? '' : ( obj.cust_approved ? "Approved" : "Rejected" ) ) }
+    else
+      { datetime: '', approved: '' }
+    end
   end
 
 end
