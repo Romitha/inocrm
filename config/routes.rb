@@ -152,6 +152,8 @@ Rails.application.routes.draw do
       get 'profile'
       put "upload_avatar"
       get "assign_role"
+      get "request_user_active"
+      post "accept_user_active"
     end
   end
 

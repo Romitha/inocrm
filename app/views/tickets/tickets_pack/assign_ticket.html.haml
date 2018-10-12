@@ -125,7 +125,7 @@
       <label for="Assign to" class="required control-label">Assign to</label>
       {{select-box optionArray=assignTo click=(action (mut obj.assign_to) value="target.value") }}
     .col-sm-4
-      <label for="Assign to" class="control-label">
+      <label for="Desription" class="control-label">
       Task Description
       {{textarea value=obj.task_description cols="80" rows="3" class="form-control"}}
       </label>
@@ -160,7 +160,11 @@
   {{optionArray}}
   <option  > </option>
   {{#each optionArray as |option|}}
+  {{ #if option.active }}
   <option value={{ option.id }} > {{option.name}} </option>
+  {{else}}
+  <option value={{ option.id }} disabled='disabled' > {{option.name}} </option>
+  {{/if}}
   {{/each}}
 
 %script{type: "text/x-handlebars", id: "components/group-list"}

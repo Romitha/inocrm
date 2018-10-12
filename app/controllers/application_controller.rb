@@ -40,6 +40,10 @@ class ApplicationController < ActionController::Base
           render js: "alert('session expired'); window.location.href='#{root_url}';" unless user_signed_in?
         end
       else
+        if user_signed_in? and !current_user.active
+          flash[:error] = "You are inactivated by System Admin. Please request here for activation."
+          sign_out current_user
+        end
         authenticate_user!
       end
     end

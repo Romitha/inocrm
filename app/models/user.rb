@@ -562,6 +562,10 @@ class TicketEngineer < ActiveRecord::Base
     Rails.cache.fetch([:user, :ticket_engineer, self.id ]){user.full_name}
   end
 
+  def user_active
+    Rails.cache.fetch([:user, :ticket_engineer, self.id ]){user.active}
+  end
+
   def flush_cache
     Rails.cache.delete([:sbu_engineer, sbu_id ])
   end

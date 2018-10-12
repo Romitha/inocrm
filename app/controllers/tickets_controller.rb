@@ -1283,7 +1283,7 @@ class TicketsController < ApplicationController
         # sbu_engineer = SbuEngineer.find params[:filter_sbu]
         # sbu = sbu_engineer.sbu
 
-        @sbus = sbu.sbu_engineers.where(active: true).map { |s| {id: s.engineer.id, name: "#{s.engineer.full_name} (#{ TicketEngineer.where(user_id: s.engineer_id, job_completed_at: nil).count })"} }
+        @sbus = sbu.sbu_engineers.where(active: true).map { |s| {id: s.engineer.id, active: s.engineer.user_active, name: "#{s.engineer.full_name} (#{ TicketEngineer.where(user_id: s.engineer_id, job_completed_at: nil).count })"} }
 
       else
         @sbus = Sbu.where(active: true).map { |s| {id: s.id, name: s.sbu} }
@@ -1303,7 +1303,7 @@ class TicketsController < ApplicationController
 
         end
 
-        filtered_engineers.group_by{ |t| t.channel_no.to_i }.map { |k, v| { channel_no: k, ticket_id: params[:ticket_id], eng_set: v.map{ |r| { name: r.user.full_name, image: r.user.avatar.url, id: r.id, order_no: r.order_no, channel_no: r.channel_no, ticket_id: r.ticket_id, deletable: r.deletable? } }.sort{ |p, n| p[:order_no].to_i <=> n[:order_no].to_i } } }
+        filtered_engineers.group_by{ |t| t.channel_no.to_i }.map { |k, v| { channel_no: k, ticket_id: params[:ticket_id], eng_set: v.map{ |r| { name: r.user.full_name, image: r.user.avatar.url, active: r.user.active, id: r.id, order_no: r.order_no, channel_no: r.channel_no, ticket_id: r.ticket_id, deletable: r.deletable? } }.sort{ |p, n| p[:order_no].to_i <=> n[:order_no].to_i } } }
 
       else
         {}
