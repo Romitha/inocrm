@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   load_and_authorize_resource except: [:assign_role, :check_user_session]
-  before_action :set_user, only: [:profile, :initiate_user_profile_edit, :update, :upload_avatar]
+  before_action :set_user, only: [:profile, :initiate_user_profile_edit, :update, :upload_avatar, :request_user_active, :accept_user_active]
   before_filter :user_session_expired, except: [:check_user_session]
 
   def new
@@ -129,6 +129,30 @@ class UsersController < ApplicationController
     no_user_session = current_user.nil?
     respond_to do |format|
       format.json {render json: no_user_session}
+    end
+  end
+
+  def request_user_active
+    respond_to do |format|
+      format.html
+    end
+  end
+
+  def accept_user_active
+
+    email_to = params[:email_to].to_s
+    cc = email_to.scan(/\bcc:+[a-zA-Z0-9._%+-]+@\w+\.\w{2,}\b/).map{|e| e[3..-1]}
+    to = (email_to.scan(/\bto:+[a-zA-Z0-9._%+-]+@\w+\.\w{2,}\b/).map{|e| e[3..-1]}.first or cc.first)
+
+    if params[:send_email].present? and params[:send_email].to_bool
+      if to.present?
+        view_context.send_email(email_to: to, email_cc: cc, email_code: "USER_ACTIVE")
+        @email_response = "Successfully sent email to: #{to}"
+      end
+    end
+
+    respond_to do |format|
+      format.html
     end
   end
 

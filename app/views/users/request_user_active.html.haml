@@ -1,0 +1,7 @@
+.row
+  .col-md-12
+    %h3 Sorry! You no longer active with this system. Anyhow you can contact System Admin to resolve this issue as soon as possible.
+
+/ = form_tag acept_user_active_user_path(@user), method: :post do
+/   = text_area_tag "note", nil, rows: 50
+/   = submit_tag "Request", class: "btn btn-sm btn-success"
