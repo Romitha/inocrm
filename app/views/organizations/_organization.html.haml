@@ -1,8 +1,8 @@
 .row.border-right1.border-left1.border-top1.border-bottom1.small_scale_margin-bottom1.small_scale_padding-top1.small_scale_padding-bottom1
   .col-md-1.col-xs-4.col-sm-2
     = link_to organization do
-      = image_tag (organization.logo.url || "organization_image.png"), class: "img-responsive"
-  .col-md-8.col-sm-5.col-xs-8.border-right1
+      = image_tag (organization.logo_url || "organization_image.png"), class: "img-responsive"
+  .col-md-7.col-sm-6.col-xs-8.border-right1
     .edit_organization
       %span.h4.strong
         = link_to edit_organization_path(organization), class: "has-tooltip", data: {toggle: "tooltip", placement: "left"}, title: "Edit #{organization.name}" do
@@ -15,8 +15,8 @@
     %p= organization.description
     = link_to "More >>", "#", onclick: "Organizations.toggle_more(); return false;", class: "hide more_toggle"
     - organization.accounts_dealer_types.each do |d|
-      %span.label.label-success= d.dealer_type.name
-  .col-md-3.col-sm-5.col-xs-10
+      %span.label.label-success= d.dealer_name
+  .col-md-4.col-sm-6.col-xs-10
     %table.table-default.col-md-offset-1.col-sm-offset-1
       %tbody
         %tr
@@ -26,11 +26,11 @@
         %tr
           %td
             %strong Created at :
-          %td= organization.account and organization.account.created_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
+          %td= organization.account and organization.account.created_at.to_datetime.try(:strftime, INOCRM_CONFIG["short_date_format"])
         %tr
           %td
             %strong Created by :
-          %td= organization.account and organization.account.created_user.try(:full_name)
+          %td= organization.account and organization.account.created_user.full_name
         %tr
           %td
             %strong Industry type :

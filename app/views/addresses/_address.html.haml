@@ -1,5 +1,7 @@
 .row.margin-none
   .col-md-3
+    %strong ID: #{address.id}
+    %br/
     = link_to "#", class: "inline_edit", data: {type: "select", source: Address::TYPES.collect{|category| {value: category, text: category}}, resource: "address", name: "category", url: polymorphic_path([address.addressable, address]), "original-title" => "Update address"} do
       = address.category
     %br/

@@ -13,7 +13,7 @@
 
 = collapse_wrapper collapse_id: "org_sla_list", labelledby: "org_sla_labelledby" do
   - @sla_all.each_with_index do |sla, index|
-    = collapse collapse_type: "info", labelledby: "labelledby_#{sla.id}", header_content: sla.description, collapse_link: "sla_link#{sla.id}", collapse_id: "org_sla_list" do
+    = collapse collapse_type: "info", labelledby: "labelledby_#{sla.id}", header_content: "ID:#{sla.id} - #{sla.description}", collapse_link: "sla_link#{sla.id}", collapse_id: "org_sla_list" do
       .pull-right
         - unless sla.is_used_anywhere?
           = link_to delete_admin_sla_admins_organizations_path(sla_id: sla.id), method: :delete, rel: "tooltip", :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do

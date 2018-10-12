@@ -12,18 +12,12 @@
       .col-md-6
         .strong
           Warranty date format
-        %select.selectpicker{:name => "selValue", class: "small_scale_margin-top1"}
-          %option dd M, yyyy
-          %option dd, yyyy, M
-          %option M, yyyy, dd
-          %option M, dd, yyyy
-          %option yyyy, M, dd
-          %option yyyy, dd, M
+        = select_tag "#", options_for_select([["dd M, yyyy", "dd M, yyyy"], ["dd, yyyy, M", "dd, yyyy, M"], ["M, yyyy, dd", "M, yyyy, dd"], ["M, dd, yyyy", "M, dd, yyyy"], ["yyyy, M, dd", "yyyy, M, dd"], ["yyyy, dd, M", "yyyy, dd, M"]], Product.find(product_id).product_brand.warranty_date_format), {:include_blank => false, class: "form-control selectpicker"}
     .row
       .col-md-6
-        = f.input :start_at, as: :string, input_html: {class: "datepicker"}
+        = f.input :start_at, as: :string, input_html: {class: "datepicker warranty_date"}
       .col-md-6
-        = f.input :end_at, as: :string, input_html: {class: "datepicker"}
+        = f.input :end_at, as: :string, input_html: {class: "datepicker warranty_date"}
     .row
       .col-md-4
         = f.input :period_part, input_html: {min: "0", class: "only_float"}

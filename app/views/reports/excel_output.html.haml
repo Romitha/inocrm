@@ -63,7 +63,7 @@
               = label_tag "Customer (Registered)"
               = select_tag "search_ticket[customer.organization_id]", options_from_collection_for_select(Organization.customers, :id, :name), include_blank: true, class: "form-control", id: "search_registered_customers"
               .col-md-10.small_scale_margin-top2#check_children_wrapper.hide
-                = label_tag "Children"
+                = label_tag "Descendent"
                 = check_box_tag "organization_children", true, false
             .col-md-3.small_scale_margin-top1
               = label_tag "District"

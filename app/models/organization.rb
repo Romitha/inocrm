@@ -224,8 +224,8 @@ class Organization < ActiveRecord::Base
 
   def to_indexed_json
     to_json(
-      only: [:id, :name, :type_id, :code],
-      methods: [:get_code],
+      only: [:id, :name, :type_id, :code, :web_site, :short_name, ],
+      methods: [:get_code, :logo_url],
       include: {
         industry_type: {
           only: [:id, :name],
@@ -252,8 +252,8 @@ class Organization < ActiveRecord::Base
           methods: [:contact_info],
         },
         account: {
-          only: [:id, :industry_types_id,:account_no, :code, :account_manager],
-          methods: [:get_account_manager],
+          only: [:id, :industry_types_id,:account_no, :code, :account_manager, :vat_number, :created_at],
+          methods: [:get_account_manager, :created_user, :industry_name],
         },
       },
     )
@@ -271,6 +271,10 @@ class Organization < ActiveRecord::Base
 
   def get_organization_account_manager
     account.try(:get_account_manager)
+  end
+
+  def logo_url
+    logo.url
   end
 
 end
@@ -452,13 +456,16 @@ class Account < ActiveRecord::Base
   validates_uniqueness_of :code, if: Proc.new { |account| account.code.present?}, message: "This code has already been taken"
 
   def created_user
-    User.cached_find_by_id(created_by)
+    {id: created_by, full_name: User.cached_find_by_id(created_by).try(:full_name)}
   end
   def get_account_manager
     account_manager.try(:full_name)
   end
   def get_account_manager_id
     account_manager.try(:id)
+  end
+  def industry_name
+    industry_type.try(:name)
   end
 
   has_many :dyna_columns, as: :resourceable

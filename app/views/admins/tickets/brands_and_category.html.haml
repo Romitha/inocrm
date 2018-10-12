@@ -22,31 +22,10 @@
           .col-md-3
             = f.input :parts_return_days
           .col-md-3
-            = f.input :warranty_date_format
+            = label_tag "Warranty Date Format", "Warranty Date Format"
+            = f.select :warranty_date_format, [["dd M, yyyy", "dd M, yyyy"], ["dd, yyyy, M", "dd, yyyy, M"], ["M, yyyy, dd", "M, yyyy, dd"], ["M, dd, yyyy", "M, dd, yyyy"], ["yyyy, M, dd", "yyyy, M, dd"], ["yyyy, dd, M", "yyyy, dd, M"]], {:include_blank => false}, {class: "form-control"}
           .col-md-3
             = f.input :contract_no_value
-
-        / = f.simple_fields_for :product_categories do |product_category|
-        /   .panel.panel-danger
-        /     .panel-heading
-        /       %h3.panel-title Product Category
-        /     .panel-body
-        /       .row
-        /         .col-md-1
-        /           .add_sign
-        /             = product_category.link_to_remove do
-        /               %span.glyphicon.glyphicon-remove-sign
-        /         .col-md-3
-        /           = product_category.label "SLA Time (hrs):"
-        /           = product_category.select :sla_id, SlaTime.all.map{|a| [a.sla_time, a.id]}
-        /         .col-md-5
-        /           = product_category.input :name
-        /         .col-md-3
-        /           = product_category.input :contract_no_value
-        / .row
-        /   .col-md-12
-        /     = f.link_to_add :product_categories do
-        /       %span.glyphicon.glyphicon-plus-sign Add a Category
 
         .panel.panel-success
           .panel-heading
@@ -55,7 +34,6 @@
             .row
               = f.simple_fields_for :product_brand_costs do |cost|
                 .row
-                  / - @currency =  Currency.all
                   = cost.input :currency_id, as: :hidden
                   = cost.input :updated_by, as: :hidden, input_html: {value: current_user.id}
                   %tr

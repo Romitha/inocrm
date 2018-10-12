@@ -19,8 +19,9 @@ class OrganizationsController < ApplicationController
         @organizations.select{|o| o.account.present? }
       end
     else
-      @dealer_type = DealerType.find_by_code params[:category]
-      @accounts = @dealer_type.accounts.sort{|p, n| p.organization.name <=> n.organization.name}
+      total_accounts = Organization.search(query: "accounts_dealer_types.dealer_code:#{params[:category]}")
+      @total_count = total_accounts.total
+      @accounts = total_accounts
     end
   end
 

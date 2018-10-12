@@ -17,23 +17,28 @@ class TicketsController < ApplicationController
 
     ct = params[:ct]
     fa = params[:fa]
-    if ct == "undefined"
-      @ct = ""
-    else
-      @ct = ct
-    end
-
-    if fa == "undefined"
-      @fa = ""
-    else
-      @fa = fa
-    end
 
     ticket_id = params[:ticket_id]
     @ticket = Ticket.find params[:ticket_id]
 
-    # ticket_spare_part = TicketSparePart.where("faulty_ct_no like ? and faulty_serial_no like ?", "#{ct}%", "#{fa}%")
-    ticket_spare_part = TicketSparePart.where("(faulty_ct_no like ? and faulty_serial_no like ?) or (received_part_ct_no like ? and received_part_serial_no like ?)", "#{ct}%", "#{fa}%", "#{ct}%", "#{fa}%")
+    query = []
+    value_hash = {}
+    if ct.present?
+      query << "(faulty_ct_no like :ct or received_part_ct_no like :ct)"
+      value_hash[:ct] = "#{ct}%"
+    end
+
+    if fa.present?
+      query << "(faulty_serial_no like :fa or received_part_serial_no like :fa)"
+      value_hash[:fa] = "#{fa}%"
+    end
+
+    ticket_spare_part = if query.any?
+      TicketSparePart.where(query.join(" or "), value_hash)
+    else
+      TicketSparePart.none
+    end
+
     @filtered_ticket_spare_part = ticket_spare_part.select{|s| s.ticket_id != @ticket.id }
     render "tickets/tickets_pack/resolution/ticket_in_modal"
   end
@@ -4632,7 +4637,7 @@ class TicketsController < ApplicationController
 
         @ticket.update_attribute(:status_id, TicketStatus.find_by_code("RSL").id) if @ticket.ticket_status.code == "ASN"
 
-        ticket_spare_part.update_index
+        spt_ticket_spare_part.update_index
 
         if (spt_ticket_spare_part.ticket_spare_part_manufacture)
           spt_ticket_spare_part.ticket_spare_part_manufacture.update po_required: false
