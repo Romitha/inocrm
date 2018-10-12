@@ -33,7 +33,6 @@
 - if params[:from_where] == "cus_product_ticket"
   - if organization.products.present?
     %hr
-    / = paginate products, remote: true, method: :get
     %table.table.table-hover
       %thead
         %tr
@@ -257,18 +256,12 @@
                         .col-md-6
                           .strong
                             Warranty date format
-                          %select.selectpicker{:name => "selValue", class: "small_scale_margin-top1"}
-                            %option dd M, yyyy
-                            %option dd, yyyy, M
-                            %option M, yyyy, dd
-                            %option M, dd, yyyy
-                            %option yyyy, M, dd
-                            %option yyyy, dd, M
+                          = select_tag "#", options_for_select([["dd M, yyyy", "dd M, yyyy"], ["dd, yyyy, M", "dd, yyyy, M"], ["M, yyyy, dd", "M, yyyy, dd"], ["M, dd, yyyy", "M, dd, yyyy"], ["yyyy, M, dd", "yyyy, M, dd"], ["yyyy, dd, M", "yyyy, dd, M"]]), {:include_blank => false, class: "form-control selectpicker"}
                       .row
                         .col-md-6
-                          = w.input :start_at, as: :string, input_html: {class: "datepicker"}
+                          = w.input :start_at, as: :string, input_html: {class: "datepicker warranty_start_at"}
                         .col-md-6
-                          = w.input :end_at, as: :string, input_html: {class: "datepicker"}
+                          = w.input :end_at, as: :string, input_html: {class: "datepicker warranty_end_at"}
                       .row
                         .col-md-4
                           = w.input :period_part, input_html: {min: "0", class: "only_float"}, label: "Parts Warannty Period (Months):"
@@ -287,7 +280,7 @@
                         .col-md-2.small_scale_padding-top3
                           = w.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
                             %button.btn.btn-danger Remove
-                = f.link_to_add "Add Warrenty", :warranties, class: "btn btn-sm btn-warning", onclick: "var _this = this; setTimeout(function(){Tickets.date_picker_call(); return false;}, 200)"
+                = f.link_to_add "Add Warrenty", :warranties, class: "btn btn-sm btn-warning", onclick: "var _this = this; setTimeout(function(){Tickets.date_picker_call(_this); return false;}, 200)"
                 %br
                 .row
                   .col-md-8
@@ -388,13 +381,7 @@
                     .col-md-6
                       .strong
                         Warranty date format
-                      %select.selectpicker{:name => "selValue", class: "small_scale_margin-top1"}
-                        %option dd M, yyyy
-                        %option dd, yyyy, M
-                        %option M, yyyy, dd
-                        %option M, dd, yyyy
-                        %option yyyy, M, dd
-                        %option yyyy, dd, M
+                        = select_tag "#", options_for_select([["dd M, yyyy", "dd M, yyyy"], ["dd, yyyy, M", "dd, yyyy, M"], ["M, yyyy, dd", "M, yyyy, dd"], ["M, dd, yyyy", "M, dd, yyyy"], ["yyyy, M, dd", "yyyy, M, dd"], ["yyyy, dd, M", "yyyy, dd, M"]]), {:include_blank => false, class: "form-control selectpicker"}
                   .row
                     .col-md-6
                       = w.input :start_at, as: :string, input_html: {class: "datepicker"}
@@ -418,7 +405,7 @@
                     .col-md-2.small_scale_padding-top3
                       = w.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
                         %button.btn.btn-danger Remove
-            = f.link_to_add "Add Warrenty", :warranties, class: "btn btn-sm btn-warning", onclick: "var _this = this; setTimeout(function(){Tickets.date_picker_call(); return false;}, 200)"
+            = f.link_to_add "Add Warrenty", :warranties, class: "btn btn-sm btn-warning", onclick: "var _this = this; setTimeout(function(){Tickets.date_picker_call(_this); return false;}, 200)"
 
           %br
           .row

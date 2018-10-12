@@ -868,12 +868,24 @@ window.Tickets =
     else
       $("#email_to").val("");
       $("#email_to").prop("disabled", true)
-  date_picker_call:->
-    $('.datepicker').datepicker({
+
+  date_picker_call: (e)->
+    _this = $(e)
+    console.log _this
+    _this.prev().find(".warranty_start_at, .warranty_end_at").datepicker({
     format: "yyyy-mm-dd",
     todayBtn: true,
     todayHighlight: true
     });
+
+    _this.prev().find(".selectpicker").change ->
+      format_value = $(this).val()
+      _this.prev().find(".warranty_start_at, .warranty_end_at").datepicker 'remove'
+      _this.prev().find(".warranty_start_at, .warranty_end_at").datepicker
+        format: format_value
+        todayBtn: true
+        todayHighlight: true
+      return
 
   dynamically_filter_select_for_new:->
     category1_list = $("#search_product_category1_cus_product")
@@ -957,12 +969,10 @@ window.Tickets =
         category3_list.empty().html("<option></option>"+filtered_option).trigger('chosen:updated')
 
     else if position == "parent"
-      console.log 'say parent'
       brand_id = _this.parents("."+parent_class).eq(0).find(".select_wrapper .product_brand")
       category1_id = _this.parents("."+parent_class).eq(0).find(".select_wrapper .product_category1")
       category2_id = _this.parents("."+parent_class).eq(0).find(".select_wrapper .product_category2")
       category3_id = _this.parents("."+parent_class).eq(0).find(".select_wrapper .product_category")
-      console.log category1_id
 
       category1_list = category1_id
       category1_list_html = category1_list.html()
