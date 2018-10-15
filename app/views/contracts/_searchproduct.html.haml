@@ -4,15 +4,13 @@
 - cached_products = @cached_products
 %br/
 - if products.present?
-  / = paginate products, remote: true, method: :get
-
   = form_tag submit_selected_products_contracts_path(from_where: params[:from_where], new_contract: params[:new_contract]), method: :post, remote: true do
     - if params[:from_where] == "cus_product"
       = submit_tag "Done", :name => "done_cus_product", class: "btn btn-sm btn-success btn-primary"
     - else
       = submit_tag "Done", :name => "done",  class: "btn btn-sm btn-success btn-primary"
       = hidden_field_tag :organization_id, organization_for_location.id
-      - if contract_id != nil
+      - if contract_id.present?
         = hidden_field_tag :contract_id, contract_id.id
     .row
       %table.table.table-hover
@@ -38,7 +36,7 @@
                 - else
                   = (index+1)
               %td= p.owner_customer_name
-              %td= p.location_address_full
+              %td= p.location_address_full[:full_address]
               %td= p.serial_no
               %td= p.brand_name
               %td
@@ -49,18 +47,9 @@
                 - if p.name.present?
                   .has-tooltip{title: p.name, data: { toggle:"tooltip", placement: "top" } }= p.try(:name).truncate(12)
               %td= p.description
-              / - if p.ticket_contracts.present?
-              /   - if p.ticket_contracts.last.present?
-              /     %td= p.ticket_contracts.last.organization.try(:name)
-              /     %td= boolean_in_word p.ticket_contracts.last.try(:hold), "Yes", "No"
-              /     %td
-              / - else
-
 
               %td
                 - if params[:from_where] == "cus_product"
                   = check_box_tag "serial_products_ids[]", p.id, Rails.cache.fetch([:products, request.remote_ip]).to_a.map { |e| e.id }.include?(p.id.to_f)
                 - else
                   = check_box_tag "serial_products_ids[]", p.id, Rails.cache.fetch([:contract_products, request.remote_ip]).to_a.map { |e| e.id }.include?(p.id.to_f)
-              / %td= check_box_tag "serial_products_ids[]", p.id
-  / = paginate products, remote: true, method: :get

@@ -883,7 +883,7 @@ class ReportsController < ApplicationController
 
   def parts_order_history
     TicketSparePart
-    @support_ticket_no = params[:support_ticket_no]
+    @support_ticket_no = params[:serial_no]
     # @part_histories = TicketSparePart.where("created_at >= :start_date AND created_at <= :end_date", {start_date: (Date.today - 1.year), end_date: (Date.today + 1.day)})
     @part_histories = TicketSparePart.search(query: "ticket.product_info.serial_no:#{@support_ticket_no}", per_page: 100, page: params[:page])
     render "reports/parts_order_history"

@@ -231,7 +231,7 @@ class Organization < ActiveRecord::Base
           only: [:id, :name],
         },
         products: {
-          only: [:id],
+          only: [:id, :serial_no],
           include: {
             ticket_contracts: {
               only: [:id],

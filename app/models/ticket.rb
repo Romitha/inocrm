@@ -419,9 +419,10 @@ class Ticket < ActiveRecord::Base
   end
   
   def ticket_contract_location
-    if ticket_contract.present? and products.first.present?
+    if ticket_contract.present? and products.present?
       # ticket_contract.contract_products.where(product_serial_id: products.first.id).sum(:amount).to_f
-      ticket_contract.contract_products.where(product_serial_id: products.first.id).try(:installed_location).try(:full_address)
+      tcs = ticket_contract.contract_products.where(product_serial_id: products.first.id).limit(1)
+      tcs.last.try(:instral_loc_full_address).try(:full_address)
     end
   end
 

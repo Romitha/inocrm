@@ -9,8 +9,10 @@
       %th Model No
       %th Brand Name
       %th Category
+      %th Organization Address
       %th Location Address
-      %th Description
+      %th Location Address Category
+      %th Product Description
 
   %tbody
     - @products.each do |product|
@@ -22,7 +24,9 @@
         %td= product.try(:model_no)
         %td= product.brand_name
         %td= product.try(:category_full_name_index)
-        %td= product.try(:location_address_full)
+        %td= product.owner_customer_address
+        %td= product.location_address_full.full_address
+        %td= product.location_address_full.category
         %td= product.try(:description)
     /   %td
     /     %strong Total
