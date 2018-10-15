@@ -19,7 +19,14 @@ class OrganizationsController < ApplicationController
         @organizations.select{|o| o.account.present? }
       end
     else
-      total_accounts = Organization.search(query: "accounts_dealer_types.dealer_code:#{params[:category]}")
+
+      query_search = ["accounts_dealer_types.dealer_code:#{params[:category]}"]
+
+      if params[:search_query].present?
+        query_search << params[:search_query]
+      end
+
+      total_accounts = Organization.search(query: query_search.join(" AND "), page: params[:page])
       @total_count = total_accounts.total
       @accounts = total_accounts
     end

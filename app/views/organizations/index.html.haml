@@ -1,8 +1,11 @@
 - accounts = @accounts
 #organizations_search_initialization
   .row
-    .col-md-11= text_field_tag "search", nil, placeholder: "Search", class: "form-control search"
-    .col-md-1= submit_tag "Search", class: "btn btn-success btn-sm pull-right"
+    = form_tag organizations_path, method: :get do
+      = hidden_field_tag :category, params[:category]
+      .col-md-11= text_field_tag "search_query", nil, placeholder: "Search", class: "form-control"
+      .col-md-1= submit_tag "Search", class: "btn btn-success btn-sm pull-right"
+
   %br
   %h2
     %span

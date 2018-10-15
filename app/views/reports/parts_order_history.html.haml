@@ -34,7 +34,7 @@
             - num= num+1
             = (num)
         %td= part_history.ticket.support_ticket_no
-        %td= part_history.ticket.logged_at.strftime(INOCRM_CONFIG["short_date_format"])
+        %td= (part_history.ticket.logged_at and part_history.ticket.logged_at.to_datetime.strftime(INOCRM_CONFIG["short_date_format"]))
         %td= part_history.ticket.problem_description
         %td= part_history.ticket_status
         %td= part_history.spare_part_no

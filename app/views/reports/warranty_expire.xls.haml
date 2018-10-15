@@ -27,7 +27,7 @@
             %strong= warranty.try(:end_at).to_date.strftime(INOCRM_CONFIG['short_date_format'])
         %td= warranty.try(:warranty_type_name)
         %td= warranty.product.try(:owner_customer_name)
-        %td= warranty.product.try(:location_address_full)
+        %td= warranty.product.location_address_full[:full_address]
         %td= warranty.product.try(:name)
         %td= warranty.product.try(:description)
         %td= warranty.product.try(:brand_name)
@@ -65,7 +65,7 @@
             %strong= warranty.try(:end_at).to_date.strftime(INOCRM_CONFIG['short_date_format'])
         %td= warranty.try(:warranty_type_name)
         %td= warranty.product.try(:owner_customer_name)
-        %td= warranty.product.try(:location_address_full)
+        %td= warranty.product.location_address_full[:full_address]
         %td= warranty.product.try(:name)
         %td= warranty.product.try(:description)
         %td= warranty.product.try(:brand_name)
