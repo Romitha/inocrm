@@ -31,14 +31,14 @@
             %li{role: "presentation", class: "#{can?(:index, Organization) ? '' : 'disabled'}"}
               = link_to organizations_path(category: Organization::TYPES[0]), class: "#{can?(:index, Organization) ? '' : 'disabled'}" do
                 %span= image_tag "organization_suppliers.png", style: "width: 12%;"
-                %span Organization Suppliers
+                %span Organizational Suppliers
             %li{role: "presentation", class: "#{can?(:index, Organization) ? '' : 'disabled'}"}
               = link_to organizations_path(category: Organization::TYPES[2]), class: "#{can?(:index, Organization) ? '' : 'disabled'}" do
                 %span= image_tag "individual_supplier.png", style: "width: 12%;"
                 %span Individual Suppliers
             %li.divider
             %li.dropdown-header Create Supplier
-            %li{role: "presentation", class: "#{can?(:new, Organization) ? '' : 'disabled'}"}= link_to "New Organization Supplier", new_organization_path(category: Organization::TYPES[0]), class: "#{can?(:new, Organization) ? '' : 'disabled'}"
+            %li{role: "presentation", class: "#{can?(:new, Organization) ? '' : 'disabled'}"}= link_to "New Organizational Supplier", new_organization_path(category: Organization::TYPES[0]), class: "#{can?(:new, Organization) ? '' : 'disabled'}"
             %li{role: "presentation", class: "#{can?(:new, Organization) ? '' : 'disabled'}"}= link_to "New Individual Supplier", new_organization_path(category: Organization::TYPES[2]), class: "#{can?(:new, Organization) ? '' : 'disabled'}"
 
         %li.dropdown.small_scale_margin-right10{role: "presentation"}
@@ -47,14 +47,14 @@
             %li{role: "presentation", class: "#{can?(:index, Organization) ? '' : 'disabled'}"}
               = link_to organizations_path(category: Organization::TYPES[1]), class: "#{can?(:index, Organization) ? '' : 'disabled'}" do
                 %span= image_tag "organization_customers.png", style: "width: 12%;"
-                %span Organizaion Customers
+                %span Organizational Customers
             %li{role: "presentation", class: "#{can?(:index, Organization) ? '' : 'disabled'}"}
               = link_to organizations_path(category: Organization::TYPES[3]), class: "#{can?(:index, Organization) ? '' : 'disabled'}" do
                 %span= image_tag "individual_customer.png", style: "width: 12%;"
                 %span Individual Customers
             %li.divider
             %li.dropdown-header Create Customer
-            %li{role: "presentation", class: "#{can?(:new, Organization) ? '' : 'disabled'}"}= link_to "New Organization Customer", new_organization_path(category: Organization::TYPES[1]), class: "#{can?(:new, Organization) ? '' : 'disabled'}"
+            %li{role: "presentation", class: "#{can?(:new, Organization) ? '' : 'disabled'}"}= link_to "New Organizational Customer", new_organization_path(category: Organization::TYPES[1]), class: "#{can?(:new, Organization) ? '' : 'disabled'}"
             %li{role: "presentation", class: "#{can?(:new, Organization) ? '' : 'disabled'}"}= link_to "New Individual Customer", new_organization_path(category: Organization::TYPES[3]), class: "#{can?(:new, Organization) ? '' : 'disabled'}"
         %li.dropdown.small_scale_margin-right10{role: "presentation"}
           = link_to "Reports", "#", class: "dropdown-toggle reports text-hide nav-icon", id: "report_dropdown", data: {toggle: "dropdown", placement: "bottom"}, title: "Reports", rel: "tooltip"
@@ -69,6 +69,7 @@
             / %li.dropdown-header Expire Reminder Reports
             %li{role: "presentation", class: "#{can?(:warranty_expire_report, Warranty) ? '' : 'disabled'}"}= link_to "Warranty Expire Report", warranty_expire_reports_path, class: "#{can?(:warranty_expire_report, Warranty) ? '' : 'disabled'}"
             %li{role: "presentation", class: "#{can?(:contract_expire, TicketContract) ? '' : 'disabled'}"}= link_to "Contract Expire Report", contract_expire_reports_path, class: "#{can?(:contract_expire, TicketContract) ? '' : 'disabled'}"
+
             %li= link_to "Hold Ticket Report", hold_ticket_report_reports_path
             %li= link_to "Parts To Be Returned To Manufacturer", returned_manufacture_reports_path
             %li= link_to "To Be Collected From Manufacturer", manufacture_colected_reports_path

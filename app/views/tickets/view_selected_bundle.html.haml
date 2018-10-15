@@ -1,0 +1,47 @@
+- delivered_bundle = @delivered_bundle
+
+.panel.panel-success
+  %table.table
+    %thead
+      %tr
+        %th
+          Ticket No
+        %th
+          Spare Part No
+        %th
+          Spare Part Description
+        %th
+          Engineer
+        %th
+          Event No
+        %th
+          Return Part Serial No
+        %th
+          Return Part CT No
+        %th
+          Used Status
+        %th
+          Return accepted Date
+    %tbody
+      - delivered_bundle.ticket_spare_parts.each do |ticket_spare_part|
+        %tr
+          %td
+            = ticket_spare_part.ticket_serial_no
+          %td
+            = ticket_spare_part.spare_part_no
+          %td
+            = ticket_spare_part.spare_part_description
+          %td
+            = ticket_spare_part.engineer_name
+          %td
+            = ticket_spare_part.spare_part_event_no
+          %td
+            = ticket_spare_part.return_part_ct_no
+          %td
+            = ticket_spare_part.return_part_serial_no
+          %td
+            = ticket_spare_part.ticket_use_status
+          %td
+            = simple_format ticket_spare_part.note
+          %td
+            = delivered_bundle.created_at.strftime(INOCRM_CONFIG['long_date_format'])

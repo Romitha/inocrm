@@ -46,7 +46,7 @@ class ReportsController < ApplicationController
 
     ticket_time = ticket.created_at.strftime(INOCRM_CONFIG['time_format'])
 
-    quotation_date = quotation.created_at.strftime(INOCRM_CONFIG['long_date_format'])
+    quotation_date = quotation.created_at_to.strftime(INOCRM_CONFIG['long_date_format'])
 
     quotation_time = quotation.created_at.strftime(INOCRM_CONFIG['time_format'])
 
@@ -877,7 +877,7 @@ class ReportsController < ApplicationController
 
   def parts_available
     TicketSparePart
-    @available_parts = TicketSparePartStore.joins(:ticket_spare_part).where("spt_ticket_spare_part.received_eng_by is NULL AND issued").order("issued_at desc")#where("recived_eng_at IS NULL AND issued")
+    @available_parts = TicketSparePartStore.joins(:ticket_spare_part).where("spt_ticket_spare_part.received_eng_by is NULL AND spt_ticket_spare_part.available_mail_sent_at is NOT NULL").order("issued_at desc")#where("recived_eng_at IS NULL AND issued")
     render "reports/parts_available"
   end  
 

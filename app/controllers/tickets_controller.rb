@@ -3021,12 +3021,15 @@ class TicketsController < ApplicationController
     Product
     TicketSparePart
     Inventory
-    refined_onloan_return_pending_parts = ""
+    refined_onloan_return_pending_parts = []
     if params[:search].present?
-      refined_onloan_return_pending_parts = params[:search_return_part].map { |k, v| "#{k}:#{v}" if v.present? }.compact.join(" AND ")
+      refined_onloan_return_pending_parts = params[:search_return_part].map { |k, v| "#{k}:#{v}" if v.present? }.compact
     end
-    refined_onloan_return_pending_parts += " issued:true AND part_returned:false"
-    params[:query] = refined_onloan_return_pending_parts
+
+    refined_onloan_return_pending_parts << ["issued:true", "part_returned:false"]
+
+    params[:query] = refined_onloan_return_pending_parts.join(" AND ")
+
     @return_parts = TicketOnLoanSparePart.search(params)
     render "onloan_returns/onloan_return_pending_parts"
   end
@@ -5784,12 +5787,39 @@ class TicketsController < ApplicationController
   end
 
   def view_delivered_bundle
-    authorize! :view_delivered_bundle, ReturnPartsBundle
+    
     TicketSparePart
-    ReturnPartsBundle
     Product
     User
-    @delivered_bundles = ReturnPartsBundle.where(delivered: true)
+    # authorize! :view_delivered_bundle, ReturnPartsBundle
+    delivered_bundle = []
+    refined_query = ""
+    if params[:search].present? or params[:excel_report].present?
+      delivered_bundle = params[:search_delivered_bundle].map { |k, v| "#{k}:#{v}" if v.present? }.compact
+    end
+
+    refined_query += delivered_bundle.join(" AND ")
+
+    params[:query] = refined_query
+    # params[:per_page] = 100
+
+    @delivered_bundles = ReturnPartsBundle.search(params)
+
+    if params[:excel_report].present?
+      render xlsx: "excel_output"
+    else
+      respond_to do |format|
+        format.html
+      end
+    end
+
+  end
+
+  def show_delivered_bundle
+    TicketSparePart
+    @delivered_bundle = ReturnPartsBundle.find_by_id params[:bundle_id]
+    render "tickets/view_selected_bundle"
+    
   end
 
   def create_po
