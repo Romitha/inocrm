@@ -1,3 +1,60 @@
+.row
+  .col-md-12
+    %fieldset
+      %legend Delivered Bundles
+      #search_frame
+        = form_tag view_delivered_bundle_tickets_path, method: :get, class: "form-horizontal" do
+          .row
+            .col-md-3
+              = label_tag "Brand:"
+              = select_tag "search_delivered_bundle[product_brand_id]", options_from_collection_for_select(ProductBrand.where(active: true), :id, :name, params[:product_brand_id]), class: "form-control parent_class", include_blank: true
+            .col-md-3
+              = label_tag "Bundle No:"
+              = text_field_tag "search_delivered_bundle[bundle_no]", (params[:search_delivered_bundle] and params[:search_delivered_bundle][:bundle_no]), class: "form-control", placeholder: "Return Part Serial No"
+            .col-md-3
+              = label_tag "Return Part CT No:"
+              = text_field_tag "search_delivered_bundle[ticket_spare_parts.return_part_ct_no]", params[:return_part_ct_no], class: "form-control", placeholder: "Return Part CT No"
+            .col-md-3
+              = label_tag "Return Part Serial No:"
+              = text_field_tag "search_delivered_bundle[ticket_spare_parts.return_part_serial_no]", params[:return_part_serial_no], class: "form-control", placeholder: "Return Part CT No"
+          .row
+            .col-md-3
+              = label_tag "Created Date From:"
+              = text_field_tag "created_at_from", params[:created_at_from], class: "form-control datepicker", placeholder: "Select To date"
+            .col-md-3
+              = label_tag "Created Date To:"
+              = text_field_tag "created_at_to", params[:created_at_to], class: "form-control datepicker", placeholder: "Select To date"
+            .col-md-3
+              = label_tag "Delivered Date From:"
+              = text_field_tag "delivered_at_from", params[:delivered_at_from], class: "form-control datepicker", placeholder: "Select To date"
+            .col-md-3
+              = label_tag "Delivered Date To:"
+              = text_field_tag "delivered_at_to", params[:delivered_at_to], class: "form-control datepicker", placeholder: "Select To date"
+          .row
+            .col-md-3
+              = label_tag "Ticket No:"
+              = text_field_tag "search_delivered_bundle[ticket_spare_parts.ticket_serial_no]", params[:ticket_serial_no], class: "form-control",placeholder: "Ticket_no"
+            .col-md-3
+              = label_tag "Spare Part No:"
+              = text_field_tag "search_delivered_bundle[ticket_spare_parts.spare_part_no]", params[:spare_part_no], class: "form-control", placeholder: "Spare part no"
+            .col-md-3
+              = label_tag "Event No:"
+              = text_field_tag "search_delivered_bundle[ticket_spare_parts.spare_part_event_no]", params[:spare_part_event_no], class: "form-control",placeholder: "Event no"
+            / .col-md-3
+            /   = label_tag "Used Status:"
+            /   = select_tag "product_brand_id", options_from_collection_for_select(ProductBrand.where(active: true), :id, :name, params[:product_brand_id]), class: "form-control parent_class", include_blank: true
+
+
+          .row.small_scale_margin-top1
+            .col-md-1
+              .search
+                = submit_tag "Search", class: "btn btn-sm btn-warning", name: "search"
+            .col-md-1
+              .search
+                = submit_tag "Excel Report", class: "btn btn-sm btn-success", name: "excel_report"
+
+= paginate @delivered_bundles, method: :get, remote: false
+
 .panel.panel-default
   .panel-heading Delivered Bundles
   %table.table
@@ -6,6 +63,9 @@
         %th No
         %th Bundle no
         %th Brand
+        %th Created At
+        %th Created By
+        %th Delivered At
         %th Delivered By
         %th Note
     %tbody
@@ -13,13 +73,22 @@
         %tr
           %td
             - if params[:page]
-              = (index+1) + 10*(params[:page].to_i-1)
+              = link_to (index+1) + 10*(params[:page].to_i-1), show_delivered_bundle_tickets_path(bundle_callback: "select_bundle", bundle_id: db.id)
             - else
-              = (index+1)
+              = link_to (index+1), show_delivered_bundle_tickets_path(bundle_callback: "select_bundle", bundle_id: db.id)
           %td
             = db.bundle_no
           %td
-            = ProductBrand.find_by_id(db.product_brand_id).name
+            = db.brand_name
           %td
-            = User.find_by_id(db.delivered_by).full_name
-          %td{title: db.try(:note)}= simple_format db.try(:note).try :truncate, 30
+            = db.created_at.to_datetime.strftime(INOCRM_CONFIG['long_date_format'])
+          %td
+            = db.created_by_name
+          %td
+            = db.delivered_at.to_datetime.strftime(INOCRM_CONFIG['long_date_format'])
+          %td
+            = db.delivered_by_name
+
+          %td{title: db.try(:note)}= db.note
+
+= paginate @delivered_bundles, method: :get, remote: false

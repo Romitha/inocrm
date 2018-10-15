@@ -11,7 +11,7 @@ class TicketSparePart < ActiveRecord::Base
     indexes :engineer, type: "nested", include_in_parent: true
   end
 
-  def self.search(params)  
+  def self.search(params)
     tire.search(page: (params[:page] || 1), per_page: (params[:per_page] || 1000)) do
       query do
         boolean do
@@ -444,7 +444,7 @@ class TicketSparePartManufacture < ActiveRecord::Base
     indexes :ticket, type: "nested", include_in_parent: true
   end
 
-  def self.search(params)  
+  def self.search(params)
     tire.search(page: (params[:page] || 1), per_page: (params[:per_page] || 1000)) do
       query do
         boolean do
@@ -532,6 +532,7 @@ class TicketOnLoanSparePart < ActiveRecord::Base
   
   mapping do
     indexes :inventory_product, type: "nested", include_in_parent: true
+    indexes :ticket_spare_part, type: "nested", include_in_parent: true
   end
 
   def self.search(params)
@@ -640,17 +641,75 @@ end
 class ReturnPartsBundle < ActiveRecord::Base
   self.table_name = "spt_return_parts_bundle"
 
+  include Tire::Model::Search
+  include Tire::Model::Callbacks
+
+  mapping do
+    indexes :ticket_spare_parts, type: "nested", include_in_parent: true
+    indexes :ticket_spare_part_manufactures, type: "nested", include_in_parent: true
+  end
+
+  def self.search(params)
+    tire.search(page: (params[:page] || 1), per_page: (params[:per_page] || 10)) do
+      query do
+        boolean do
+          must { string params[:query] } if params[:query].present?
+          must { range :created_at, gte: params[:created_at_from].to_date.beginning_of_day } if params[:created_at_from].present?
+          must { range :created_at, lte: params[:created_at_to].to_date.end_of_day } if params[:created_at_to].present?
+          must { range :delivered_at, gte: params[:delivered_at_from].to_date.beginning_of_day } if params[:delivered_at_from].present?
+          must { range :delivered_at, lte: params[:delivered_at_to].to_date.end_of_day } if params[:delivered_at_to].present?
+        end
+      end
+      if params[:sort_by]
+        sort { by :created_at, {order: "ASC", ignore_unmapped: true} }
+      end
+    end
+  end
+
+  def to_indexed_json
+    to_json(
+      only: [:id, :bundle_no, :product_brand_id, :po_no, :created_by, :created_at, :so_no, :note, :amount, :currency_id, :delivered_at],
+      methods: [:po_no_format, :currency_type, :brand_of_product_name, :formated_created_at, :delivered_by_name, :created_by_name,:brand_name],
+      include: {
+        ticket_spare_parts: {
+          only: [:id, :spare_part_no ,:return_part_serial_no, :return_part_ct_no, :spare_part_no, :spare_part_description],
+          methods: [:spare_part_event_no, :ticket_serial_no, :ticket_use_status, :engineer_name],
+          include: {
+            ticket_spare_part_status_actions: {
+              only: [:id, :status_id, :done_at],
+              methods: [:action_engineer_by_name]
+            }
+          }
+        },
+      }
+    )
+  end
+
   belongs_to :product_brand
 
   has_many :ticket_spare_part_manufactures
   has_many :ticket_spare_parts, through: :ticket_spare_part_manufactures
 
+
   before_create do |return_part_bundle|
+    Organization
     return_part_bundle.bundle_no = CompanyConfig.first.increase_sup_last_bundle_no
+
+  end
+
+  def brand_name
+    product_brand.try(:name)
+  end
+
+  def delivered_by_name
+    User.cached_find_by_id(delivered_by).try(:full_name)
+  end
+
+  def created_by_name
+    User.cached_find_by_id(created_by).try(:full_name)
   end
 
 end
-
 class TicketSparePartNonStock < ActiveRecord::Base
   self.table_name = "spt_ticket_spare_part_non_stock"
 

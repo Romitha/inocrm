@@ -638,6 +638,10 @@ Product:
   Generate Customer Product Report:
     actions:
       - customer_product_report
+CustomerQuotation:
+  Access estimation quotation:
+    actions:
+      - quotation_resolution
     attributes:
       []
     system_module:

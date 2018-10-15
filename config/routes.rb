@@ -200,6 +200,7 @@ Rails.application.routes.draw do
       get "workflow_diagram"
       get "suggesstion_data"
       get "edit_serial"
+      get "show_delivered_bundle"
       match "extend_warranty", to: "tickets#extend_warranty", via: [:get, :post]
       get "close_event"#, to: "tickets#close_event", via: [:get, :post]
       get "check_fsr"

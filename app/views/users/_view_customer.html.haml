@@ -17,13 +17,13 @@
 
 
   %dl.dl-horizontal
-    - if ticket.contract_available
-      .col-md-6
-        %h4 Product Location
-        %dt Customer
-        %dd= ticket.products.first.owner_customer.try(:name)
-        %dt Address
-        %dd= ticket.products.first.location_address.try(:full_address)
+    / - if ticket.contract_available
+    .col-md-6
+      %h4 Product Location
+      %dt Customer
+      %dd= ticket.products.first.owner_customer.try(:name)
+      %dt Address
+      %dd= ticket.products.first.location_address.try(:full_address)
       / %dt
       /   - customer.contact_type_values.each do |contact_type_value|
       /     = contact_type_value.contact_type.try(:name)

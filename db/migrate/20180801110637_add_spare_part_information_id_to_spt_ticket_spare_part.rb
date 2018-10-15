@@ -4,7 +4,7 @@ class AddSparePartInformationIdToSptTicketSparePart < ActiveRecord::Migration
 
     create_table :mst_spt_ticket_spare_part_information, id: false do |t|
       t.column :id, "INT UNSIGNED NOT NULL AUTO_INCREMENT, PRIMARY KEY (id)"
-      t.string :name, "VARCHAR(200) UNSIGNED NOT NULL"
+      t.string :name, limit:200, null: false
       t.timestamps
     end
     
