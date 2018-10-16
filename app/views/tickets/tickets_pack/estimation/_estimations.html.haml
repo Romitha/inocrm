@@ -119,4 +119,4 @@
 
 / =params[:from_where]
 - if params[:action] == "ajax_show" and can?(:quotation_resolution, CustomerQuotation)
-  .col-md-3.pull-right= link_to "Estimation and Quotation", resolution_tickets_path(ticket_id: ticket.id, from_where1: params[:from_where1]), remote: false}
+  .col-md-3.pull-right= link_to "Estimation and Quotation", resolution_tickets_path(ticket_id: ticket.id, from_where1: params[:from_where1]), remote: false

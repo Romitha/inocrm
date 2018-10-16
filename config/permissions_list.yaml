@@ -638,6 +638,11 @@ Product:
   Generate Customer Product Report:
     actions:
       - customer_product_report
+    attributes:
+      []
+    system_module:
+      name: Ticket
+
 CustomerQuotation:
   Access estimation quotation:
     actions:

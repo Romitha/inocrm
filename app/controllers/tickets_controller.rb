@@ -913,6 +913,8 @@ class TicketsController < ApplicationController
             @product.update_attribute :last_ticket_id, @ticket.id
             @ticket.customer.update_attribute :last_ticket_id, @ticket.id
 
+            @ticket.ticket_product_serials.where( product_id: @product.id ).first.update(location_address_id: @product.location_address_id) if @ticket.ticket_product_serials.where( product_id: @product.id ).first.present?
+
             ticket_user_action = @ticket.user_ticket_actions.create(action_at: DateTime.now, action_by: current_user.id, re_open_index: 0, action_id: TaskAction.find_by_action_no(1).id) # Add ticket action
 
             q_and_answers.each{|q| q.ticket_action_id= ticket_user_action.id; @ticket.q_and_answers << q}
