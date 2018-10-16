@@ -1,0 +1,14 @@
+wb = xlsx_package.workbook
+
+headers = {1 => "No", 2 => "Bundle No", 3 => "Brand", 4 => "Created At", 5 => "Created By", 6 => "Delivered At", 7 => "Delivered By"}
+
+wb.add_worksheet(name: "Delivered Bundles") do |sheet|
+  sheet.add_row Hash[headers.sort].values
+
+  @delivered_bundles.each_with_index do |db, index|
+
+  	bundle_hash = { 1 => (index+1), 2 => db.bundle_no, 3 => db.brand_name, 4 => db.created_at.to_datetime.strftime(INOCRM_CONFIG['long_date_format']), 5 => db.created_by_name, 6 => db.delivered_at.to_datetime.strftime(INOCRM_CONFIG['long_date_format']), 7 => db.delivered_by_name}
+
+    sheet.add_row Hash[bundle_hash.sort].values
+  end
+end
