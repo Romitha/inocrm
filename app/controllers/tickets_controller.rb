@@ -5808,7 +5808,7 @@ class TicketsController < ApplicationController
     @delivered_bundles = ReturnPartsBundle.search(params)
 
     if params[:excel_report].present?
-      render xlsx: "excel_output"
+      render xlsx: "view_selected_bundle"
     else
       respond_to do |format|
         format.html
