@@ -52,4 +52,4 @@
                 - if params[:from_where] == "cus_product"
                   = check_box_tag "serial_products_ids[]", p.id, Rails.cache.fetch([:products, request.remote_ip]).to_a.map { |e| e.id }.include?(p.id.to_f)
                 - else
-                  = check_box_tag "serial_products_ids[]", p.id, Rails.cache.fetch([:contract_products, request.remote_ip]).to_a.map { |e| e.id }.include?(p.id.to_f)
+                  = check_box_tag "serial_products_ids[]", p.id, Rails.cache.fetch([:contract_product_ids, request.remote_ip]).to_a.include?(p.id.to_s), disabled:  Rails.cache.fetch([:contract_product_ids, request.remote_ip]).to_a.include?(p.id.to_s)

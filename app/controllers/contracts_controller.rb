@@ -69,7 +69,7 @@ class ContractsController < ApplicationController
     end
 
     if params[:edit_create]
-      Rails.cache.delete([:contract_products, request.remote_ip])
+      Rails.cache.delete([:contract_product_ids, request.remote_ip])
       @installments = ContractPaymentInstallment.all
       @organization = Organization.find params[:customer_id]
       # @product = Product.find params[:product_serial_id]
@@ -83,7 +83,7 @@ class ContractsController < ApplicationController
     end
 
     if params[:edit_create_contract]
-      Rails.cache.delete([:contract_products, request.remote_ip])
+      Rails.cache.delete([:contract_product_ids, request.remote_ip])
 
       @installments = ContractPaymentInstallment.all
       @organization = Organization.find params[:customer_id]
@@ -98,7 +98,7 @@ class ContractsController < ApplicationController
     end
 
     if params[:view_product]
-      # Rails.cache.delete([:contract_products, request.remote_ip])
+      # Rails.cache.delete([:contract_product_ids, request.remote_ip])
       @product = Product.find params[:product_id]
       if params[:serial_product]
       else
@@ -223,7 +223,8 @@ class ContractsController < ApplicationController
     #   FileUtils.cp contract_attachment.attachment_url.file.path, contract_document_path
 
     # end
-    Rails.cache.fetch([:contract_products, request.remote_ip]).to_a.each do |product|
+    Rails.cache.fetch([:contract_product_ids, request.remote_ip]).to_a.each do |product_id|
+      product = Product.find(product_id)
       unless @contract.product_ids.include?(product.id)
         c_product = @contract.contract_products.build(product_serial_id: product.id, sla_id: product.product_brand.sla_id)
 
@@ -244,11 +245,7 @@ class ContractsController < ApplicationController
       end
     end
 
-    Rails.cache.delete([:contract_products, request.remote_ip])
-    # @contract.products.each do |product|
-    #   product.create_product_owner_history(@organization.id, current_user.id, "Added in contract", 0)
-
-    # end
+    Rails.cache.delete([:contract_product_ids, request.remote_ip])
 
     respond_to do |format|
       format.html { redirect_to contracts_path, notice: "Successfully saved."}
@@ -261,7 +258,7 @@ class ContractsController < ApplicationController
     Invoice
     Ticket
     
-    Rails.cache.delete([:contract_products, request.remote_ip])
+    Rails.cache.delete([:contract_product_ids, request.remote_ip])
 
     # authorize :view_contract, Organization
     @organization = Organization.find params[:customer_id]
@@ -320,9 +317,12 @@ class ContractsController < ApplicationController
       end
       if params[:contract_id].present?
         @contract_id = TicketContract.find params[:contract_id]
-        @products = Product.search(query: fined_query).select{|p| !@contract_id.product_ids.map(&:to_s).include? p.id }
+        fined_query << " AND NOT ticket_contracts.id:#{params[:contract_id]}"
+        @products = Product.search(query: fined_query)#.select{|p| !@contract_id.product_ids.map(&:to_s).include? p.id }
+
       else
         @products = Product.search(query: fined_query)
+
       end
 
       @organization1 = Organization.find params[:customer_id]
@@ -343,32 +343,32 @@ class ContractsController < ApplicationController
   def submit_selected_products
     Address
     if params[:done].present?
+      @organization_for_location = Organization.find params[:organization_id]
       if params[:serial_products_ids].present?
-        serial_products = Product.where(id: params[:serial_products_ids])
-        @before_count = Rails.cache.fetch([:contract_products, request.remote_ip]).to_a.count
-        Rails.cache.delete([:contract_products, request.remote_ip])
-        @organization_for_location = Organization.find params[:organization_id]
+        selected_ids = Rails.cache.fetch([:contract_product_ids, request.remote_ip]) { params[:serial_products_ids] }
+        selected_ids.concat(params[:serial_products_ids])
+
+        Rails.cache.write([:contract_product_ids, request.remote_ip], selected_ids.uniq )
+
         # @organization_decendents = @organization_for_location.anchestors.map{|m| m[:member]}
         if params[:contract_id].present?
           @contract_id = TicketContract.find params[:contract_id]
         end
-        @cached_products = Rails.cache.fetch([:contract_products, request.remote_ip]){ serial_products.to_a }
-      else
-        @before_count = Rails.cache.fetch([:contract_products, request.remote_ip]).to_a.count
-        Rails.cache.delete([:contract_products, request.remote_ip])
       end
+      @cached_products = Product.where(id: Rails.cache.fetch([:contract_product_ids, request.remote_ip]) )
+
     end
 
     if params[:remove].present?
-      a = Rails.cache.fetch([:contract_products, request.remote_ip])
+      a = Rails.cache.fetch([:contract_product_ids, request.remote_ip])
       @organization_for_location = Organization.find params[:organization_id]
       if params[:contract_id].present?
         @contract_id = TicketContract.find params[:contract_id]
       end
-      a.delete_if{|e| e.id.to_f == params[:selected_product].to_f }
-      Rails.cache.delete([:contract_products, request.remote_ip])
+      a.delete_if{|e| e == params[:selected_product] }
 
-      @cached_products = Rails.cache.fetch([:contract_products, request.remote_ip]){ a }
+      Rails.cache.write([:contract_product_ids, request.remote_ip], a)
+      @cached_products = Product.where(id: a)
     end
 
     if params[:done_cus_product].present?
@@ -458,7 +458,8 @@ class ContractsController < ApplicationController
         #   FileUtils.cp contract_attachment.attachment_url.file.path, contract_document_path
 
         # end
-        Rails.cache.fetch([:contract_products, request.remote_ip]).to_a.each do |product|
+        Rails.cache.fetch([:contract_product_ids, request.remote_ip]).to_a.each do |product_id|
+          product = Product.find(product_id)
           unless @contract.product_ids.include?(product.id)
             c_product = @contract.contract_products.create(product_serial_id: product.id, sla_id: product.product_brand.sla_id)
 
@@ -472,7 +473,7 @@ class ContractsController < ApplicationController
           end
         end
 
-        Rails.cache.delete([:contract_products, request.remote_ip])
+        Rails.cache.delete([:contract_product_ids, request.remote_ip])
 
       end
       @organization = @contract.organization

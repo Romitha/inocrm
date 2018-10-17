@@ -810,9 +810,15 @@ class ReportsController < ApplicationController
     User
     Product
     TaskAction
-    @user_ticket_actions = UserTicketAction.where(action_id: '37').order("action_at desc")
+    # @user_ticket_actions = UserTicketAction.joins(request_spare_part: :ticket_spare_part).where(action_id: 37, spt_act_request_spare_part: {spt_ticket_spare_part: {returned_part_accepted: false, close_approved: false}}).order("action_at desc")
+    @user_ticket_actions = UserTicketAction.joins(request_spare_part: :ticket_spare_part).where(action_id: 37, "spt_ticket_spare_part.returned_part_accepted" => false, "spt_ticket_spare_part.close_approved" => false).page(params[:page]).per(100)
     # 37 action is Receive Spare part from Manufacture
-    render "reports/returned_manufacture"
+
+    if params[:excel_output].present?
+      render xlsx: "returned_manufacture"
+    else
+      render "returned_manufacture"
+    end
   end
 
   def manufacture_colected
@@ -831,13 +837,15 @@ class ReportsController < ApplicationController
     Product
     TaskAction
     TicketSparePart
+    Invoice
     # @tickets = Ticket.search(query: "ticket_type_name:'In house' AND job_finished:true AND NOT user_ticket_actions.action_id:58")
     # @tickets_58 = Ticket.search(query: "user_ticket_actions.action_id:58 AND user_ticket_actions.feedback_reopen:true")
 
     # @combined_tickets = Ticket.search(query: "ticket_type_code:'IH' AND job_finished:true").select{|t| t.user_ticket_actions.none?{|u| u.action_id == 58 and !u.feedback_reopen } }
 
     @combined_tickets = Ticket.where(ticket_type_id: '1', status_id:'6')
-    # @combined_tickets = Ticket.search(query: "ticket_type_code:'IH' AND ticket_status_code:'CFB'")
+    @combined_tickets = @combined_tickets.sort{|p, n| [p.job_finished_at, p.qc_passed_at, p.final_invoice.try(:created_at)].compact.max <=> [n.job_finished_at, n.qc_passed_at, n.final_invoice.try(:created_at)].compact.max }
+    # @combined_tickets = Ticket.includes(:final_invoice).select("GREATEST(spt_ticket.job_finished_at, spt_ticket.qc_passed_at, spt_ticket_invoice.created_at) AS net_date").where(ticket_type_id: '1', status_id:'6').order("net_date desc").references(:spt_ticket_invoice)
 
 
     

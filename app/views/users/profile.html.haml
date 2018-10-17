@@ -101,6 +101,11 @@
             XXXXXXXX
           .col-md-2
             .pull-right= link_to "Edit", initiate_user_profile_edit_user_path(template_params: "password_security_details"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true, class: "#{can?(:initiate_user_profile_edit, User) ? '' : 'disabled'}"
+        .row
+          .col-md-10
+            User: (Status: <span class="label label-#{ user.active ? 'success' : 'danger' }">#{boolean_in_word user.active, "Active", "Inactive"}</span>)
+          .col-md-2
+            .pull-right= link_to "Edit", initiate_user_profile_edit_user_path(template_params: "activate_user"), data: {toggle: "modal", target: "#user_edit_popup", userid: user.id}, remote: true, class: "#{can?(:initiate_user_profile_edit, User) ? '' : 'disabled'}"
 
 .col-md-1
 #profile_modal.modal.fade{tabindex: -1, role: "dialog", "aria-labelledby" => "profile_modal", "aria-hidden" => true}

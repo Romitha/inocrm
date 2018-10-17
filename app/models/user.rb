@@ -53,7 +53,13 @@ class User < ActiveRecord::Base
   after_update :crop_avatar
 
   def crop_avatar
-    avatar.recreate_versions! if coord_x.present?
+    if coord_x.present?
+      begin
+        self.avatar.try(:recreate_versions!)
+      rescue
+        (puts self.avatar.present?)
+      end
+    end
   end
 
   def other_addresses

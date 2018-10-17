@@ -14,8 +14,8 @@
           - if params[:from_where] != "cus_product"
             %th Amount
             %th Discount Amount
-            / %th Start Date
-            / %th End Date
+            %th Start Date
+            %th End Date
             %th B2B Contract
             %th Installed Location
             %th Installed Address
@@ -68,7 +68,7 @@
               - else
                 - if params[:new_contract]
                   = link_to "View", contracts_path(view_product: true, serial_product: true, product_id: p.id), remote: false, class: "btn btn-sm btn-warning", target: "_blank"
-                  = link_to "Remove", submit_selected_products_contracts_path(remove: true, selected_product: p.id, organization_id:organization_for_location.id, new_contract: params[:new_contract]), remote: true, class: "btn btn-sm btn-danger", method: :post
+                  = link_to "Remove", submit_selected_products_contracts_path(remove: true, selected_product: p.id, organization_id: organization_for_location.id, new_contract: params[:new_contract]), remote: true, class: "btn btn-sm btn-danger", method: :post
                 - else
                   = link_to "View", contracts_path(view_product: true, view_serial_product: true, product_id: p.id, contract_id:contract_id.id), remote: false, class: "btn btn-sm btn-warning", target: "_blank"
                   = link_to "Remove", submit_selected_products_contracts_path(remove: true, selected_product: p.id,organization_id:organization_for_location.id, contract_id:contract_id.id), remote: true, class: "btn btn-sm btn-danger", method: :post

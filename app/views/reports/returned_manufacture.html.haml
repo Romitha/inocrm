@@ -1,5 +1,9 @@
 - user_ticket_actions = @user_ticket_actions
 %h3 Parts To Be Returned To Manufacturer
+
+= link_to "Export to Excel Sheet", returned_manufacture_reports_path(excel_output: true), class: "btn btn-sm btn-success"
+= paginate user_ticket_actions, method: :get, remote: false
+
 .row
   .col-md-1
     %strong No
@@ -24,24 +28,27 @@
 - num = 0
 %hr
 - user_ticket_actions.each_with_index do |user_ticket_action, index|
-  - if user_ticket_action.request_spare_part.ticket_spare_part.returned_part_accepted == false && user_ticket_action.request_spare_part.ticket_spare_part.close_approved == false
-    .row
-      .col-md-1
-        - if params[:page]
-          = (index+1)+ 10*(params[:page].to_i-1)
-        - else
-          - num= num+1
-          = (num)
-      .col-md-1= user_ticket_action.action_at.strftime(INOCRM_CONFIG["short_date_format"])
-      .col-md-1= user_ticket_action.ticket.support_ticket_no
-      .col-md-2= user_ticket_action.request_spare_part.ticket_spare_part.spare_part_description
-      .col-md-1= user_ticket_action.request_spare_part.ticket_spare_part.spare_part_no
-      .col-md-1= user_ticket_action.request_spare_part.ticket_spare_part.spare_part_event_no
-      .col-md-1= user_ticket_action.request_spare_part.ticket_spare_part.engineer_name
-      .col-md-1= user_ticket_action.request_spare_part.ticket_spare_part.spare_part_status_action.name
-      .col-md-2{ "class"=> "has-popover", "data-toggle"=> "popover", "title"=> "Note: #{user_ticket_action.request_spare_part.ticket_spare_part.note}", "data-content"=> "#{yield(:customer_supplier_p_more)}", "data-html" => "true", "data-trigger" => "hover", "data-placement" => "left" }= strip_tags(user_ticket_action.request_spare_part.ticket_spare_part.note).truncate(40)
-      - date_sent = Date.parse(user_ticket_action.action_at.strftime(INOCRM_CONFIG["short_date_format"]))
-      - date_now = Date.today
-      .col-md-1= (date_now - date_sent).to_i
+  .row
+    .col-md-1
+      - if params[:page]
+        = (index+1)+ 10*(params[:page].to_i-1)
+      - else
+        - num= num+1
+        = (num)
+    .col-md-1= user_ticket_action.action_at.strftime(INOCRM_CONFIG["short_date_format"])
+    .col-md-1= user_ticket_action.ticket.support_ticket_no
+    .col-md-2= user_ticket_action.request_spare_part.ticket_spare_part.spare_part_description
+    .col-md-1= user_ticket_action.request_spare_part.ticket_spare_part.spare_part_no
+    .col-md-1= user_ticket_action.request_spare_part.ticket_spare_part.spare_part_event_no
+    .col-md-1= user_ticket_action.request_spare_part.ticket_spare_part.engineer_name
+    .col-md-1= user_ticket_action.request_spare_part.ticket_spare_part.spare_part_status_action.name
+    .col-md-2{ "class"=> "has-popover", "data-toggle"=> "popover", "title"=> "Note: #{user_ticket_action.request_spare_part.ticket_spare_part.note}", "data-content"=> "#{yield(:customer_supplier_p_more)}", "data-html" => "true", "data-trigger" => "hover", "data-placement" => "left" }= strip_tags(user_ticket_action.request_spare_part.ticket_spare_part.note).truncate(40)
+    - date_sent = Date.parse(user_ticket_action.action_at.strftime(INOCRM_CONFIG["short_date_format"]))
+    - date_now = Date.today
+    .col-md-1= (date_now - date_sent).to_i
 
     %hr
+
+= paginate user_ticket_actions, method: :get, remote: false
+
+= link_to "Export to Excel Sheet", returned_manufacture_reports_path(excel_output: true), class: "btn btn-sm btn-success"
