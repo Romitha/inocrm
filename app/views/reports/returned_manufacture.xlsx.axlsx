@@ -1,0 +1,37 @@
+wb = xlsx_package.workbook
+
+user_ticket_actions = @user_ticket_actions
+date_now = Date.today
+
+
+headers = ["No", "Part Receive at", "Ticket No", "Part Description", "Spare Part No", "Event No", "Engineer Name", "Part Status", "Note", "No of days since receive date", ]
+
+wb.add_worksheet(name: "Quotation report") do |sheet|
+  sheet.add_row headers
+
+  user_ticket_actions.each_with_index do |user_ticket_action, index|
+    ticket_spare_part = user_ticket_action.request_spare_part.ticket_spare_part
+    user_ticket_action_array = []
+
+    user_ticket_action_array << if params[:page]
+      (index+1)+ 100*(params[:page].to_i-1)
+    else
+      (index+1)
+    end
+
+    user_ticket_action_array << user_ticket_action.action_at.strftime(INOCRM_CONFIG["short_date_format"])
+    user_ticket_action_array << user_ticket_action.ticket.support_ticket_no
+    user_ticket_action_array << ticket_spare_part.spare_part_description
+    user_ticket_action_array << ticket_spare_part.spare_part_no
+    user_ticket_action_array << ticket_spare_part.spare_part_event_no
+    user_ticket_action_array << ticket_spare_part.engineer_name
+    user_ticket_action_array << ticket_spare_part.spare_part_status_action.name
+    user_ticket_action_array << strip_tags(ticket_spare_part.note)
+    date_sent = Date.parse(user_ticket_action.action_at.strftime(INOCRM_CONFIG["short_date_format"]))
+    user_ticket_action_array << (date_now - date_sent).to_i
+
+    sheet.add_row user_ticket_action_array
+
+  end
+
+end

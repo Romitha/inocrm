@@ -53,6 +53,7 @@ class AvatarUploader < CarrierWave::Uploader::Base
   end
 
   def crop
+
     if model.coord_x.present?
       resize_to_limit(500,500)
       manipulate! do |img|

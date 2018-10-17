@@ -7,31 +7,31 @@ wb.add_worksheet(name: "Quotation report") do |sheet|
   sheet.add_row headers
 
   @quotations.each_with_index do |quotation, index|
-		quotation_content = [
-			"#{index+1}",
-			quotation.formatted_quotation_no,
-			quotation.ticket.customer_name,
-			quotation.created_by_full_name,
-			quotation.created_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}"),
-			quotation.ticket.support_ticket_no,
-			quotation.validity_period,
-			standard_currency_format(quotation.total_cost_sub_sum),
-			standard_currency_format(quotation.total_quoted_sub_sum),
-			quotation.note,
-			quotation.old_customer_approved_at.approved,
-			quotation.old_customer_approved_at.datetime,
-			standard_currency_format(quotation.profit),
-			boolean_in_word(quotation.canceled, "Yes", "No"),
-			quotation.ticket.final_invoice.try(:payment_term_name),
-			quotation.ticket.ticket_currency.code,
-			quotation.ticket.final_invoice.try(:formatted_invoice_no),
-			quotation.ticket.final_invoice.try(:invoice_type_name),
-			standard_currency_format(quotation.ticket.final_invoice.try(:total_amount)),
-			standard_currency_format(quotation.ticket.final_invoice.try(:total_advance_recieved)),
-			standard_currency_format(quotation.ticket.final_invoice.try(:net_total_amount)),
-		]
+    quotation_content = [
+      "#{index+1}",
+      quotation.formatted_quotation_no,
+      quotation.ticket.customer_name,
+      quotation.created_by_full_name,
+      quotation.created_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}"),
+      quotation.ticket.support_ticket_no,
+      quotation.validity_period,
+      standard_currency_format(quotation.total_cost_sub_sum),
+      standard_currency_format(quotation.total_quoted_sub_sum),
+      quotation.note,
+      quotation.old_customer_approved_at.approved,
+      quotation.old_customer_approved_at.datetime,
+      standard_currency_format(quotation.profit),
+      boolean_in_word(quotation.canceled, "Yes", "No"),
+      quotation.ticket.final_invoice.try(:payment_term_name),
+      quotation.ticket.ticket_currency.code,
+      quotation.ticket.final_invoice.try(:formatted_invoice_no),
+      quotation.ticket.final_invoice.try(:invoice_type_name),
+      standard_currency_format(quotation.ticket.final_invoice.try(:total_amount)),
+      standard_currency_format(quotation.ticket.final_invoice.try(:total_advance_recieved)),
+      standard_currency_format(quotation.ticket.final_invoice.try(:net_total_amount)),
+    ]
 
-	  sheet.add_row quotation_content
+    sheet.add_row quotation_content
 
   end
 
