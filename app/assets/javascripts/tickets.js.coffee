@@ -1241,39 +1241,46 @@ window.Tickets =
     # else
     #   $(".product_brand_main").addClass("hide");
     #   $(".product_brand_show").removeClass("hide");
-  show_date: ->
+  show_date: (e)->
+    _this = $(e)
+    ticket_end_at = _this.parents(".ticket_contract_start_at").eq(0).siblings(".ticket_contract_end_at").find("#ticket_contract_contract_end_at")
+    ticket_end_at.datepicker 'remove'
+    ticket_end_at.datepicker({
+      format: "yyyy-mm-dd",
+      todayBtn: true,
+      todayHighlight: true,
+    })
+    # strDate = $("#ticket_contract_contract_start_at").val()
+    # dateParts = strDate.split("-");
 
-    strDate = $("#ticket_contract_contract_start_at").val()
-    dateParts = strDate.split("-");
+    # date1 = new Date(dateParts[2], (dateParts[1])-1, dateParts[0]);
+    # # get_start_date = $("#ticket_contract_contract_start_at").val()
+    # # convert_start_date = get_start_date.replace("-", ",");
+    # # converted_start_date = convert_start_date.replace("-", ",");
+    # # alert converted_start_date
 
-    date1 = new Date(dateParts[2], (dateParts[1])-1, dateParts[0]);
-    # get_start_date = $("#ticket_contract_contract_start_at").val()
-    # convert_start_date = get_start_date.replace("-", ",");
-    # converted_start_date = convert_start_date.replace("-", ",");
-    # alert converted_start_date
-
-    date = new Date(date1);
-    date.setDate(date.getDate() - 1);
+    # date = new Date(date1);
+    # date.setDate(date.getDate() - 1);
 
 
 
-    d = new Date(date)
-    year = d.getFullYear()
-    month = (d.getMonth()+1)
-    day = (d.getDate())
+    # d = new Date(date)
+    # year = d.getFullYear()
+    # month = (d.getMonth()+1)
+    # day = (d.getDate())
 
-    if day < 10
-      modi_day = '0'+day
-    else
-      modi_day = day
+    # if day < 10
+    #   modi_day = '0'+day
+    # else
+    #   modi_day = day
 
-    if month < 10
-      modi_month = '0'+month
-    else
-      modi_month = month
-    someFormattedDate = (year+1) + '-' + (modi_month) + '-' + (modi_day)
-    # finaldate = new Date(someFormattedDate)
-    $("#ticket_contract_contract_end_at").val(someFormattedDate)
+    # if month < 10
+    #   modi_month = '0'+month
+    # else
+    #   modi_month = month
+    # someFormattedDate = (year+1) + '-' + (modi_month) + '-' + (modi_day)
+    # # finaldate = new Date(someFormattedDate)
+    # $("#ticket_contract_contract_end_at").val(someFormattedDate)
 
   balance_count: ->
     amount_box = parseFloat($("#contract_payment_received_amount").val())
