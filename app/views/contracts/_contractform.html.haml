@@ -66,9 +66,9 @@
         = f.select :owner_organization_id, ( Organization.owner.members.collect{ |m| [m.name, m.id ] } << [Organization.owner.name, Organization.owner.id] ), {include_blank: false}, {class: "form-control col-md-12 small_scale_margin-top2"}
 
   .row
-    .col-md-4
-      = f.input :contract_start_at, as: :string, required: true,input_html: {class: "datepicker", value: f.object.contract_start_at.try(:strftime, INOCRM_CONFIG["short_date_format"]), onblur:"Tickets.show_date();"}
-    .col-md-4
+    .col-md-4.ticket_contract_start_at
+      = f.input :contract_start_at, as: :string, required: true,input_html: {class: "datepicker", value: f.object.contract_start_at.try(:strftime, INOCRM_CONFIG["short_date_format"]), onblur: "Tickets.show_date(this); return false;"}
+    .col-md-4.ticket_contract_end_at
       = f.input :contract_end_at, as: :string, required: true, input_html: {class: "datepicker", value: f.object.contract_end_at.try(:strftime, INOCRM_CONFIG["short_date_format"])}
     .col-md-4
       = f.input :process_at, as: :string, required: true, input_html: {class: "datepicker", value: f.object.process_at.try(:strftime, INOCRM_CONFIG["short_date_format"])}

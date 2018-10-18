@@ -30,7 +30,7 @@
 
     // - if (@rce and (@manufacture_warranty or @manufacture_chargeable or @store_warranty or @store_chargeable))
     .row
-      = f.input :repare_start, as: :string, label: "Repair start", input_html: {class: "datetimepicker", value: f.object.repare_start.try(:localtime).try(:strftime, "%m/%d/%Y %I:%M %p")}, wrapper_html: {class: "position_relative col-md-6"}, required: true
+      = f.input :repare_start, as: :string, label: "Repair start", input_html: {class: "datetimepicker", value: f.object.repare_start.try(:localtime).try(:strftime, "%m/%d/%Y %I:%M %p"), data: {minDate: DateTime.now.strftime("%m/%d/%Y %I:%M %p")}}, wrapper_html: {class: "position_relative col-md-6 allow_only_future",}, required: true
 
       = f.input :repare_end, as: :string, label: "Repair end", input_html: {class: "datetimepicker", value: f.object.repare_end.try(:localtime).try(:strftime, "%m/%d/%Y %I:%M %p")}, wrapper_html: {class: "position_relative col-md-6"}, required: true
 
