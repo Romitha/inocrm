@@ -160,11 +160,7 @@
   {{optionArray}}
   <option  > </option>
   {{#each optionArray as |option|}}
-  {{ #if option.active }}
-  <option value={{ option.id }} > {{option.name}} </option>
-  {{else}}
-  <option value={{ option.id }} disabled='disabled' > {{option.name}} </option>
-  {{/if}}
+  <option value={{ option.id }} disabled='disabled' > {{option.name}} ({{option.active}}) </option>
   {{/each}}
 
 %script{type: "text/x-handlebars", id: "components/group-list"}
