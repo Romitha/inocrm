@@ -160,7 +160,7 @@
   {{optionArray}}
   <option  > </option>
   {{#each optionArray as |option|}}
-  {{ #if option['active'] }}
+  {{ #if get option active }}
   <option value={{ option.id }} > {{option.name}} </option>
   {{else}}
   <option value={{ option.id }} disabled='disabled' > {{option.name}} ({{option.active}}) </option>
