@@ -1288,7 +1288,7 @@ class TicketsController < ApplicationController
         @sbus = sbu.sbu_engineers.where(active: true).map { |s| {id: s.engineer.id, active: s.engineer.user_active, name: "#{s.engineer.full_name} (#{ TicketEngineer.where(user_id: s.engineer_id, job_completed_at: nil).count })"} }
 
       else
-        @sbus = Sbu.where(active: true).map { |s| {id: s.id, name: s.sbu} }
+        @sbus = Sbu.where(active: true).map { |s| {id: s.id, name: s.sbu, active: s.active} }
         # @sbus = SbuEngineer.all.map { |s| {id: s.id, name: s.sbu.try(:sbu)} }
 
       end

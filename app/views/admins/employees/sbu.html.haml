@@ -39,7 +39,7 @@
 
 = collapse_wrapper collapse_id: "emp_sbu_list", labelledby: "emp_sbu_labelledby" do
   - @sbu_all.each_with_index do |sbu, index|
-    = collapse collapse_type: "info", labelledby: "labelledby_#{sbu.id}", header_content: sbu.sbu, collapse_link: "emppayment_termlink_#{sbu.id}", collapse_id: "emp_sbu_list" do
+    = collapse collapse_type: "info", labelledby: "labelledby_#{sbu.id}", header_content: "#{sbu.sbu} #{'Inactive' unless sbu.active}", collapse_link: "emppayment_termlink_#{sbu.id}", collapse_id: "emp_sbu_list" do
       .pull-right
         - unless sbu.is_used_anywhere?
           = link_to delete_admin_sbu_admins_employees_path(sbu_id: sbu.id), method: :delete, rel: "tooltip", :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do
@@ -67,7 +67,7 @@
       .row.col-md-12
         = collapse_wrapper collapse_id: "ticket_sbuengineer_list", labelledby: "tic_sbuengineer_labelledby" do
           - sbu.cached_sbu_engineers.each do |sbu_engineer|
-            = collapse collapse_type: "danger", labelledby: "labelledby_#{sbu_engineer.id}", header_content: "Engineer: #{sbu_engineer.engineer.full_name}", collapse_link: "ticpsbuengineerlink_#{sbu_engineer.id}", collapse_id: "ticket_sbuengineer_list" do
+            = collapse collapse_type: "danger", labelledby: "labelledby_#{sbu_engineer.id}", header_content: "Engineer: #{sbu_engineer.engineer.full_name} #{'Inactive' unless sbu_engineer.active}", collapse_link: "ticpsbuengineerlink_#{sbu_engineer.id}", collapse_id: "ticket_sbuengineer_list" do
               .pull-right
                 - unless sbu_engineer.is_used_anywhere?
                   = link_to delete_admin_sbu_engineer_admins_employees_path(sbu_engineer_id: sbu_engineer.id), method: :delete, rel: "tooltip", :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do
