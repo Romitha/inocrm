@@ -70,6 +70,11 @@
             %li{role: "presentation", class: "#{can?(:warranty_expire_report, Warranty) ? '' : 'disabled'}"}= link_to "Warranty Expire Report", warranty_expire_reports_path, class: "#{can?(:warranty_expire_report, Warranty) ? '' : 'disabled'}"
             %li{role: "presentation", class: "#{can?(:contract_expire, TicketContract) ? '' : 'disabled'}"}= link_to "Contract Expire Report", contract_expire_reports_path, class: "#{can?(:contract_expire, TicketContract) ? '' : 'disabled'}"
 
+            %li{role: "presentation", class: "#{can?(:customer_supplier_report, Ticket) ? '' : 'disabled'}"}= link_to "Customer Supplier Report", customer_supplier_report_reports_path, class: "#{can?(:customer_supplier_report, Ticket) ? '' : 'disabled'}"
+
+
+
+
             %li= link_to "Hold Ticket Report", hold_ticket_report_reports_path
             %li= link_to "Parts To Be Returned To Manufacturer", returned_manufacture_reports_path
             %li= link_to "To Be Collected From Manufacturer", manufacture_colected_reports_path

@@ -94,8 +94,9 @@ class Organization < ActiveRecord::Base
   scope :organization_customers, -> {where(category: TYPES[1]).order('name asc')}
   scope :individual_customers, -> {where(category: TYPES[3])}
   scope :owner, -> { where(refers: "CRM_OWNER").first }
+  scope :customers_and_suppliers, -> { joins(accounts_dealer_types: :dealer_type).where(mst_dealer_types: {code: Organization::TYPES}) }
 
-  scope :stores, -> { where(type_id: 4)}
+  scope :stores, -> { where(type_id: 4)} # Proc.new{ where(type_id: 4) }
 
   validates_format_of :web_site, :with => URI::regexp(%w(http https)), if: Proc.new{|o| o.web_site.present? }
 
@@ -151,6 +152,9 @@ class Organization < ActiveRecord::Base
 
   def get_code
     organization_type.try(:code)
+  end
+  def org_name
+    organization_type.try(:name)
   end
 
   def self.organization_tree_path(who, level = 0)
@@ -224,8 +228,8 @@ class Organization < ActiveRecord::Base
 
   def to_indexed_json
     to_json(
-      only: [:id, :name, :type_id, :code, :web_site, :short_name, ],
-      methods: [:get_code, :logo_url],
+      only: [:id, :name, :type_id, :code, :web_site, :short_name, :code ],
+      methods: [:get_code, :logo_url, :org_name],
       include: {
         industry_type: {
           only: [:id, :name],
@@ -244,7 +248,7 @@ class Organization < ActiveRecord::Base
           methods: [:dealer_id, :dealer_name, :dealer_code],
         },
         addresses: {
-          only: [:id, :primary_address],
+          only: [:id, :primary_address, :addressable_type],
           methods: [:full_address],
         },
         contact_numbers: {
@@ -252,7 +256,7 @@ class Organization < ActiveRecord::Base
           methods: [:contact_info],
         },
         account: {
-          only: [:id, :industry_types_id,:account_no, :code, :account_manager, :vat_number, :created_at],
+          only: [:id, :industry_types_id,:account_no, :code, :vat_number, :created_at, :svat_no, :business_registration_no],
           methods: [:get_account_manager, :created_user, :industry_name],
         },
       },

@@ -376,6 +376,32 @@ class ReportsController < ApplicationController
       end
     end
   end
+
+
+
+  def customer_supplier_report
+
+    Organization
+
+    customer_report = []
+    refined_query = ""
+    if params[:search].present? or params[:excel_report].present?
+      customer_report = params[:search_customer_supplier].map { |k, v| "#{k}:#{v}" if v.present? }.compact
+    end
+
+    refined_query += customer_report.join(" AND ")
+
+    params[:query] = refined_query
+
+    @customer_reports = Organization.search(params)
+
+    @account_managers = User.joins(:designation).where(designations: {code: "MGR"})
+
+
+  end
+
+
+
   def non_contract_ticket_report
     Ticket
     Invoice
@@ -440,6 +466,7 @@ class ReportsController < ApplicationController
       end
     end
   end
+
 
   def customer_product_report
     Ticket
@@ -856,7 +883,8 @@ class ReportsController < ApplicationController
     # @ticket_manufactures = UserTicketAction.where(action_id: '58').order("action_at desc").to_a.uniq{|t| t.ticket_id }
 
     render "reports/cus_not_colected"
-  end  
+  end
+
 
   def order_updated
     TaskAction
