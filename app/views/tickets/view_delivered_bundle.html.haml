@@ -10,36 +10,36 @@
               = select_tag "search_delivered_bundle[product_brand_id]", options_from_collection_for_select(ProductBrand.where(active: true), :id, :name, params[:product_brand_id]), class: "form-control parent_class", include_blank: true
             .col-md-3
               = label_tag "Bundle No:"
-              = text_field_tag "search_delivered_bundle[bundle_no]", (params[:search_delivered_bundle] and params[:search_delivered_bundle][:bundle_no]), class: "form-control", placeholder: "Return Part Serial No"
+              = text_field_tag "search_delivered_bundle[bundle_no]", (params[:search_delivered_bundle] and params[:search_delivered_bundle][:bundle_no]), class: "form-control", placeholder: "bundle No"
             .col-md-3
               = label_tag "Return Part CT No:"
-              = text_field_tag "search_delivered_bundle[ticket_spare_parts.return_part_ct_no]", params[:return_part_ct_no], class: "form-control", placeholder: "Return Part CT No"
+              = text_field_tag "search_delivered_bundle[ticket_spare_parts.return_part_ct_no]", params[:return_part_ct_no], class: "form-control", placeholder: "return part ct No"
             .col-md-3
               = label_tag "Return Part Serial No:"
-              = text_field_tag "search_delivered_bundle[ticket_spare_parts.return_part_serial_no]", params[:return_part_serial_no], class: "form-control", placeholder: "Return Part CT No"
+              = text_field_tag "search_delivered_bundle[ticket_spare_parts.return_part_serial_no]", params[:return_part_serial_no], class: "form-control", placeholder: "return part serial No"
           .row
             .col-md-3
               = label_tag "Created Date From:"
-              = text_field_tag "created_at_from", params[:created_at_from], class: "form-control datepicker", placeholder: "Select To date"
+              = text_field_tag "created_at_from", params[:created_at_from], class: "form-control datepicker", placeholder: "select from date"
             .col-md-3
               = label_tag "Created Date To:"
-              = text_field_tag "created_at_to", params[:created_at_to], class: "form-control datepicker", placeholder: "Select To date"
+              = text_field_tag "created_at_to", params[:created_at_to], class: "form-control datepicker", placeholder: "select to date"
             .col-md-3
               = label_tag "Delivered Date From:"
-              = text_field_tag "delivered_at_from", params[:delivered_at_from], class: "form-control datepicker", placeholder: "Select To date"
+              = text_field_tag "delivered_at_from", params[:delivered_at_from], class: "form-control datepicker", placeholder: "select from date"
             .col-md-3
               = label_tag "Delivered Date To:"
-              = text_field_tag "delivered_at_to", params[:delivered_at_to], class: "form-control datepicker", placeholder: "Select To date"
+              = text_field_tag "delivered_at_to", params[:delivered_at_to], class: "form-control datepicker", placeholder: "select to date"
           .row
             .col-md-3
               = label_tag "Ticket No:"
-              = text_field_tag "search_delivered_bundle[ticket_spare_parts.ticket_serial_no]", params[:ticket_serial_no], class: "form-control",placeholder: "Ticket_no"
+              = text_field_tag "search_delivered_bundle[ticket_spare_parts.ticket_serial_no]", params[:ticket_serial_no], class: "form-control",placeholder: "ticket_no"
             .col-md-3
               = label_tag "Spare Part No:"
-              = text_field_tag "search_delivered_bundle[ticket_spare_parts.spare_part_no]", params[:spare_part_no], class: "form-control", placeholder: "Spare part no"
+              = text_field_tag "search_delivered_bundle[ticket_spare_parts.spare_part_no]", params[:spare_part_no], class: "form-control", placeholder: "spare part no"
             .col-md-3
               = label_tag "Event No:"
-              = text_field_tag "search_delivered_bundle[ticket_spare_parts.spare_part_event_no]", params[:spare_part_event_no], class: "form-control",placeholder: "Event no"
+              = text_field_tag "search_delivered_bundle[ticket_spare_parts.spare_part_event_no]", params[:spare_part_event_no], class: "form-control",placeholder: "event no"
             / .col-md-3
             /   = label_tag "Used Status:"
             /   = select_tag "product_brand_id", options_from_collection_for_select(ProductBrand.where(active: true), :id, :name, params[:product_brand_id]), class: "form-control parent_class", include_blank: true
@@ -73,11 +73,11 @@
         %tr
           %td
             - if params[:page]
-              = link_to (index+1) + 10*(params[:page].to_i-1), show_delivered_bundle_tickets_path(bundle_callback: "select_bundle", bundle_id: db.id)
+              =  (index+1) + 10*(params[:page].to_i-1)
             - else
-              = link_to (index+1), show_delivered_bundle_tickets_path(bundle_callback: "select_bundle", bundle_id: db.id)
+              =  (index+1)
           %td
-            = db.bundle_no
+            = link_to db.bundle_no, show_delivered_bundle_tickets_path(bundle_callback: "select_bundle", bundle_id: db.id)
           %td
             = db.brand_name
           %td
@@ -85,7 +85,7 @@
           %td
             = db.created_by_name
           %td
-            = db.delivered_at.to_datetime.strftime(INOCRM_CONFIG['long_date_format'])
+            = db.delivered_at.try(:to_datetime).try(:strftime, INOCRM_CONFIG['long_date_format'])
           %td
             = db.delivered_by_name
 

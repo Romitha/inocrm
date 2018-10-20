@@ -39,8 +39,8 @@
         %td
         %td= contract.owner_organization.try(:name)
         %td= contract.organization.account.get_account_manager
-        %td= contract.formated_contract_start_at
-        %td= contract.formated_contract_end_at
+        %td= contract.contract_start_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}"))
+        %td= contract.contract_end_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}"))
         %td
           - if contract.season == 1
             Season 1

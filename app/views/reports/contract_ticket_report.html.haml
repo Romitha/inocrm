@@ -7,7 +7,7 @@
           .row
             .col-md-3
               = label_tag "Customer Name"
-              = select_tag "search_contracts[ticket_contract.organization.id]", options_from_collection_for_select(Organization.customers, :id, :name), class: "form-control parent_class", include_blank: true
+              = select_tag "search_contracts[ticket_contract.organization.id]", options_from_collection_for_select(Organization.customers, :id, :name), class: "form-control parent_class chosen-select", include_blank: true
               
             .col-md-3
               = label_tag "Service Provider:"

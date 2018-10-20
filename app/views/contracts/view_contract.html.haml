@@ -208,6 +208,10 @@
             %th Category
             %th Model No
             %th Product No
+            %th SLA
+            %th B2B
+            %th Contract Start Date
+            %th Contract End Date
             %th Amount(Discounted)
             %th Action
         %tbody
@@ -223,6 +227,10 @@
               %td= p.product.category_full_name_index
               %td= p.product.model_no
               %td= p.product.product_no
+              %td= p.sla_time.description
+              %td= p.contract_b2b
+              %td= p.contract_start_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
+              %td= p.contract_end_at.try(:strftime, INOCRM_CONFIG["short_date_format"])
               - amount_without_discount = p.try(:amount)
               - discount = p.discount_amount.to_f
               - if !(amount_without_discount == "" && discount == "")

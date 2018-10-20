@@ -4,6 +4,8 @@
 = link_to "Export to Excel Sheet", returned_manufacture_reports_path(excel_output: true), class: "btn btn-sm btn-success"
 = paginate user_ticket_actions, method: :get, remote: false
 
+%h5.blue Parts received from manufacturer(by coordinator), return part not yet accepted (by coordinator) and not been close approved
+%br
 .row
   .col-md-1
     %strong No
