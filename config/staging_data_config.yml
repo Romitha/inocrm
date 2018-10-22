@@ -78,3 +78,8 @@ contact_type_values_map:
 spt_quotation_no_annual_reset: true
 
 contract_product_required: false
+
+bpm:
+  bpm_url: "http://192.168.100.157:8080/jbpm-console/rest"
+
+  bpm_deployment_id: "lk.inova:INOCRM:1.0.3.0"

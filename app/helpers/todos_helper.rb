@@ -184,41 +184,7 @@ module TodosHelper
   private
 
     def deployment_id
-      # "lk.inova:INOCRM:0.0.3"
-      # "lk.inova:INOCRM:0.0.7"
-      # "lk.inova:INOCRM:0.0.8"
-      # "lk.inova:INOCRM:0.0.9"
-      # "lk.inova:INOCRM:0.0.0.1"
-      # "lk.inova:INOCRM:0.0.0.3"
-      case Rails.env
-      when "development"
-        # "lk.inova:INOCRM:0.0.0.4"
-        # "lk.inova:INOCRM:1.0.0.5"
-        # "lk.inova:INOCRM:1.0.0.6"
-        # "lk.inova:INOCRM:1.0.0.9"
-        # "lk.inova:INOCRM:1.0.1.0"
-        # "lk.inova:INOCRM:1.0.2.4"
-        # "lk.inova:INOCRM:1.0.3.1"
-        # "lk.inova:INOCRM:1.0.2.8"
-        "lk.inova:INOCRM:1.0.3.0"
-      when "production"
-        # "lk.inova:INOCRM:1.0.0.4"
-        # cloned from github
-        # "lk.inova:INOCRM:1.0.0.5"
-        # "lk.inova:INOCRM:1.0.0.6"
-        # "lk.inova:INOCRM:1.0.0.9"
-        # "lk.inova:INOCRM:1.0.2.4"
-        # "lk.inova:INOCRM:1.0.2.8"
-        "lk.inova:INOCRM:1.0.3.0"
-      when "test"
-        # "lk.inova:INOCRM:1.0.2.4"
-        # "lk.inova:INOCRM:1.0.2.8"
-        "lk.inova:INOCRM:1.0.3.0"
-      when "staging"
-        # "lk.inova:INOCRM:1.0.2.4"
-        # "lk.inova:INOCRM:1.0.2.8"
-        "lk.inova:INOCRM:1.0.3.0"
-      end
+      INOCRM_CONFIG[:bpm][:bpm_deployment_id]
         
     end
 
@@ -236,15 +202,7 @@ module TodosHelper
     end
 
     def base_url
-      if Rails.env == "staging"
-        # "http://192.168.100.157:8080/jbpm-console/rest"
-        "http://192.168.100.157:8080/jbpm-console/rest"
-      elsif Rails.env == "production"
-        "http://192.168.1.232:8080/jbpm-console/rest"
-      else
-        "http://192.168.1.202:8080/jbpm-console/rest"
-        # "http://192.168.1.232:8080/jbpm-console/rest"
-      end
+      INOCRM_CONFIG[:bpm][:bpm_url]
       # curl -X POST -H "Accept:application/xml" -H "Content-type:application/json" -H "Authorization: Basic a3Jpc3Y6a3Jpc3Y=" http://192.168.1.202:8080/jbpm-console/rest/runtime/org.Test1234:test1234:3.3/process/test1234.test1a/start\?map_name\=wanni\&map_age\=27\&map_user\=anu
     end
 
