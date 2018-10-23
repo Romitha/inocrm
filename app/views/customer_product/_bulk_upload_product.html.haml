@@ -1,0 +1,9 @@
+= render "contracts/edit_product"
+%font{:color => "blue"}
+  %strong Imported Excel Sheet Results - Records Count: #{(@sheet.last_row - 1)}
+%br
+= initiate_table table_type: "table-bordered" do
+  = table_header ["No", "Serial No", "Model No", "Product No", "Name"]
+  = multi_table_body do
+    - (@sheet.last_row - 1).times.each_with_index do |r, index|
+      = multi_table_row [index+1]+@sheet.row(r+2)

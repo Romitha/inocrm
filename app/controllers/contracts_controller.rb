@@ -52,17 +52,15 @@ class ContractsController < ApplicationController
     if params[:select_product]
       if params[:organization_id]
         @organization = Organization.find params[:organization_id]
-        @organization.products.build if @organization.products.blank?
-
-        # @ticket_contracts = @organization.ticket_contracts.page params[:page]
-        # @contract_products = @organization.contract_products
+        @products = Product.where(owner_customer_id: params[:organization_id]).page(params[:page]).per(10)
       end
     end
 
     if params[:select_product_ticket]
       if params[:organization_id]
         @organization = Organization.find params[:organization_id]
-        @organization.products.build if @organization.products.blank?
+        # @organization.products.build if @organization.products.blank?
+        @products = Product.where(owner_customer_id: params[:organization_id]).page(params[:page]).per(10)
         # @ticket_contracts = @organization.ticket_contracts.page params[:page]
         # @contract_products = @organization.contract_products
       end
@@ -646,6 +644,78 @@ class ContractsController < ApplicationController
     end
   end
 
+  def save_cus_product
+    @product = if params[:product_id].present?
+      Product.find(params[:product_id])
+    else
+      Product.new
+    end
+
+    @product.attributes = product_params
+
+    if @product.save
+      @product.owner_customer.update_index if @product.owner_customer.present?
+      Ticket.index.import @product.tickets if @product.tickets.present?
+    end
+
+    respond_to do |format|
+      format.html { redirect_to contracts_path, notice: "Successfully saved."}
+      format.js { render "save_cus_product" }
+    end
+  end
+
+  def edit_product
+    @product = Product.find(params[:product_id])
+
+    render :edit_product
+  end
+
+  def delete_product
+    @product = Product.find(params[:product_id])
+
+    if @product.validate_destruction
+      render :delete_product
+    else
+      render js: "alert('Sorry Unable to delete product');"
+    end
+
+  end
+
+  def bulk_product_upload
+    Inventory
+    if params[:new_bulk_upload_serial].present?
+      accessible_inventory_serial_item_params = inventory_serial_item_params
+
+      Rails.cache.write([ :serial_item, params[:refer_resource_class].to_sym, params[:refer_resource_id].to_i, session[:grn_arrived_time].to_i ], Rails.cache.fetch([:bulk_serial, params[:timestamp].to_i ]).map { |s| InventorySerialItem.new(accessible_inventory_serial_item_params.merge(serial_no: s[0], ct_no: s[1])) })
+
+      Rails.cache.delete( [:bulk_serial, params[:timestamp].to_i ] )
+
+    elsif params[:clear_import].present?
+      File.delete(File.join(Rails.root, "public", "uploads", uploaded_io.original_filename))
+
+    else
+      uploaded_io = params[:import_excel]
+      @file_name = uploaded_io.original_filename
+
+      Dir.mkdir(File.join(Rails.root, "public", "uploads"), 755) unless Dir.exist?(File.join(Rails.root, "public", "uploads"))
+
+      File.open(Rails.root.join('public', 'uploads', @file_name), 'wb') do |file|
+        file.write(uploaded_io.read)
+
+      end
+
+      @organization = Organization.find(params[:refer_resource_id])
+
+      @product = Product.new owner_customer_id: params[:refer_resource_id]
+
+      @sheet = Roo::Spreadsheet.open(File.join(Rails.root, "public", "uploads", @file_name))
+
+      # File.delete(File.join(Rails.root, "public", "uploads", uploaded_io.original_filename))
+
+    end
+    render "customer_product/bulk_product_upload"
+  end
+
   def delete_warrenty
     @warrenty = Warranty.find params[:warranty_id]
     if @warrenty.present?
@@ -736,6 +806,10 @@ class ContractsController < ApplicationController
 
     def customer_product_params
       params.require(:organization).permit(:id, products_attributes: [:id, :create_by_id, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by, :remarks, :description, :name, :date_installation, :note, :dn_number, :invoice_number, :invoice_date, :location_address_id, :sla_id, :_destroy, warranties_attributes:[:start_at, :end_at, :product_serial_id, :warranty_type_id, :period_part, :period_labour, :period_onsight, :care_pack_product_no, :care_pack_reg_no, :note, :_destroy]])
+    end
+
+    def product_params
+      params.require(:product).permit(:id, :create_by_id, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by, :remarks, :description, :name, :date_installation, :note, :dn_number, :invoice_number, :invoice_date, :location_address_id, :sla_id, :_destroy, warranties_attributes:[:start_at, :end_at, :product_serial_id, :warranty_type_id, :period_part, :period_labour, :period_onsight, :care_pack_product_no, :care_pack_reg_no, :note, :_destroy])
     end
 
     def contract_product_params

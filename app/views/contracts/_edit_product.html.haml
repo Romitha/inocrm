@@ -1,0 +1,317 @@
+- organization = @organization
+= simple_nested_form_for @product, url: save_cus_product_contracts_path(product_id: @product.id), html: {class: "validate_form"}, method: :put, remote: true, multipart: true do |f|
+  = f.input :create_by_id, as: :hidden, input_html: {value: current_user.id}
+  - if f.object.persisted?
+    - product = f.object
+    - if f.object.tickets.any? or f.object.contract_products.any?
+      .panel-body
+        .row
+          .col-md-6
+            %h3 Product Info
+            %dl.dl-horizontal
+              %dt Serial No :
+              %dd= product.serial_no
+              %dt SLA Time :
+              %dd= product.sla_time.try(:description)
+              %dt Product Brand :
+              %dd= product.product_brand.try(:name)
+              %dt Category :
+              %dd= product.category_full_name_index
+              %dt Model No :
+              %dd= product.model_no
+              %dt Product No :
+              %dd= product.product_no
+              %dt Name :
+              %dd= product.name
+              %dt Description :
+              %dd= product.description
+              %dt Serial No:
+              %dd= product.serial_no
+
+          .col-md-6
+            - f.object.contract_products.each do |c|
+              %dl.dl-horizontal
+                %dt Contract No:
+                %dd= c.ticket_contract.contract_no
+                %dt Contract start at:
+                %dd= c.contract_start_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+                %dt Contract end at:
+                %dd= c.contract_end_at.try(:strftime, INOCRM_CONFIG['short_date_format'])
+    - else
+      .row
+        .col-md-4
+          = f.input :serial_no, required: true
+        .col-md-4
+          = f.association :sla_time,collection: SlaTime.where(active: true), required: true, label_method: :description, include_blank: false, label: "SLA"
+      .row.product_cat
+        .select_wrapper
+          .col-md-3
+            = f.association :product_brand, collection: ProductBrand.where(active: true), required: true, input_html: {class: "product_brand", id: "product_product_brand_id"}
+          .col-md-3
+            %font{:color => "#90032A"}
+              = label_tag "Product Category 1"
+              = select_tag "search_product_category1_cus_product",option_groups_from_collection_for_select(ProductBrand.where(active: true), :active_product_category1s, :id, :id, :name, "#"), include_blank: true, class: "form-control product_category1", id: "search_product_category1"
+          .col-md-3
+            %font{:color => "#90032A"}
+              = label_tag "Product Category 2"
+              = select_tag "search_product_category2_cus_product", option_groups_from_collection_for_select(ProductCategory1.all, :active_product_category2s, :id, :id, :name, "#"), include_blank: true, class: "form-control product_category2", id: "search_product_category2"
+
+          .col-md-3
+            = f.association :product_category, collection: ProductCategory2.all, as: :grouped_select, group_method: :active_product_categories, group_label_method: :id, value_method: :id, required: true, input_html: {class: "product_category chosen-select", onchange: "Tickets.product_name(this);", id: "product_product_category_id"}, label: "Product Category 3"
+      .row
+        .col-md-2
+          = f.input :model_no
+        .col-md-2
+          = f.input :product_no
+      .row.pro_name
+        .col-md-4
+          = f.input :name, input_html: {class: "product_name"}
+        .col-md-8
+          =f.input :description
+    .row
+      .col-md-4                
+        = f.association :location_address, collection: [product.owner_customer], as: :grouped_select, group_method: :addresses, label_method: :full_address, required: true
+    %fieldset
+      %legend POP
+      .row
+        .col-md-3
+          = f.association :product_pop_status, collection: ProductPopStatus.where(active: true)
+        .col-md-4
+          = f.input :pop_note, input_html: {value: nil}
+          %div{style: "word-wrap: break-word;"}= simple_format f.object.pop_note
+        .col-md-3
+          = f.association :product_sold_country, label_method: :country_name_with_code
+        - if f.object.persisted?
+          .col-md-3
+            %strong.small_scale_padding-bottom3{style: "display: block;"} POP note document
+            - if f.object.pop_doc_url.present?
+              .pop_url_show
+                = link_to f.object.pop_doc_url.file.filename, f.object.pop_doc_url.url, target: "_blank"
+
+            = f.label "Upload pop note"
+            / = f.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf', class: "product_pop_doc_url", data: {class: "pop_doc_url_wrapper"}
+            = f.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf,application/msword,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            / #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
+
+            - if product.pop_doc_url.present?
+              = link_to "Remove", remove_pop_document_contracts_path(pop_id: f.object.id, wrapper: "contract_pop_wrapper_#{f.object.id}"), method: :delete, remote: false, data: {confirm: "Are you sure? Do you want to remove?"}
+            / .pop_doc_url_wrapper
+    %fieldset
+      %legend Corporate Product
+      .row
+        .col-md-4
+          = f.input :corporate_product, wrapper: :append
+        .col-md-4
+          = f.input :dn_number
+        .col-md-4
+          = f.input :invoice_number
+      .row
+        .col-md-4
+          = f.input :invoice_date, as: :string, input_html: {class: "datepicker", value: f.object.invoice_date.try(:strftime, INOCRM_CONFIG["short_date_format"])}
+        .col-md-4
+          = f.input :date_installation, as: :string, input_html: {class: "datepicker", value: f.object.date_installation.try(:strftime, INOCRM_CONFIG["short_date_format"])}
+        / = hidden_field_tag :owner_customer_id, product.owner_customer
+
+    %fieldset
+      %legend Warranty
+      %table.table.table-responsive.table-condensed.table-bordered
+        %thead
+          %tr
+            %th
+            %th{colspan: 2} Warranty date
+            %th{colspan: 3} Period in month
+            %th Warranty
+            %th{colspan: 2} Care Pack
+            %th
+          %tr
+            %th
+            %th Start
+            %th End
+            %th Part
+            %th labour
+            %th Onsite
+            %th Type
+            %th Product number
+            %th Reg number
+            %th Note
+            / %th Function
+
+        %tbody
+          - f.object.warranties.order("created_at ASC").each do |warranty|
+            %tr
+              %td
+                = link_to delete_warrenty_contracts_path(warranty_id: warranty.id), method: :delete, rel: "tooltip", :data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Delete" do
+                  %span.glyphicon.glyphicon-trash
+              %td= warranty.start_at.to_date.strftime("%b %d, %Y")
+              %td= (warranty.end_at && warranty.end_at.to_date.strftime("%b %d, %Y"))
+              %td= warranty.period_part
+              %td= warranty.period_labour
+              %td= warranty.period_onsight
+              %td= warranty.warranty_type.try(:name)
+              %td= warranty.care_pack_product_no
+              %td= warranty.care_pack_reg_no
+              %td= warranty.note
+
+    = f.simple_fields_for :warranties do |w| # "products_attributes[]", w.object.warranties.build
+      - if w.object.new_record?
+        %fieldset
+          %h3 New Warranty
+          = w.input :product_serial_id, as: :hidden, input_html: {value: f.object.id}
+          .row
+            .col-md-6
+              = w.association :warranty_type, as: :radio_buttons, wrapper: :append, collection: WarrantyType.where(active: true).first(2), checked: WarrantyType.find_by_code("MW").id
+            .col-md-6
+              .strong
+                Warranty date format
+              = select_tag "#", options_for_select([["dd M, yyyy", "dd M, yyyy"], ["dd, yyyy, M", "dd, yyyy, M"], ["M, yyyy, dd", "M, yyyy, dd"], ["M, dd, yyyy", "M, dd, yyyy"], ["yyyy, M, dd", "yyyy, M, dd"], ["yyyy, dd, M", "yyyy, dd, M"]]), {:include_blank => false, class: "form-control selectpicker"}
+          .row
+            .col-md-6
+              = w.input :start_at, as: :string, input_html: {class: "datepicker warranty_start_at"}
+            .col-md-6
+              = w.input :end_at, as: :string, input_html: {class: "datepicker warranty_end_at"}
+          .row
+            .col-md-4
+              = w.input :period_part, input_html: {min: "0", class: "only_float"}, label: "Parts Warannty Period (Months):"
+            .col-md-4
+              = w.input :period_labour, input_html: {min: "0", class: "only_float"}, label: "Labour Warannty Period (Months):"
+            .col-md-4
+              = w.input :period_onsight, input_html: {min: "0", class: "only_float"}, label: "On-Site Warannty Period (Months):"
+          .row
+            .col-md-3
+              = w.input :care_pack_product_no, label: "Care pack product number: "
+            .col-md-3
+              = w.input :care_pack_reg_no, label: "Care pack / Agreement  Reg. No:  "
+            .col-md-6
+              = w.input :note, input_html: {rows: 1}, label: "Warranty Note:"
+          .row
+            .col-md-2.small_scale_padding-top3
+              = w.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
+                %button.btn.btn-danger Remove
+    = f.link_to_add "Add Warrenty", :warranties, class: "btn btn-sm btn-warning", onclick: "var _this = this; setTimeout(function(){Tickets.date_picker_call(_this); return false;}, 200)"
+    %br
+    .row
+      .col-md-8
+        = f.input :note
+
+    %br
+  - else
+    .panel-body
+      .row
+        %h4 New Product
+      .row
+        .col-md-4
+          = f.input :serial_no, required: true
+        .col-md-4
+          = f.association :sla_time, collection: SlaTime.where(active: true),required: true, label_method: :description, include_blank: false, label: "SLA"
+
+      .row.product_cat
+        .select_wrapper
+          .col-md-3
+            = f.association :product_brand,collection: ProductBrand.where(active: true), required: true, input_html: {class: "product_brand"}
+          .col-md-3
+            %font{:color => "#90032A"}
+              = label_tag "#{CompanyConfig.first.try(:sup_product_category1_label)} : "
+              = select_tag "search_product_category1_cus_product", option_groups_from_collection_for_select(ProductBrand.where(active: true), :active_product_category1s, :id, :id, :name, "#"), include_blank: true, class: "form-control", id: "search_product_category1"
+          .col-md-3
+            %font{:color => "#90032A"}
+              = label_tag "#{CompanyConfig.first.try(:sup_product_category2_label)} : "
+              = select_tag "search_product_category2_cus_product", option_groups_from_collection_for_select(ProductCategory1.all, :active_product_category2s, :id, :id, :name, "#"), include_blank: true, class: "form-control", id: "search_product_category2"
+            
+          / .col-md-3
+          /   = label_tag "Product Category 3"
+          /   = select_tag "search_product_category3", option_groups_from_collection_for_select(ProductCategory2.all, :product_categories, :name, :id, :name, "#"), include_blank: true, class: "product_category form-control"
+          .col-md-3
+            = f.association :product_category, collection: ProductCategory2.all, as: :grouped_select, group_method: :active_product_categories, group_label_method: :id, value_method: :id, required: true, input_html: {class: "product_category chosen-select", onchange: "Tickets.product_name(this);"}, label: "#{CompanyConfig.first.try(:sup_product_category_label)} : ", id: "search_product_category3"
+      .row
+        .col-md-2
+          = f.input :model_no
+        .col-md-2
+          = f.input :product_no
+      .row.pro_name
+        .col-md-4
+          = f.input :name, input_html: {class: "product_name"}
+        .col-md-8
+          =f.input :description
+      .row
+        .col-md-4
+          / = f.association :location_address, collection: ([organization] + organization.members), as: :grouped_select, group_method: :addresses, label_method: :full_address, required: true
+          = f.association :location_address, collection: [organization], as: :grouped_select, group_method: :addresses, label_method: :full_address, required: true
+      %fieldset
+        %legend POP
+        .row
+          .col-md-3
+            = f.association :product_pop_status, collection: ProductPopStatus.where(active: true)
+          .col-md-4
+            = f.input :pop_note
+          .col-md-3
+            = f.association :product_sold_country, label_method: :country_name_with_code
+          .col-md-3
+            %strong.small_scale_padding-bottom3{style: "display: block;"} POP note document
+            = f.label "Upload pop note"
+            / = f.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf', class: "product_pop_doc_url", data: {class: "pop_doc_url_wrapper"}
+            = f.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf'
+            / #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
+
+
+            / .pop_doc_url_wrapper
+
+      %fieldset
+        %legend Corporate Product
+        .row
+          .col-md-4
+            = f.input :corporate_product, wrapper: :append
+          .col-md-4
+            = f.input :dn_number
+          .col-md-4
+            = f.input :invoice_number
+        .row
+          .col-md-4
+            = f.input :invoice_date, as: :string, input_html: {class: "datepicker", value: f.object.invoice_date.try(:strftime, INOCRM_CONFIG["short_date_format"])}
+          .col-md-4
+            = f.input :date_installation, as: :string, input_html: {class: "datepicker", value: f.object.date_installation.try(:strftime, INOCRM_CONFIG["short_date_format"])}
+          = hidden_field_tag :owner_customer_id, organization.id
+
+      %fieldset
+        %legend Warranty
+        = f.simple_fields_for :warranties do |w| # "products_attributes[]", w.object.warranties.build
+          - if w.object.new_record?
+            %fieldset
+              %h3 New Warranty
+              = w.input :product_serial_id, as: :hidden, input_html: {value: f.object.id}
+              .row
+                .col-md-6
+                  = w.association :warranty_type, as: :radio_buttons, wrapper: :append, collection: WarrantyType.where(active: true).first(2), checked: WarrantyType.find_by_code("MW").id
+                .col-md-6
+                  .strong
+                    Warranty date format
+                    = select_tag "#", options_for_select([["dd M, yyyy", "dd M, yyyy"], ["dd, yyyy, M", "dd, yyyy, M"], ["M, yyyy, dd", "M, yyyy, dd"], ["M, dd, yyyy", "M, dd, yyyy"], ["yyyy, M, dd", "yyyy, M, dd"], ["yyyy, dd, M", "yyyy, dd, M"]]), {:include_blank => false, class: "form-control selectpicker"}
+              .row
+                .col-md-6
+                  = w.input :start_at, as: :string, input_html: {class: "datepicker"}
+                .col-md-6
+                  = w.input :end_at, as: :string, input_html: {class: "datepicker"}
+              .row
+                .col-md-4
+                  = w.input :period_part, input_html: {min: "0", class: "only_float"}, label: "Parts Warannty Period (Months):"
+                .col-md-4
+                  = w.input :period_labour, input_html: {min: "0", class: "only_float"}, label: "Labour Warannty Period (Months):"
+                .col-md-4
+                  = w.input :period_onsight, input_html: {min: "0", class: "only_float"}, label: "On-Site Warannty Period (Months):"
+              .row
+                .col-md-3
+                  = w.input :care_pack_product_no, label: "Care pack product number"
+                .col-md-3
+                  = w.input :care_pack_reg_no, label: "Care pack reg number"
+                .col-md-6
+                  = w.input :note, input_html: {rows: 1}
+              .row
+                .col-md-2.small_scale_padding-top3
+                  = w.link_to_remove  class: "remove_c_t_v_link",:data => { :confirm => 'Are you sure?', toggle: "tooltip", placement: "bottom" }, title: "Remove" do
+                    %button.btn.btn-danger Remove
+        = f.link_to_add "Add Warrenty", :warranties, class: "btn btn-sm btn-warning", onclick: "var _this = this; setTimeout(function(){Tickets.date_picker_call(_this); return false;}, 200)"
+
+      %br
+      .row
+        .col-md-8
+          = f.input :note
+  = f.submit "Save", class: "btn btn-sm btn-success", remote: true, data: {disable_with: "Please wait..."}

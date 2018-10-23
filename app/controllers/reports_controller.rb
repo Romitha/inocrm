@@ -346,9 +346,6 @@ class ReportsController < ApplicationController
         t_ids = []
         not_need_index.uniq{|n| n[:id]}.each do |n_index|
           t_ids << n_index[:id]
-          # if !n_index[:not_need_index]
-          #   # Ticket.find(n_index[:id]).update_index
-          # end
         end
 
         Ticket.index.import Ticket.where(id: t_ids) if t_ids.present?

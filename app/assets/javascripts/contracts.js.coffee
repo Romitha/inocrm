@@ -18,17 +18,33 @@ window.Contracts =
     #     $("#ticket_contract_contract_end_at").prop('disabled', true);
     return
 
-  # filter_select: (elem)->
-  #   this_elem = $(elem)
+  import_excel_upload: ->
+    $("#import_excel_upload").fileupload
+      url: '/contracts/bulk_product_upload'
+      maxFileSize: 1000000
+      dataType: "script"
+      autoUpload: false
+      formData:
+        refer_resource_id: $("#data_carrier").data("referenceid")
+        refer_resource_class: $("#data_carrier").data("referenceclass")
 
-  #   category_list = this_elem.prev().find(".product_product_category_class")
-  #   brand_list = this_elem.prev().find(".product_product_brand_class")
-  #   category_list_html = category_list.html()
-  #   category_list.empty()
-
-  #   console.log this_elem.prev()
-  #   brand_list.change ->
-  #     alert "hi"
-  #     selected = $(":selected", brand_list).text()
-  #     filtered_option = $(category_list_html).filter("optgroup[label='#{selected}']").html()
-  #     category_list.empty().html(filtered_option).trigger('chosen:updated')
+      add: (e, data) ->
+        types = /(\.|\/)(xlsx)$/i
+        maxsize = 1024*1024
+        file = data.files[0]
+        if types.test(file.type) || types.test(file.name)
+          if maxsize > file.size
+            data.context = $(tmpl('import_csv_upload_output', file))
+            $(".import_csv_wrapper").html(data.context)
+            data.submit()
+          else
+            alert "Your image file is with #{file.size}KB is exceeding than limited size of #{maxsize}KB. Please select other image file not exceeding 1MB"
+        else
+          alert("#{file.name} is not a XLSX file format.")
+      progress: (e, data) ->
+        if data.context
+          progress = parseInt(data.loaded/data.total*100, 10)
+          data.context.find(".progress-bar").css("width", progress+"%").attr("aria-valuenow", "#{progress}").html(progress+"%")
+          if progress==100
+            $("#ajax-loader").addClass("hide")
+            # $(".profile_image_wrapper").empty();

@@ -27,13 +27,13 @@
 
 - elsif params[:select_product].present?
   $("#contractlist").removeClass("hide");
-  $("#contractlist").html("#{j render 'contracts/cus_products'}");
-  $("a[href='#contracts_ticket_form_collapse_search_customers_link']").trigger("click");
-  Inventories.filter_product();
-  Inventories.filter_category();
-  $("a[href='#contracts_ticket_form_collapse_contracts_link']").trigger("click");
-  - if @organization.products.count == 0
-    Tickets.dynamically_filter_select_for_new();
+  - if params[:page].present?
+    $("#products_list > tbody:last-child").append("#{j render 'contracts/products', products: @products}");
+    - if @product.count > 10
+      $("#load_link").html("#{j link_to('More', contracts_path(select_product: true, organization_id: @organization.id, page: (params[:page].to_i + 1)), remote: true) }");
+  - else
+    $("#contractlist").html("#{j render 'contracts/cus_products'}");
+  Contracts.import_excel_upload();
 
 - elsif params[:select_product_ticket].present?
   $("#contractlist1").removeClass("hide");
