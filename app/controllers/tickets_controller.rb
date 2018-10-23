@@ -899,92 +899,92 @@ class TicketsController < ApplicationController
 
     if @continue
       # sleep rand(5)
-      begin
-        Ticket.transaction do
-          company_config = CompanyConfig.lock.first.reload
+      Ticket.transaction do
+        company_config = CompanyConfig.lock.first.reload
 
-          @ticket.ticket_no = company_config.sup_last_ticket_no.to_i
-          @ticket.product_inside = 1 if @ticket.ticket_type_code == "IH"
-          if @ticket.save!
+        @ticket.ticket_no = company_config.sup_last_ticket_no.to_i
+        @ticket.product_inside = 1 if @ticket.ticket_type_code == "IH"
+        if @ticket.save!
 
-            @ticket.update(contract_available: @ticket.ticket_contract.present?)
+          @ticket.update(contract_available: @ticket.ticket_contract.present?)
 
-            @ticket.products << @product
-            @product.update_attribute :last_ticket_id, @ticket.id
-            @ticket.customer.update_attribute :last_ticket_id, @ticket.id
+          @ticket.products << @product
+          @product.update_attribute :last_ticket_id, @ticket.id
+          @ticket.customer.update_attribute :last_ticket_id, @ticket.id
 
-            @ticket.ticket_product_serials.where( product_id: @product.id ).first.update(location_address_id: @product.location_address_id) if @ticket.ticket_product_serials.where( product_id: @product.id ).first.present?
+          @ticket.ticket_product_serials.where( product_id: @product.id ).first.update(location_address_id: @product.location_address_id) if @ticket.ticket_product_serials.where( product_id: @product.id ).first.present?
 
-            ticket_user_action = @ticket.user_ticket_actions.create(action_at: DateTime.now, action_by: current_user.id, re_open_index: 0, action_id: TaskAction.find_by_action_no(1).id) # Add ticket action
+          ticket_user_action = @ticket.user_ticket_actions.create(action_at: DateTime.now, action_by: current_user.id, re_open_index: 0, action_id: TaskAction.find_by_action_no(1).id) # Add ticket action
 
-            q_and_answers.each{|q| q.ticket_action_id= ticket_user_action.id; @ticket.q_and_answers << q}
-            ge_q_and_answers.each{|q| q.ticket_action_id= ticket_user_action.id; @ticket.ge_q_and_answers << q}
+          q_and_answers.each{|q| q.ticket_action_id= ticket_user_action.id; @ticket.q_and_answers << q}
+          ge_q_and_answers.each{|q| q.ticket_action_id= ticket_user_action.id; @ticket.ge_q_and_answers << q}
 
-            Rails.cache.delete([:new_ticket, request.remote_ip.to_s, @ticket_time_now])
-            Rails.cache.delete([:ticket_params, request.remote_ip.to_s, @ticket_time_now])
-            Rails.cache.delete([:created_warranty, request.remote_ip.to_s, @ticket_time_now])
-            Rails.cache.delete([:existing_customer, request.remote_ip.to_s, @ticket_time_now])
-            Rails.cache.delete([:histories, session[:product_id]])
-            session[:ticket_id] = nil
-            session[:product_category_id] = nil
-            session[:product_brand_id] = nil
-            session[:product_id] = nil
-            session[:customer_id] = nil
-            session[:serial_no] = nil
-            session[:warranty_id] = nil
-            Rails.cache.delete([:ticket_initiated_attributes, @ticket_time_now])
+          Rails.cache.delete([:new_ticket, request.remote_ip.to_s, @ticket_time_now])
+          Rails.cache.delete([:ticket_params, request.remote_ip.to_s, @ticket_time_now])
+          Rails.cache.delete([:created_warranty, request.remote_ip.to_s, @ticket_time_now])
+          Rails.cache.delete([:existing_customer, request.remote_ip.to_s, @ticket_time_now])
+          Rails.cache.delete([:histories, session[:product_id]])
+          session[:ticket_id] = nil
+          session[:product_category_id] = nil
+          session[:product_brand_id] = nil
+          session[:product_id] = nil
+          session[:customer_id] = nil
+          session[:serial_no] = nil
+          session[:warranty_id] = nil
+          Rails.cache.delete([:ticket_initiated_attributes, @ticket_time_now])
 
-            session[:time_now]= nil
+          session[:time_now]= nil
 
-            unless @ticket.status_id == @status_close_id
-              # bpm output variables
-              ticket_id = @ticket.id
-              di_pop_approval_pending = ["RCD", "RPN", "APN", "LPN", "APV"].include?(@ticket.products.first.product_pop_status.try(:code)) ? "Y" : "N"
-              priority = @ticket.priority
-              d42_assignment_required = "Y"
-              engineer_id = "-"
+          unless @ticket.status_id == @status_close_id
+            # bpm output variables
+            ticket_id = @ticket.id
+            di_pop_approval_pending = ["RCD", "RPN", "APN", "LPN", "APV"].include?(@ticket.products.first.product_pop_status.try(:code)) ? "Y" : "N"
+            priority = @ticket.priority
+            d42_assignment_required = "Y"
+            engineer_id = "-"
 
-              @bpm_response = view_context.send_request_process_data start_process: true, process_name: "SPPT", query: {ticket_id: ticket_id, d1_pop_approval_pending: di_pop_approval_pending, priority: priority, d42_assignment_required: d42_assignment_required, engineer_id: engineer_id, supp_engr_user: engineer_id, supp_hd_user: @ticket.created_by }
+            @bpm_response = view_context.send_request_process_data start_process: true, process_name: "SPPT", query: {ticket_id: ticket_id, d1_pop_approval_pending: di_pop_approval_pending, priority: priority, d42_assignment_required: d42_assignment_required, engineer_id: engineer_id, supp_engr_user: engineer_id, supp_hd_user: @ticket.created_by }
 
-              if @bpm_response[:status].try(:upcase) == "SUCCESS"
-                @ticket.ticket_workflow_processes.create(process_id: @bpm_response[:process_id], process_name: @bpm_response[:process_name], re_open_index: @ticket.re_open_count)
-              else
-                @bpm_process_error = true
-              end
+            if @bpm_response[:status].try(:upcase) == "SUCCESS"
+              @ticket.ticket_workflow_processes.create(process_id: @bpm_response[:process_id], process_name: @bpm_response[:process_name], re_open_index: @ticket.re_open_count)
+            else
+              @bpm_process_error = true
             end
-            @ticket.update_index
+          end
+          @ticket.update_index
 
-            email_to = params[:email_to].to_s
-            cc = email_to.scan(/\bcc:+[a-zA-Z0-9._%+-]+@\w+\.\w{2,}\b/).map{|e| e[3..-1]}
-            to = (email_to.scan(/\bto:+[a-zA-Z0-9._%+-]+@\w+\.\w{2,}\b/).map{|e| e[3..-1]}.first or cc.first)
+          email_to = params[:email_to].to_s
+          cc = email_to.scan(/\bcc:+[a-zA-Z0-9._%+-]+@\w+\.\w{2,}\b/).map{|e| e[3..-1]}
+          to = (email_to.scan(/\bto:+[a-zA-Z0-9._%+-]+@\w+\.\w{2,}\b/).map{|e| e[3..-1]}.first or cc.first)
 
-            if params[:send_email].present? and params[:send_email].to_bool
-              if to.present?
-                view_context.send_email(email_to: to, email_cc: cc, ticket_id: @ticket.id, email_code: "NEW_TICKET")
-                @email_response = "Successfully sent email to: #{to}"
-              end
+          if params[:send_email].present? and params[:send_email].to_bool
+            if to.present?
+              view_context.send_email(email_to: to, email_cc: cc, ticket_id: @ticket.id, email_code: "NEW_TICKET")
+              @email_response = "Successfully sent email to: #{to}"
             end
-
-            flash_message = @bpm_process_error ? "Ticket successfully saved. But BPM error. Please continue after rectifying BPM" : "Thank you. ticket is successfully registered. #{@email_response}"
-
-            # WebsocketRails[:posts].trigger 'new', {task_name: "Ticket", task_id: @ticket.id, task_verb: "created.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
-
-            render js: "alert('#{flash_message}'); window.location.href='#{ticket_path(@ticket)}';"
-
-          else
-            @flash_message = "Please re-try"
-            render :remarks
           end
 
+          flash_message = @bpm_process_error ? "Ticket successfully saved. But BPM error. Please continue after rectifying BPM" : "Thank you. ticket is successfully registered. #{@email_response}"
+
+          # WebsocketRails[:posts].trigger 'new', {task_name: "Ticket", task_id: @ticket.id, task_verb: "created.", by: current_user.email, at: Time.now.strftime('%d/%m/%Y at %H:%M:%S')}
+
+          render js: "alert('#{flash_message}'); window.location.href='#{ticket_path(@ticket)}';"
+
+        else
+          @flash_message = "Please re-try"
+          render :remarks
         end
 
-      rescue Exception => e
-        if e.is_a?(ActiveRecord::RecordNotUnique)
-          render js: "alert('Ticket token already taken. Please try again saving. It will save with fresh ticket token');"
-        else
-          render js: "alert('Some error occured. Please try again'); "
-        end
       end
+      # begin
+
+      # rescue Exception => e
+      #   if e.is_a?(ActiveRecord::RecordNotUnique)
+      #     render js: "alert('Ticket token already taken. Please try again saving. It will save with fresh ticket token');"
+      #   else
+      #     render js: "console.log('#{e}'); alert('Some error occured. Please try again');"
+      #   end
+      # end
       
      # render plain: @ticket_params.inspect
     end
