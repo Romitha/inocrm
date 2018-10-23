@@ -1,0 +1,25 @@
+- products.each_with_index do |product, index|
+  %tr{class: "#{product.id}_product_element"}
+    %td
+      - if params[:page]
+        = (index+1)+ 10*(params[:page].to_i-1)
+      - else
+        = (index+1)
+    %td= product.name
+    %td= product.product_brand.name
+    %td= product.category_full_name_index
+    %td= product.model_no
+    %td= product.product_no
+    %td= product.serial_no
+    %td= boolean_in_word product.corporate_product, "Yes", "No"
+    %td
+      - if params[:select_product].present?
+        = link_to edit_product_contracts_path(product_id: product.id), remote: true do
+          .glyphicon.glyphicon-pencil
+        |
+        = link_to delete_product_contracts_path(product_id: product.id), remote: true, method: :delete, data: {confirm: "Are you Sure? This action cannot be undone."} do
+          .glyphicon.glyphicon-trash
+        
+      - elsif params[:select_product_ticket].present?
+        = link_to find_by_serial_tickets_path(serial_search: product.serial_no, ticket_time_now: @ticket_time_now, from: "serial_input"), remote: true, method: :post do
+          .glyphicon.glyphicon-folder-open

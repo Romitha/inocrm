@@ -38,6 +38,12 @@ Rails.application.routes.draw do
       delete "remove_pop_document"
       delete "delete_warrenty"
       delete "delete_instalments"
+
+      get "edit_product"
+      put "save_cus_product"
+      delete "delete_product"
+
+      post "bulk_product_upload"
     end
   end
 

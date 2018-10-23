@@ -8,7 +8,7 @@
     .col-md-3
       = label_tag "Customer Name" do
         Customer Name
-        = text_field_tag "organization_customers[name]", (params[:organization_customers] and params[:organization_customers][:name]), :placeholder => "Customer Name", class: "form-control"
+        = text_field_tag "organization_customers[name]", (params[:organization_customers] and params[:organization_customers][:name]), :placeholder => "Customer Name", class: "form-control", id: "search_quotation_customer_name"
     .col-md-3
       = label_tag "Account Number" do
         Account Number
