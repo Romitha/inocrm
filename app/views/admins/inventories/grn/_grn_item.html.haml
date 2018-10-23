@@ -196,7 +196,7 @@
           .row
             .col-md-8
               .btn.btn-info.btn-mini.fileinput-button{style: "min-height: 10px;"}
-                %span Import CSV
+                %span Import Excel Scheet
                 = file_field_tag "import_csv", id: "import_csv_upload"
                 #data_carrier{data: {"referenceId" => resource_reference_id, "referenceClass" => resource_reference_class, inventoryid: inventory.id, inventoryproductid: inventory_product.id, grnobjectid: g.object.object_id }}
               .import_csv_wrapper.small_scale_margin-bottom1

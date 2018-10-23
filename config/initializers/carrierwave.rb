@@ -21,7 +21,7 @@ when "bobbin"
 when "staging"
   stfp_server = "192.168.100.155"
   user = 'root'
-  password = 'redhat'
+  password = 'VsIs@987'
   sftp_folder = "/var/www/inovacrm_assets/#{Rails.env}"
 end
 
