@@ -1177,6 +1177,9 @@
                           = action.act_payment_received.ticket_payment_received.ticket_invoice.try(:invoice_no).to_s.rjust(6, INOCRM_CONFIG['invoice_no_format'])
                       .col-md-4
                         Receipt Description: #{action.act_payment_received.ticket_payment_received.try(:receipt_description)}
+                      .col-md-4
+                        Type:
+                        #{action.act_payment_received.ticket_payment_received.ticket_payment_received_type_name}
 
                 - elsif action.action_id == 77 and action.act_payment_received.present?
                   .panel-body

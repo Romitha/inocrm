@@ -218,7 +218,7 @@
           %td Min.advance payment
           %td= number_with_precision (estimation.approval_required ? estimation.approved_adv_pmnt_amount : estimation.advance_payment_amount), precision: 2
         %tr
-          %td Advance payment recieved
+          %td Advance payment received
           %td= standard_currency_format estimation.ticket.ticket_payment_receiveds.where(type_id: TicketPaymentReceivedType.find_by_code("AD").id).sum(:amount).to_f
 
 .row

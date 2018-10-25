@@ -152,4 +152,8 @@ class TicketPaymentReceived < ActiveRecord::Base
     received_by_user.full_name
   end
 
+  def ticket_payment_received_type_name
+    ticket_payment_received_type.try(:name)
+  end
+
 end

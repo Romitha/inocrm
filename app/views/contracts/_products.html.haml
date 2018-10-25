@@ -14,7 +14,7 @@
     %td= boolean_in_word product.corporate_product, "Yes", "No"
     %td
       - if params[:select_product].present?
-        = link_to edit_product_contracts_path(product_id: product.id), remote: true do
+        = link_to edit_product_contracts_path(product_id: product.id, organization_id: @organization.id), remote: true do
           .glyphicon.glyphicon-pencil
         |
         = link_to delete_product_contracts_path(product_id: product.id), remote: true, method: :delete, data: {confirm: "Are you Sure? This action cannot be undone."} do

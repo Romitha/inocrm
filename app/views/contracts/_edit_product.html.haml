@@ -1,5 +1,5 @@
 - organization = @organization
-= simple_nested_form_for @product, url: save_cus_product_contracts_path(product_id: @product.id), html: {class: "validate_form"}, method: :put, remote: true, multipart: true do |f|
+= simple_nested_form_for @product, url: (params[:import_excel].present? ? bulk_upload_product_save_contracts_path(timestore: @time_store) : save_cus_product_contracts_path(product_id: @product.id) ), html: {class: "validate_form"}, method: :put, remote: true, multipart: true do |f|
   = f.input :create_by_id, as: :hidden, input_html: {value: current_user.id}
   - if f.object.persisted?
     - product = f.object
@@ -198,11 +198,12 @@
     .panel-body
       .row
         %h4 New Product
-      .row
-        .col-md-4
-          = f.input :serial_no, required: true
-        .col-md-4
-          = f.association :sla_time, collection: SlaTime.where(active: true),required: true, label_method: :description, include_blank: false, label: "SLA"
+      - unless params[:import_excel].present?
+        .row
+          .col-md-4
+            = f.input :serial_no, required: true
+          .col-md-4
+            = f.association :sla_time, collection: SlaTime.where(active: true),required: true, label_method: :description, include_blank: false, label: "SLA"
 
       .row.product_cat
         .select_wrapper
@@ -216,12 +217,8 @@
             %font{:color => "#90032A"}
               = label_tag "#{CompanyConfig.first.try(:sup_product_category2_label)} : "
               = select_tag "search_product_category2_cus_product", option_groups_from_collection_for_select(ProductCategory1.all, :active_product_category2s, :id, :id, :name, "#"), include_blank: true, class: "form-control", id: "search_product_category2"
-            
-          / .col-md-3
-          /   = label_tag "Product Category 3"
-          /   = select_tag "search_product_category3", option_groups_from_collection_for_select(ProductCategory2.all, :product_categories, :name, :id, :name, "#"), include_blank: true, class: "product_category form-control"
           .col-md-3
-            = f.association :product_category, collection: ProductCategory2.all, as: :grouped_select, group_method: :active_product_categories, group_label_method: :id, value_method: :id, required: true, input_html: {class: "product_category chosen-select", onchange: "Tickets.product_name(this);"}, label: "#{CompanyConfig.first.try(:sup_product_category_label)} : ", id: "search_product_category3"
+            = f.association :product_category, collection: ProductCategory2.all, as: :grouped_select, group_method: :active_product_categories, group_label_method: :id, value_method: :id, required: true, input_html: {class: "product_category chosen-select", onchange: "Tickets.product_name(this);"}, label: "#{CompanyConfig.first.try(:sup_product_category_label)} : ", id: "product_product_category_id"
       .row
         .col-md-2
           = f.input :model_no
@@ -232,10 +229,11 @@
           = f.input :name, input_html: {class: "product_name"}
         .col-md-8
           =f.input :description
-      .row
-        .col-md-4
-          / = f.association :location_address, collection: ([organization] + organization.members), as: :grouped_select, group_method: :addresses, label_method: :full_address, required: true
-          = f.association :location_address, collection: [organization], as: :grouped_select, group_method: :addresses, label_method: :full_address, required: true
+      - unless params[:import_excel].present?
+        .row
+          .col-md-4
+            / = f.association :location_address, collection: ([organization] + organization.members), as: :grouped_select, group_method: :addresses, label_method: :full_address, required: true
+            = f.association :location_address, collection: [organization], as: :grouped_select, group_method: :addresses, label_method: :full_address, required: true
       %fieldset
         %legend POP
         .row
@@ -245,15 +243,6 @@
             = f.input :pop_note
           .col-md-3
             = f.association :product_sold_country, label_method: :country_name_with_code
-          .col-md-3
-            %strong.small_scale_padding-bottom3{style: "display: block;"} POP note document
-            = f.label "Upload pop note"
-            / = f.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf', class: "product_pop_doc_url", data: {class: "pop_doc_url_wrapper"}
-            = f.file_field :pop_doc_url, accept: 'image/png,image/gif,image/jpeg,application/pdf'
-            / #preview_of_pop_doc_url{style: "word-wrap: break-word;"}
-
-
-            / .pop_doc_url_wrapper
 
       %fieldset
         %legend Corporate Product
@@ -269,7 +258,7 @@
             = f.input :invoice_date, as: :string, input_html: {class: "datepicker", value: f.object.invoice_date.try(:strftime, INOCRM_CONFIG["short_date_format"])}
           .col-md-4
             = f.input :date_installation, as: :string, input_html: {class: "datepicker", value: f.object.date_installation.try(:strftime, INOCRM_CONFIG["short_date_format"])}
-          = hidden_field_tag :owner_customer_id, organization.id
+          = f.input :owner_customer_id, as: :hidden, input_html: {value: organization.id}
 
       %fieldset
         %legend Warranty
@@ -284,12 +273,12 @@
                 .col-md-6
                   .strong
                     Warranty date format
-                    = select_tag "#", options_for_select([["dd M, yyyy", "dd M, yyyy"], ["dd, yyyy, M", "dd, yyyy, M"], ["M, yyyy, dd", "M, yyyy, dd"], ["M, dd, yyyy", "M, dd, yyyy"], ["yyyy, M, dd", "yyyy, M, dd"], ["yyyy, dd, M", "yyyy, dd, M"]]), {:include_blank => false, class: "form-control selectpicker"}
+                  = select_tag "#", options_for_select([["dd M, yyyy", "dd M, yyyy"], ["dd, yyyy, M", "dd, yyyy, M"], ["M, yyyy, dd", "M, yyyy, dd"], ["M, dd, yyyy", "M, dd, yyyy"], ["yyyy, M, dd", "yyyy, M, dd"], ["yyyy, dd, M", "yyyy, dd, M"]]), {:include_blank => false, class: "form-control selectpicker"}
               .row
                 .col-md-6
-                  = w.input :start_at, as: :string, input_html: {class: "datepicker"}
+                  = w.input :start_at, as: :string, input_html: {class: "datepicker warranty_start_at"}
                 .col-md-6
-                  = w.input :end_at, as: :string, input_html: {class: "datepicker"}
+                  = w.input :end_at, as: :string, input_html: {class: "datepicker warranty_end_at"}
               .row
                 .col-md-4
                   = w.input :period_part, input_html: {min: "0", class: "only_float"}, label: "Parts Warannty Period (Months):"
