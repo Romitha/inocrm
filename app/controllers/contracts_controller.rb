@@ -52,7 +52,7 @@ class ContractsController < ApplicationController
     if params[:select_product]
       if params[:organization_id]
         @organization = Organization.find params[:organization_id]
-        @products = Product.where(owner_customer_id: params[:organization_id]).page(params[:page]).per(10)
+        @products = Product.where(owner_customer_id: params[:organization_id]).order("created_at desc").page(params[:page]).per(10)
       end
     end
 
@@ -281,7 +281,9 @@ class ContractsController < ApplicationController
 
   def search_product
     if params[:search_product]
-      @products = Product.search(params)
+      query = [params[:query]]
+      query << "NOT owner_customer_id:#{params[:organization_id]}"
+      @products = Product.search(query: query.map { |e| e if e.present? }.compact.join(" AND "))
     end
   end
 
@@ -371,11 +373,12 @@ class ContractsController < ApplicationController
 
     if params[:done_cus_product].present?
       if params[:serial_products_ids].present?
-        serial_products = Product.where(id: params[:serial_products_ids])
-        puts serial_products.count
-        Rails.cache.delete([:products, request.remote_ip])
+        # Rails.cache.delete([:products, request.remote_ip])
 
-        @cached_products = Rails.cache.fetch([:products, request.remote_ip]){ serial_products.to_a }
+        # @cached_products = Rails.cache.fetch([:products, request.remote_ip]){ serial_products.to_a }
+        organization = Organization.find(params[:organization_id])
+        Product.where(id: params[:serial_products_ids]).update_all(owner_customer_id: organization.id)
+        render js: "alert('Successfully Added'); window.location.href='#{customer_search_contracts_path}';"
       end
     end
 
@@ -656,18 +659,26 @@ class ContractsController < ApplicationController
     if @product.save
       @product.owner_customer.update_index if @product.owner_customer.present?
       Ticket.index.import @product.tickets if @product.tickets.present?
+    else
+      @error = @product.errors.full_messages.join(', ')
     end
 
     respond_to do |format|
-      format.html { redirect_to contracts_path, notice: "Successfully saved."}
+      format.html { redirect_to customer_search_contracts_path, notice: "Successfully saved."}
       format.js { render "save_cus_product" }
     end
   end
 
   def edit_product
-    @product = Product.find(params[:product_id])
+    @organization = Organization.find(params[:organization_id])
+    @product = if params[:product_id].present?
+      Product.find(params[:product_id])
+    else
+      Product.new
+    end
 
     render :edit_product
+
   end
 
   def delete_product
@@ -690,9 +701,6 @@ class ContractsController < ApplicationController
 
       Rails.cache.delete( [:bulk_serial, params[:timestamp].to_i ] )
 
-    elsif params[:clear_import].present?
-      File.delete(File.join(Rails.root, "public", "uploads", uploaded_io.original_filename))
-
     else
       uploaded_io = params[:import_excel]
       @file_name = uploaded_io.original_filename
@@ -704,16 +712,65 @@ class ContractsController < ApplicationController
 
       end
 
+      Rails.cache.delete([:bulk_serial, params[:@time_store].to_i ]) if params[:@time_store].present?
+
       @organization = Organization.find(params[:refer_resource_id])
 
       @product = Product.new owner_customer_id: params[:refer_resource_id]
 
       @sheet = Roo::Spreadsheet.open(File.join(Rails.root, "public", "uploads", @file_name))
 
-      # File.delete(File.join(Rails.root, "public", "uploads", uploaded_io.original_filename))
+      @time_store = Time.now.strftime("%H%M%S")
+      excelsheet_row_array = []
+      @duplicate_serials = []
+      (@sheet.last_row - 1).times.each do |m|
+        if @sheet.row(m+2)[0].present?
+          if !Product.exists?(serial_no: @sheet.row(m+2)[0])
+            excelsheet_row_array << @sheet.row(m+2)
+          else
+            @duplicate_serials << @sheet.row(m+2)[0]
+          end
+        end
+      end
+
+      timestore_array = Rails.cache.fetch([:buld_product_upload, :timestores, request.remote_ip]).to_a
+      Rails.cache.write([:buld_product_upload, :timestores, request.remote_ip], timestore_array.push(@time_store.to_i))
+
+      Rails.cache.write([:bulk_serial, timestore_array.last ], excelsheet_row_array.uniq{|e| e[0]} )
+
+
+      File.delete(File.join(Rails.root, "public", "uploads", @file_name))
 
     end
     render "customer_product/bulk_product_upload"
+  end
+
+  def bulk_upload_product_save
+    @product = Product.new product_params
+    excel_params = []
+    if params[:timestore].present?
+      Rails.cache.fetch([:bulk_serial, params[:timestore].to_i ] ).each do |e|
+        excel_params << product_params.merge({ serial_no: e[0], sla_id: e[1], location_address_id: e[2] })
+      end
+
+      if Product.create!(excel_params)
+        Rails.cache.fetch([:buld_product_upload, :timestores, request.remote_ip]).to_a.each do |e|
+          Rails.cache.delete([:bulk_serial, e ] )
+        end
+
+        Rails.cache.delete([:buld_product_upload, :timestores, request.remote_ip])
+
+        render js: "alert('Successfully Created'); window.location.href='#{customer_search_contracts_path}';"
+        # render js: "alert('#{flash_message}'); window.location.href='#{ticket_path(@ticket)}';"
+        # redirect_to contracts_path
+      else
+        render js: "alert('Unable to save');"
+      end
+
+    else
+      render js: "alert(\"There is some error. Please try.\");"
+    end
+
   end
 
   def delete_warrenty
@@ -809,7 +866,7 @@ class ContractsController < ApplicationController
     end
 
     def product_params
-      params.require(:product).permit(:id, :create_by_id, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by, :remarks, :description, :name, :date_installation, :note, :dn_number, :invoice_number, :invoice_date, :location_address_id, :sla_id, :_destroy, warranties_attributes:[:start_at, :end_at, :product_serial_id, :warranty_type_id, :period_part, :period_labour, :period_onsight, :care_pack_product_no, :care_pack_reg_no, :note, :_destroy])
+      params.require(:product).permit(:id, :owner_customer_id, :create_by_id, :serial_no, :product_brand_id, :product_category_id, :model_no, :product_no, :pop_status_id, :sold_country_id, :pop_note, :pop_doc_url, :corporate_product, :sold_at, :sold_by, :remarks, :description, :name, :date_installation, :note, :dn_number, :invoice_number, :invoice_date, :location_address_id, :sla_id, :_destroy, warranties_attributes:[:start_at, :end_at, :product_serial_id, :warranty_type_id, :period_part, :period_labour, :period_onsight, :care_pack_product_no, :care_pack_reg_no, :note, :_destroy])
     end
 
     def contract_product_params

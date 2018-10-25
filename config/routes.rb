@@ -44,6 +44,7 @@ Rails.application.routes.draw do
       delete "delete_product"
 
       post "bulk_product_upload"
+      put "bulk_upload_product_save"
     end
   end
 

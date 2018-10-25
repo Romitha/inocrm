@@ -29,8 +29,10 @@
   $("#contractlist").removeClass("hide");
   - if params[:page].present?
     $("#products_list > tbody:last-child").append("#{j render 'contracts/products', products: @products}");
-    - if @product.count > 10
+    - if @products.count > 9
       $("#load_link").html("#{j link_to('More', contracts_path(select_product: true, organization_id: @organization.id, page: (params[:page].to_i + 1)), remote: true) }");
+    - else
+      $("#load_link").remove()
   - else
     $("#contractlist").html("#{j render 'contracts/cus_products'}");
   Contracts.import_excel_upload();

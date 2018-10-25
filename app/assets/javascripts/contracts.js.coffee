@@ -27,6 +27,7 @@ window.Contracts =
       formData:
         refer_resource_id: $("#data_carrier").data("referenceid")
         refer_resource_class: $("#data_carrier").data("referenceclass")
+        timestore: $("#data_carrier").data("timestore")
 
       add: (e, data) ->
         types = /(\.|\/)(xlsx)$/i

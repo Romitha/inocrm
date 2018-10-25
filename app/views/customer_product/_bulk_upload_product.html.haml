@@ -1,9 +1,11 @@
 = render "contracts/edit_product"
 %font{:color => "blue"}
-  %strong Imported Excel Sheet Results - Records Count: #{(@sheet.last_row - 1)}
+  %strong
+    Imported Excel Sheet Results - Records Count: #{(Rails.cache.fetch([:bulk_serial, @time_store.to_i ]).to_a.count)}
+    .red Total Existing Product Serial No: #{@duplicate_serials.join(", ")} 
 %br
 = initiate_table table_type: "table-bordered" do
-  = table_header ["No", "Serial No", "Model No", "Product No", "Name"]
+  = table_header ["No", "Serial No", "SLA Id", "Location address Id"]
   = multi_table_body do
-    - (@sheet.last_row - 1).times.each_with_index do |r, index|
-      = multi_table_row [index+1]+@sheet.row(r+2)
+    - Rails.cache.fetch([:bulk_serial, @time_store.to_i ]).each_with_index do |r, index|
+      = multi_table_row [index+1].concat(r)

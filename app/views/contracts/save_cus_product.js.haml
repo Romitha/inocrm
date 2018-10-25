@@ -1,2 +1,5 @@
 $("#productsModel").modal('hide');
-$("#contractlist").prepend("<div class='alert alert-warning alert-dismissible' role='alert'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>Successfully Saved</div>");
+- if @errors.present?
+	$("#contractlist").prepend("<div class='alert alert-warning alert-dismissible' role='alert'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>#{@errors}</div>");
+- else
+	$("#contractlist").prepend("<div class='alert alert-warning alert-dismissible' role='alert'><button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>Successfully Saved</div>");

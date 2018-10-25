@@ -2869,9 +2869,9 @@ class TicketsController < ApplicationController
     User
     if params[:customer_name].present?
       search_customer_name = params[:customer_name]
-      @tickets = Kaminari.paginate_array(Ticket.joins(:customer).where(" spt_ticket.status_id != ? and spt_ticket.cus_payment_required = ? and spt_ticket.cus_payment_completed = ?", 9, true, false ).where("spt_customer.name like ?", "%#{search_customer_name}%")).page(params[:page]).per(3)
+      @tickets = Kaminari.paginate_array(Ticket.joins(:customer).where(" spt_ticket.status_id != ? and spt_ticket.cus_payment_required = ? and spt_ticket.cus_payment_completed = ?", 9, true, false ).where("spt_customer.name like ?", "%#{search_customer_name}%")).page(params[:page]).per(100)
     else
-      @tickets = Kaminari.paginate_array(Ticket.where("spt_ticket.status_id != ? and spt_ticket.cus_payment_required = ? and spt_ticket.cus_payment_completed = ?", 9, true, false )).page(params[:page]).per(3)
+      @tickets = Kaminari.paginate_array(Ticket.where("spt_ticket.status_id != ? and spt_ticket.cus_payment_required = ? and spt_ticket.cus_payment_completed = ?", 9, true, false )).page(params[:page]).per(100)
     end
     render "tickets/tickets_pack/customer_advance_payment/customer_advance_paymente"
   end
