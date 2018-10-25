@@ -14,4 +14,5 @@ $ ->
   Searches.setup()
   Todos.setup()
   Reports.setup()
+  Contracts.setup()
   return
