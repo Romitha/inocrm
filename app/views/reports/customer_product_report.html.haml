@@ -7,7 +7,7 @@
           .row
             .col-md-3
               = label_tag "Customer Name"
-              = select_tag "search_contracts[owner_customer_id]", options_from_collection_for_select(Organization.customers, :id, :name), class: "form-control parent_class", include_blank: true
+              = select_tag "search_contracts[owner_customer_id]", options_from_collection_for_select([], :id, :name), class: "form-control parent_class", include_blank: true, id: "search_ajax_customer"
           .row
             .col-md-3
               = label_tag "Brand"

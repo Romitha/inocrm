@@ -19,5 +19,6 @@
  *= require bootstrap-wysihtml5
  *= require bootstrap.vertical.min
  *= require sb-admin-2
+ *= require select2.min
  *= require_tree .
  */

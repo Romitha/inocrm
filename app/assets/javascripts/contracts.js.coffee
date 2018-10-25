@@ -1,5 +1,6 @@
 window.Contracts =
   setup: ->
+    @search_ajax_customer()
     return
 
   disabled_datepicker: ->
@@ -48,4 +49,11 @@ window.Contracts =
           data.context.find(".progress-bar").css("width", progress+"%").attr("aria-valuenow", "#{progress}").html(progress+"%")
           if progress==100
             $("#ajax-loader").addClass("hide")
-            # $(".profile_image_wrapper").empty();
+
+  search_ajax_customer: ->
+    console.log "yes"
+    $('#search_ajax_customer').select2
+      ajax:
+        delay: 500
+        url: '/reports/customers.json'
+        dataType: 'json'

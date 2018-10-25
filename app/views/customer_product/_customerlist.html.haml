@@ -5,7 +5,7 @@
     .col-md-3
       = label_tag "Customer Name" do
         Customer Name
-        = text_field_tag "organization_customers[name]", (params[:organization_customers] and params[:organization_customers][:name]), :placeholder => "Customer Name", class: "form-control", id: "search_quotation_customer_name"
+      = select_tag "organization_customers[id]", options_from_collection_for_select([], :id, :name), include_blank: true, class: "form-control", id: "search_ajax_customer"
     .col-md-2
       = label_tag "Serial No" do
         Serial No

@@ -32,6 +32,7 @@
 //= require mustache
 //= require phoenix
 //= require fuzzy_search
+//= require select2.full.min
 //= require ember.init
 //= require_tree .
 

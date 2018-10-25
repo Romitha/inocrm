@@ -1111,8 +1111,13 @@ class ReportsController < ApplicationController
   end
 
   def customers
-    customers = Customer.select(:name).distinct.map(&:name)
-    render json: customers
+    # customers = Customer.select(:name).distinct.map(&:name)
+    query = ["accounts_dealer_types.dealer_code:CUS"]
+    query << "name:#{params[:q]}" if params[:q].present?
+    params[:query] = query.map { |v| v if v.present? }.compact.join(" AND ")
+    customers = Organization.search(params)
+    # customers = Organization.search("name like ?", "%#{params[:q]}%")
+    render json: {results: customers.map { |o| { id: o.id, text: o.name } }}
   end
 
   def manufacture_part_order_report
