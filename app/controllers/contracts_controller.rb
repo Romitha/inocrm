@@ -378,6 +378,9 @@ class ContractsController < ApplicationController
         # @cached_products = Rails.cache.fetch([:products, request.remote_ip]){ serial_products.to_a }
         organization = Organization.find(params[:organization_id])
         Product.where(id: params[:serial_products_ids]).update_all(owner_customer_id: organization.id)
+
+        Product.index.import Product.where(id: params[:serial_products_ids])
+
         render js: "alert('Successfully Added'); window.location.href='#{customer_search_contracts_path}';"
       end
     end
@@ -750,7 +753,7 @@ class ContractsController < ApplicationController
     excel_params = []
     if params[:timestore].present?
       Rails.cache.fetch([:bulk_serial, params[:timestore].to_i ] ).each do |e|
-        excel_params << product_params.merge({ serial_no: e[0], sla_id: e[1], location_address_id: e[2] })
+        excel_params << product_params.merge({ serial_no: e[0], sla_id: e[1], location_address_id: e[2], current_user_id: current_user.id })
       end
 
       if Product.create!(excel_params)

@@ -43,8 +43,9 @@
       %ul
         %li Upload file must be <strong>XLSX</strong> format (Eg: Microsoft Excel sheet)
         %li File capacity must be less than <strong>1Mb</strong>
-        %li Format must be <strong>Serial No, CT No</strong> order
-        %li First row of sheet must be header with <strong>Serial No, CT No</strong>
+        %li Format must be <strong>Serial No, SLA ID, Loacation Address ID</strong> order
+        %li First row of sheet must be header with <strong>, SLA ID, Loacation Address ID</strong>
+        %li <strong>SLA ID, Loacation Address ID</strong> must be from Data source. Otherwise it throws datasource unavailable error.
   .col-md-1
     = link_to edit_product_contracts_path(organization_id: organization.id), remote: true, class: "btn btn-success" do
       New

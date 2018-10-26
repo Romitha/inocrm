@@ -468,6 +468,7 @@ class ReportsController < ApplicationController
   def customer_product_report
     Ticket
     Invoice
+    Organization
     authorize! :customer_product_report, Product
     if params[:search].present?
       params[:from_where] = "customer_product"
