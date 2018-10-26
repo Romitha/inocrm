@@ -1285,7 +1285,7 @@ class TicketsController < ApplicationController
         # sbu_engineer = SbuEngineer.find params[:filter_sbu]
         # sbu = sbu_engineer.sbu
 
-        @sbus = sbu.sbu_engineers.joins(:user).where(active: true, users: {active: true}).map { |s| {id: s.engineer.id, active: s.engineer.user_active, name: "#{s.engineer.full_name} (#{ TicketEngineer.where(user_id: s.engineer_id, job_completed_at: nil).count })"} }
+        @sbus = sbu.sbu_engineers.joins(:engineer).where(active: true, users: {active: true}).map { |s| {id: s.engineer.id, active: s.engineer.user_active, name: "#{s.engineer.full_name} (#{ TicketEngineer.where(user_id: s.engineer_id, job_completed_at: nil).count })"} }
 
       else
         @sbus = Sbu.where(active: true).map { |s| {id: s.id, name: s.sbu, active: s.active} }
