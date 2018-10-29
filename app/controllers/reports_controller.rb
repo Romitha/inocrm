@@ -392,8 +392,7 @@ class ReportsController < ApplicationController
 
     @customer_reports = Organization.search(params)
 
-    @account_managers = User.joins(:designation).where(designations: {code: "MGR"})
-
+    @account_managers = User.where(active: true)
 
   end
 
