@@ -22,7 +22,7 @@ class AddSparePartInformationIdToSptTicketSparePart < ActiveRecord::Migration
 
     add_column :inv_prn, :supplier_id, 'INT UNSIGNED NULL'
     add_index :inv_prn, :supplier_id, name: "fk_inv_prn_organzations1_idx"
-    InventoryPrn.update_all(supplier_id: Organization.organization_suppliers.first.id)
+    #InventoryPrn.update_all(supplier_id: Organization.organization_suppliers.first.id)
 
     add_foreign_key :inv_prn, :organizations, name: "fk_inv_prn_organzations1", column: :supplier_id
 
