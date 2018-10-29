@@ -5814,7 +5814,6 @@ class TicketsController < ApplicationController
         format.html
       end
     end
-
   end
 
   def show_delivered_bundle
