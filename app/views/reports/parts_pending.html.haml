@@ -35,7 +35,7 @@
         - else
           - num= num+1
           = (num)
-      .col-md-1= pending_part.store_requested_at.strftime(INOCRM_CONFIG["short_date_format"])
+      .col-md-1= pending_part.store_requested_at.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
       .col-md-1= pending_part.ticket_spare_part.engineer_name
       .col-md-1= pending_part.ticket_no
       .col-md-1= pending_part.customer_name

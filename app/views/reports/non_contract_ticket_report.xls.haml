@@ -95,15 +95,15 @@
             - ticket.customer_quotations.each do |e|
               = e.try(:customer_quotation_no).to_s.rjust(6, INOCRM_CONFIG['quotation_no_format'])
               ,
-          %td= ticket.try(:created_at).to_date.strftime(INOCRM_CONFIG["short_date_format"])
+          %td= ticket.try(:created_at).to_date.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
           %td
             - if ticket.present?
-              = ticket.try(:logged_at).to_date.strftime(INOCRM_CONFIG["short_date_format"])
+              = ticket.try(:logged_at).to_date.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
           %td= ticket.problem_description
           %td= ticket.job_type_get
           %td
             - if ticket.job_started_at.present?
-              = ticket.job_started_at.to_date.strftime(INOCRM_CONFIG["short_date_format"])
+              = ticket.job_started_at.to_date.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
           %td= ticket.ticket_start_action.try(:action)
           / %td= ticket.owner_engineer.try(:full_name)
           / %td

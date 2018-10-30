@@ -19,7 +19,7 @@ wb.add_worksheet(name: "Quotation report") do |sheet|
       (index+1)
     end
 
-    user_ticket_action_array << user_ticket_action.action_at.strftime(INOCRM_CONFIG["short_date_format"])
+    user_ticket_action_array << user_ticket_action.action_at.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
     user_ticket_action_array << user_ticket_action.ticket.support_ticket_no
     user_ticket_action_array << ticket_spare_part.spare_part_description
     user_ticket_action_array << ticket_spare_part.spare_part_no
