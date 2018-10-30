@@ -68,7 +68,7 @@
               = (index+1)+ 10*(params[:page].to_i-1)
             - else
               = (index+1)
-          %td= part.formatted_issued_at
+          %td= part.issued_at.present? ? part.issued_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}") : ''
           %td= part.issued_user
           %td= part.store_name
           %td= part.inventory_product.try(:generated_item_code)
