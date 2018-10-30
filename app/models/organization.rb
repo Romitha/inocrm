@@ -228,7 +228,7 @@ class Organization < ActiveRecord::Base
 
   def to_indexed_json
     to_json(
-      only: [:id, :name, :type_id, :code, :web_site, :short_name, :code ],
+      only: [:id, :name, :type_id, :code, :web_site, :short_name, :code, :description ],
       methods: [:get_code, :logo_url, :org_name],
       include: {
         industry_type: {
@@ -256,7 +256,7 @@ class Organization < ActiveRecord::Base
           methods: [:contact_info],
         },
         account: {
-          only: [:id, :industry_types_id,:account_no, :code, :vat_number, :created_at, :svat_no, :business_registration_no],
+          only: [:id, :industry_types_id, :account_no, :code, :vat_number, :created_at, :svat_no, :business_registration_no, :active, :goodwill_status, :credit_allow, :credit_period_day ],
           methods: [:get_account_manager, :created_user, :industry_name],
         },
       },
