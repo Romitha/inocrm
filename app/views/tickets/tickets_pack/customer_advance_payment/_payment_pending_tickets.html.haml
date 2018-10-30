@@ -5,7 +5,7 @@
       %tr
         %th No
         %th Ticket Date
-        %th status_id
+        %th status
         %th Ticket No
         %th Customer
         %th Serial No
@@ -14,7 +14,7 @@
         %th Product No
         %th
     %tbody
-      - tickets.each_with_index do |ticket|
+      - tickets.each_with_index do |ticket,index|
         %tr
           %td
             - if params[:page]
@@ -22,7 +22,7 @@
             - else
               = (index+1)
           %td #{ticket.logged_at.try :strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}" }
-          %td= ticket.status_id
+          %td= ticket.ticket_status.name
           %td #{ticket.ticket_no}
           %td #{ticket.try(:customer).try(:name)}
           %td
