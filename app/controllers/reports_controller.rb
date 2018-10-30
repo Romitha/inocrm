@@ -379,11 +379,20 @@ class ReportsController < ApplicationController
   def customer_supplier_report
 
     Organization
+    Address
 
-    customer_report = []
     refined_query = ""
     if params[:search].present? or params[:excel_report].present?
+
+      puts params[:search_customer_supplier]['accounts_dealer_types.dealer_code']
+
+      params[:search_customer_supplier]['accounts_dealer_types.dealer_code'] ||= "(CUS OR SUP OR INDCUS OR INDSUP)"
+
+      puts params[:search_customer_supplier]['accounts_dealer_types.dealer_code']
+
       customer_report = params[:search_customer_supplier].map { |k, v| "#{k}:#{v}" if v.present? }.compact
+    else
+      customer_report = ["accounts_dealer_types.dealer_code:(CUS OR SUP OR INDCUS OR INDSUP)"]
     end
 
     refined_query += customer_report.join(" AND ")
@@ -393,6 +402,14 @@ class ReportsController < ApplicationController
     @customer_reports = Organization.search(params)
 
     @account_managers = User.where(active: true)
+
+    if params[:excel_report].present?
+      render xlsx: "customer_supplier_report"
+    else
+      respond_to do |format|
+        format.html
+      end
+    end
 
   end
 
