@@ -903,7 +903,7 @@ class ReportsController < ApplicationController
   def order_updated
     TaskAction
     TicketSparePart
-    @ticket_manufactures = TicketSparePartManufacture.where(order_pending: true)
+    @ticket_manufactures = TicketSparePartManufacture.joins(:ticket_spare_part).where(order_pending: true, spt_ticket_spare_part: {part_terminated: false})
     # @ticket_manufactures = UserTicketAction.where.not(action_id: '58').order("action_at desc").to_a.uniq{|t| t.ticket_id }
 
     # Ticket.search(query: "NOT user_ticket_actions.action_id:58")
