@@ -1,0 +1,14 @@
+wb = xlsx_package.workbook
+
+headers = {1 => "Index No", 2 => "Cus/Sup Name", 3 => "Short Name", 4 => "Account Number", 5 => "Customer Code", 6 => "Industry Type", 7 => "Organization Type" , 8 => "VAT Number", 9 => "SVAT Number", 10 => "Account Manager", 11 => "Business Reg. No", 12 => "Address Type", 13 => "Address", 14 => "Active", 15 => "Goodwill Status" , 16 => "Credit Allow" , 17 => "Credit Period Days" ,18 => "Website" , 19 => "Description" , 20 => "Created At" , 21 => "Created By"}
+
+wb.add_worksheet(name: "Customer Supplier Report") do |sheet|
+  sheet.add_row Hash[headers.sort].values
+
+  @customer_reports.each_with_index do |db, index|
+
+	bundle_hash = { 1 => (index+1), 2 => db.name, 3 => db.short_name, 4 => db.account.account_no, 5 => db.code, 6 => db.account.industry_name, 7 => db.org_name , 8 => db.account.vat_number, 9 => db.account.svat_no, 10 => db.account.get_account_manager, 11 => db.account.business_registration_no, 12 =>db.account , 13 =>db.account , 14 =>db.account.active , 15 => db.account.goodwill_status , 16 => db.account.credit_allow , 17 => db.account.credit_period_day, 18 => db.web_site, 19 => db.description , 20 => db.account.created_at.to_datetime.strftime(INOCRM_CONFIG["short_date_format"]), 21 => db.account.created_user.full_name}
+
+    sheet.add_row Hash[bundle_hash.sort].values
+  end
+end

@@ -1,0 +1,132 @@
+.row
+  .col-md-12
+    %fieldset
+      %legend Customer-Supplier Report
+      #search_frame
+        = form_tag customer_supplier_report_reports_path, method: :get, class: "form-horizontal" do
+          / = hidden_field_tag :page, params[:page]
+          .row
+            .col-md-3
+              = label_tag "Account No:"
+              = text_field_tag "search_customer_supplier[account.account_no]", params.dig('search_customer_supplier', 'account.account_no'), class: "form-control",placeholder: "Account No"
+            .col-md-3
+              = label_tag "VAT No:"
+              = text_field_tag "search_customer_supplier[account.vat_number]",params.dig('search_customer_supplier', 'account.vat_number'), class: "form-control",placeholder: "Vat No"
+              
+            .col-md-3
+              = label_tag "SVAT No:"
+              = text_field_tag "search_customer_supplier[account.svat_no]",params.dig('search_customer_supplier', 'account.svat_no'), class: "form-control",placeholder: "Svat No"
+            .col-md-3
+              = label_tag "Business Registration No:"
+              = text_field_tag "search_customer_supplier[account.business_registration_no]", params.dig('search_customer_supplier', 'account.business_registration_no'), class: "form-control",placeholder: "Business Registration svat_no"
+
+          %br
+          .row
+            .col-md-3
+              = label_tag "Customer/Supplier Name "
+              = select_tag "search_customer_supplier[id]", options_from_collection_for_select(Organization.customers_and_suppliers, :id, :name), class: "form-control parent_class chosen-select", include_blank: true
+            .col-md-3
+              = label_tag "Account Manager"
+              = select_tag "search_customer_supplier[account_manager_id]", options_from_collection_for_select(@account_managers, :id, :email, params[:account_manager_id]), class: "form-control parent_class chosen-select", include_blank: true
+            .col-md-3
+              = label_tag "Industry Type "
+              = select_tag "search_customer_supplier[industry_types_id]", options_from_collection_for_select(IndustryType.where(active: true), :id, :name, params[:industry_types_id]), class: "form-control parent_class chosen-select ", include_blank: true
+            .col-md-3
+              = label_tag "Organization Types"
+              = select_tag "search_customer_supplier[type_id]", options_from_collection_for_select(OrganizationType.where(active: true), :id, :name, params[:type_id]), class: "form-control parent_class chosen-select ", include_blank: true
+
+          %br
+          .row
+            .col-md-3
+              = check_box_tag "search_customer_supplier[accounts_dealer_types.dealer_code]", "CUS", false, class: "first_resolution"
+              = label_tag "Organizational Customer"
+            .col-md-3
+              = check_box_tag "search_customer_supplier[accounts_dealer_types.dealer_code]", "SUP", false, class: "first_resolution"
+              = label_tag "Organzational Supplier"
+            .col-md-3
+              = check_box_tag "search_customer_supplier[accounts_dealer_types.dealer_code]", "INDCUS", false, class: "first_resolution"
+              = label_tag "Individual Customer"
+            .col-md-3
+              = check_box_tag "search_customer_supplier[accounts_dealer_types.dealer_code]", "INDSUP", false, class: "first_resolution"
+              = label_tag "Individual Supplier"
+
+          %br
+          .row
+            .col-md-3
+              = label_tag "Customer Code :"
+              = text_field_tag "search_customer_supplier[organization.code]", params[:code], class: "form-control"
+
+
+
+          .row.small_scale_margin-top1
+            .col-md-1
+              .search
+                = submit_tag "Search", class: "btn btn-sm btn-warning", name: "search"
+            .col-md-1
+              .search
+                = submit_tag "Excel Report", class: "btn btn-sm btn-success", name: "excel_report"
+
+= paginate @customer_reports, method: :get, remote: false
+.panel.panel-default{style:"overflow: auto;"}
+  %table.table.table-hovered
+    %thead
+      %tr
+        %th Index No
+        %th Cus/Sup Name
+        %th Short Name
+        %th Account Number
+        %th Customer Code
+        %th Industry Type
+        %th Organization Type
+        %th VAT Number
+        %th SVAT Number
+        %th Account Manager
+        %th Business Reg. No
+        %th Address Type
+        %th Address
+        %th Active
+        %th Goodwill Status
+        %th Credit Allow
+        %th Credit Period Days
+        %th Website
+        %th Description
+        %th Created At
+        %th Created By
+        
+    %tbody
+      - @customer_reports.each_with_index do |db, index|
+        %tr
+          %td
+            - if params[:page]
+              = (index+1) + 10*(params[:page].to_i-1)
+            - else
+              = (index+1)
+          %td= db.name
+          %td= db.short_name
+          %td= db.account.account_no
+          %td= db.code
+          %td= db.account.industry_name
+          %td= db.org_name
+          %td= db.account.vat_number
+          %td= db.account.svat_no
+          %td= db.account.get_account_manager
+          %td= db.account.business_registration_no
+
+          - if db.addresses.any?{|a| a.primary_address.present? }
+            - db.addresses.each do |address|
+              - if address.primary_address
+                %td= address.addressable_type
+                %td= address.try(:full_address)
+          - else
+            %td
+            %td
+
+          %td= db.account.active
+          %td= db.account.goodwill_status
+          %td= db.account.credit_allow
+          %td= db.account.credit_period_day
+          %td= db.web_site
+          %td= db.description
+          %td= db.account.created_at.to_datetime.strftime(INOCRM_CONFIG["short_date_format"])
+          %td= db.account.created_user.full_name
+= paginate @customer_reports, method: :get, remote: false          
