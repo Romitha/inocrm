@@ -34,3 +34,4 @@ erd.pdf
 /Capfile
 /config/deploy.rb
 /config/deploy/*.rb
+elasticsearch-2\.4\.1/
