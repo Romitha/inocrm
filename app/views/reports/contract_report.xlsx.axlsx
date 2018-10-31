@@ -1,0 +1,81 @@
+#intialized total variables
+total_product_amount = 0
+total_payment_receiveds = 0
+total_pending_amount = 0
+
+wb = xlsx_package.workbook
+
+headers = [ "Contract No",
+            "Customer Name",
+            "Customer- With Descendants",
+            "Service Provider",
+            "Account Manager",
+            "Contract Start Date",
+            "Contract End Date",
+            "Season",
+            "Brand",
+            "Category",
+            "Contract Type",
+            "Payment Type",
+            "Accepted",
+            "Currency",
+            "Status",
+            "Contract Amount",
+            "Payment Received",
+            "Pending Amount"
+          ]
+
+footer =  [
+            "Printed By : #{current_user.full_name}",
+            "Print At :   #{DateTime.now.to_date}"
+          ]          
+wb.add_worksheet(name: "Contract Report") do |sheet|
+            sheet.add_row headers
+          
+            @contracts.each_with_index do |contract, index|
+
+
+              pending_amount = ((contract.product_amount).to_f - contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f})
+              total_product_amount = total_product_amount + contract.product_amount.to_f
+              total_payment_receiveds = total_payment_receiveds + contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f}
+              total_pending_amount = total_pending_amount + pending_amount.to_f
+
+              contracts_content = [
+              
+                contract.contract_no,
+                contract.organization.name,
+                " ",
+                contract.owner_organization.try(:name),
+                contract.organization.account.get_account_manager,
+                contract.contract_start_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}"),
+                contract.contract_end_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}"),
+                (contract.season == 1 ? 'Season 1' : (contract.season == 2 ? 'Season 2' : '')),
+                contract.brand_name,
+                contract.category_full_name_index,
+                contract.ticket_contract_type.try(:name),
+                contract.ticket_contract_payment_type.try(:name),
+                (contract.formated_accepted_at.present? ? 'Yes' : 'No'),
+                contract.ticket_currency.try(:code),
+                contract.status_name,
+                standard_currency_format(contract.product_amount),
+                standard_currency_format(contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f}),
+                standard_currency_format(contract.pending_amount),
+              ]
+          
+              sheet.add_row contracts_content
+          
+            end
+
+            total = ["Total"]
+            total.concat(14.times.map{|t| "" })
+            total.push(standard_currency_format(total_product_amount))
+            total.push(standard_currency_format(total_payment_receiveds))
+            total.push(standard_currency_format(total_pending_amount))  
+            
+            sheet.add_row total
+            sheet.add_row footer
+          
+end
+
+
+
