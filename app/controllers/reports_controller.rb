@@ -635,21 +635,21 @@ class ReportsController < ApplicationController
 
     end
 
-    respond_to do |format|
-      if params[:search].present?
-        sleep 3
-        after_contract_products = []
-        params[:report] = nil
-        before_contract_products = TicketContract.search(params)
-        @warranties = if params[:contract_date_from].present? and params[:contract_date_to].present?
-          params[:report] = true
-          after_contract_products = TicketContract.search(params)
-          (before_contract_products.results + after_contract_products.results).uniq{|r| r.id}
-        else
-          before_contract_products.results
-        end
-        format.xls
+    if params[:search].present?
+      sleep 3
+      after_contract_products = []
+      params[:report] = nil
+      before_contract_products = TicketContract.search(params)
+      @warranties = if params[:contract_date_from].present? and params[:contract_date_to].present?
+        params[:report] = true
+        after_contract_products = TicketContract.search(params)
+        (before_contract_products.results + after_contract_products.results).uniq{|r| r.id}
       else
+        before_contract_products.results
+      end
+      render xlsx: "contract_report"
+    else
+      respond_to do |format|
         format.html
       end
     end
