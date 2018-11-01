@@ -39,4 +39,4 @@
 
     .col-md-1= srn_item.inventory_product.inventory_unit.unit
     .col-md-1= srn_item.inventory.try(:available_quantity)
-    .col-md-1= check_box_tag "srn_item_ids[]", srn_item.id
+    .col-md-1{class: "select_link_#{srn_item.id}"}= link_to "Select", prn_admins_inventories_path(select_srn_id: srn_item.id), remote: true

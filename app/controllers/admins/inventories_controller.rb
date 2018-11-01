@@ -2041,6 +2041,10 @@ module Admins
         @store = Organization.find params[:store_id_with_srn]
         @render_template = "with_srn"
       end
+      if params[:select_srn_id].present?
+        @srn_item = SrnItem.find params[:select_srn_id]
+        @render_template = "selected_srn_items"
+      end
       respond_to do |format|
         format.html {render "admins/inventories/prn/prn"}
         format.js {render "admins/inventories/prn/prn"}

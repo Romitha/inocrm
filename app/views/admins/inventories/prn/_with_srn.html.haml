@@ -35,6 +35,28 @@
               .col-md-1
                 .search
                   = submit_tag "Search", class: "btn btn-sm btn-warning", name: "search"
+
+        #selected_srn_form.hide
+          = form_tag submit_selected_products_admins_inventories_path(store_id_with_srn: @store.id, srn_form: "yes"), method: :post, remote: true do
+
+            %h3 Selected SRNS          
+            .row.strong
+              .col-md-1 SRN No
+              .col-md-1 Brand
+              .col-md-1 Product
+              .col-md-1 Category
+              .col-md-1 Item Code
+              .col-md-2 Description
+              .col-md-1 PRN No (s)
+              .col-md-1 Unit
+              .col-md-1 Available Qty
+              .col-md-1 Action
+            %hr
+
+            #select_srns.strong
+            %hr
+            = submit_tag "Crate PRN", :name => "done", class: "btn btn-sm btn-success btn-primary"
+
         #search_result
 
 - else
