@@ -68,7 +68,9 @@ module InventoriesHelper
     else
       case from_where
       when "search_inventory_product"
-        inventory_product_attr
+        inventory_product_attr.merge({
+          available_quantity: available_quantities
+        })
       when "inventories"
         inventory_product_attr.merge({
           available_quantity: {value: available_quantities, html: {class_attr: "text-right"}},
