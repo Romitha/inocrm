@@ -1,0 +1,37 @@
+- srn_item = @srn_item
+.row{class: "#{'text-danger' if srn_item.inventory_prn_items.any?}"}
+  - content_for :srn_info_more, flush: true do
+    %ul
+      %li
+        %strong Created At:
+        = srn_item.inventory_product.created_at.to_date.try(:strftime, INOCRM_CONFIG['short_date_format'])
+      %li
+        %strong Model No:
+        = srn_item.inventory_product.model_no
+      %li
+        %strong Product No:
+        = srn_item.inventory_product.product_no
+      %li
+        %strong Part No
+        = srn_item.inventory_product.spare_part_no
+      %li
+        %strong SO No
+        = srn_item.srn.so_no
+      %li
+        %strong Customer
+        = srn_item.srn.so_customer.try(:name)
+
+  .col-md-1= srn_item.srn.formatted_srn_no
+  .col-md-1= srn_item.inventory_product.category1_name
+  .col-md-1= srn_item.inventory_product.category2_name
+  .col-md-1= srn_item.inventory_product.category3_name
+  .col-md-1= srn_item.inventory_product.generated_item_code
+  .col-md-2= srn_item.inventory_product.description
+  .col-md-1
+    - srn_item.inventory_prn_items.each do |inventory_prn_item|
+      = link_to prns_admins_inventories_path(prn_id: inventory_prn_item.inventory_prn.id), target: "_blank" do
+        = inventory_prn_item.formated_prn_no
+
+  .col-md-1= srn_item.inventory_product.inventory_unit.unit
+  .col-md-1= srn_item.inventory.try(:available_quantity)
+  .col-md-1= check_box_tag "srn_item_ids[]", srn_item.id

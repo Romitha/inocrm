@@ -37,6 +37,11 @@
   $("#close_prn").modal();
   $("#close_prn .modal-body").html("#{j render 'admins/inventories/prn/close_prn', prn: @prn}");
 
+- if params[:select_srn_id].present?
+  $("#selected_srn_form").removeClass("hide");
+  $("#select_srns").append("#{j render 'admins/inventories/prn/'+@render_template}");
+  $(".select_link_#{@srn_item.id}").addClass("hide");
+
 $("a[rel~=popover], .has-popover").popover();
 Tickets.initial_loaders();
 Tickets.remove_ajax_loader();
