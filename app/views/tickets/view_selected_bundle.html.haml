@@ -1,5 +1,33 @@
+%br
 - delivered_bundle = @delivered_bundle
+.row
+  .col-md-4
+    %strong Bundle No:
+    #{delivered_bundle.brand_name}
+  .col-md-4
+    %strong Brand:
+    #{delivered_bundle.created_at.to_datetime.strftime(INOCRM_CONFIG['long_date_format'])}
+  .col-md-4
+    %strong Created At:
+    #{delivered_bundle.created_at.to_datetime.strftime(INOCRM_CONFIG['long_date_format'])}
 
+.row
+  .col-md-4
+    %strong Created By:
+    #{delivered_bundle.created_by_name}
+  .col-md-4
+    %strong Delivered At:
+    #{delivered_bundle.delivered_at.try(:to_datetime).try(:strftime, INOCRM_CONFIG['long_date_format'])}
+  .col-md-4
+    %strong Delivered By:
+    #{delivered_bundle.delivered_by_name}
+.row
+  .col-md-12
+    %strong Note:
+    #{delivered_bundle.note}
+%hr
+
+- delivered_bundle = @delivered_bundle
 .panel.panel-success
   %table.table
     %thead
@@ -20,6 +48,8 @@
           Return Part CT No
         %th
           Used Status
+        %th
+          Spare Part Note
         %th
           Return accepted Date
     %tbody

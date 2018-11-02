@@ -86,7 +86,7 @@ module ApplicationHelper
   def print_receipt_tag_value receipt #REQUEST_TYPE=PRINT_SPPT_RECEIPT
     [
       "DUPLICATE=#{receipt.receipt_print_count > 0 ? 'D' : ''}",
-      "RECEIPT_NO=#{receipt.id.to_s.rjust(6, INOCRM_CONFIG['receipt_no_format'])}",
+      "RECEIPT_NO=#{receipt.receipt_no.to_s.rjust(6, INOCRM_CONFIG['receipt_no_format'])}",
       "COMPANY_NAME=#{receipt.ticket.customer.full_name}",
       "TICKET_REF=#{receipt.ticket.ticket_no.to_s.rjust(6, INOCRM_CONFIG['ticket_no_format'])}",
       "INVOICE_NO=#{ receipt.ticket_invoice and receipt.ticket_invoice.invoice_no.to_s.rjust(6, INOCRM_CONFIG['invoice_no_format'])}",
