@@ -34,6 +34,5 @@ erd.pdf
 /Capfile
 /config/deploy.rb
 /config/deploy/*.rb
-
-# ignore any elasticsearch folder exists
+/.idea/*
 /elasticsearch*
