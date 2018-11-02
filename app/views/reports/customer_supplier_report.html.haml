@@ -129,4 +129,4 @@
           %td= db.description
           %td= db.account.created_at.to_datetime.strftime(INOCRM_CONFIG["short_date_format"])
           %td= db.account.created_user.full_name
-= paginate @customer_reports, method: :get, remote: false          
+= paginate @customer_reports, method: :get, remote: false

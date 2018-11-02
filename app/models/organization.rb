@@ -256,7 +256,7 @@ class Organization < ActiveRecord::Base
           methods: [:contact_info],
         },
         account: {
-          only: [:id, :industry_types_id, :account_no, :code, :vat_number, :created_at, :svat_no, :business_registration_no, :active, :goodwill_status, :credit_allow, :credit_period_day ],
+          only: [:id, :industry_types_id, :account_no, :code, :vat_number, :created_at, :svat_no, :business_registration_no, :active, :goodwill_status, :credit_allow, :credit_period_day, :account_manager_id ],
           methods: [:get_account_manager, :created_user, :industry_name],
         },
       },
