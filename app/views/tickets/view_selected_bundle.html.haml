@@ -56,7 +56,7 @@
       - delivered_bundle.ticket_spare_parts.each do |ticket_spare_part|
         %tr
           %td
-            = ticket_spare_part.ticket_serial_no
+            = link_to ticket_spare_part.ticket_serial_no, ticket_path(ticket_spare_part.ticket.id), target: "_blank"
           %td
             = ticket_spare_part.spare_part_no
           %td
