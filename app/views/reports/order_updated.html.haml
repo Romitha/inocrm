@@ -7,13 +7,17 @@
     %strong No
   .col-md-2
     %strong Order updated date
-  .col-md-2
+  .col-md-1
     %strong Ticket No
   .col-md-2
+    %strong Engineer Name
+  .col-md-1
+    %strong Event No
+  .col-md-1
     %strong Part No
   .col-md-2
     %strong Part Description
-  .col-md-3
+  .col-md-2
     %strong Spare Part Note
 - num = 0
 %hr
@@ -26,8 +30,10 @@
         - num= num+1
         = (num)
     .col-md-2= ticket_manufacture.updated_at.to_date.try :strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}"
-    .col-md-2= ticket_manufacture.ticket_spare_part.ticket.support_ticket_no
-    .col-md-2= ticket_manufacture.ticket_spare_part.spare_part_no
+    .col-md-1= ticket_manufacture.ticket_spare_part.ticket.support_ticket_no
+    .col-md-2= ticket_manufacture.ticket_spare_part.engineer_name
+    .col-md-1= ticket_manufacture.event_no
+    .col-md-1= ticket_manufacture.ticket_spare_part.spare_part_no
     .col-md-2= ticket_manufacture.ticket_spare_part.spare_part_description
-    .col-md-3{ "class"=> "has-popover", "data-toggle"=> "popover", "title"=> "Note: #{ticket_manufacture.ticket_spare_part.note}", "data-content"=> "#{yield(:customer_supplier_p_more)}", "data-html" => "true", "data-trigger" => "hover", "data-placement" => "left" }= strip_tags(ticket_manufacture.ticket_spare_part.note).truncate(100)
+    .col-md-2{ "class"=> "has-popover", "data-toggle"=> "popover", "title"=> "Note: #{ticket_manufacture.ticket_spare_part.note}", "data-content"=> "#{yield(:customer_supplier_p_more)}", "data-html" => "true", "data-trigger" => "hover", "data-placement" => "left" }= strip_tags(ticket_manufacture.ticket_spare_part.note).truncate(100)
   %hr
