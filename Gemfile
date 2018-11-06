@@ -132,13 +132,15 @@ gem 'backburner'
 
 # gem 'docx', '~> 0.2.07', :require => ["docx"]
 gem 'docx_replace'
-gem 'rubyzip'
+# gem 'rubyzip'
 # gem 'htmltoword'
 gem 'caracal'
 # gem 'omnidocx'
 
-gem 'axlsx', '~> 3.0.0.pre'
+gem 'axlsx', git: 'https://github.com/randym/axlsx.git', ref: 'c8ac844'
 gem 'axlsx_rails'
+gem 'rubyzip', '>= 1.2.1'
+
 
 group :production do
   gem 'god' # sudo apt-get install god

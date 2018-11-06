@@ -83,3 +83,9 @@ bpm:
   bpm_url: "http://192.168.1.232:8080/jbpm-console/rest"
 
   bpm_deployment_id: "lk.inova:INOCRM:1.0.3.0"
+
+upload:
+  sftp_server: '192.168.1.146'
+  user: <%= ENV.fetch("SFTP_USER") { 'root' } %>
+  password: <%= ENV.fetch("SFTP_PASSWORD") { 'centos' } %>
+  sftp_folder: '/var/www/inovacrm-assets/'
