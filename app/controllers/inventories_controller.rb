@@ -161,6 +161,8 @@ class InventoriesController < ApplicationController
     ticket_spare_part.update(ticket_spare_part_params(ticket_spare_part))
     ticket_spare_part.update(unused_reason_id: Reason.find_by_spare_part_unused(true).try(:id)) if ticket_spare_part.spare_part_status_use.try(:code) == "UUS" and !ticket_spare_part.unused_reason_id.present?
 
+    ticket_spare_part.update(unused_reason_id: nil) if ticket_spare_part.spare_part_status_use.try(:code) != "UUS"
+
     @continue = view_context.bpm_check(params[:task_id], params[:process_id], params[:owner])
     continue = @continue
     same_page = todos_url

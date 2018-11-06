@@ -645,7 +645,11 @@ class ReturnPartsBundle < ActiveRecord::Base
   include Tire::Model::Callbacks
 
   mapping do
-    indexes :ticket_spare_parts, type: "nested", include_in_parent: true
+    indexes :ticket_spare_parts, type: "nested", include_in_parent: true do
+      indexes :spare_part_no, analyzer: "snowball"
+      indexes :spare_part_event_no, analyzer: "snowball"
+    end
+    indexes :ticket_spare_part_manufactures, type: "nested", include_in_parent: true
     indexes :ticket_spare_part_manufactures, type: "nested", include_in_parent: true
   end
 

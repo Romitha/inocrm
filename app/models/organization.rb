@@ -73,7 +73,7 @@ class Organization < ActiveRecord::Base
   has_many :ticket_contracts, foreign_key: :customer_id
   has_many :contract_products, through: :ticket_contracts
 
-  belongs_to :mst_title,foreign_key: :title_id
+  belongs_to :mst_title, foreign_key: :title_id
   belongs_to :created_by_user, class_name: "User", foreign_key: :created_by
 
   has_many :organization_contact_addresses
@@ -116,6 +116,12 @@ class Organization < ActiveRecord::Base
       data.data_value = (value.class==Fixnum ? value : value.strip)
       data.save
     end
+  end
+
+  def name
+    # first_name ? "#{try(:mst_title).try(:title)} #{first_name} #{last_name}" : email
+    mst_title ? "#{mst_title.title} #{super}" : super
+
   end
 
   def employees

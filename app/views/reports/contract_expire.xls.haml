@@ -15,7 +15,7 @@
     - @contracts.each do |contract|
       %tr
         %td= contract.contract_no
-        %td= contract.formated_contract_start_at
+        %td= contract.contract_start_at.to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
         %td
           %font{:color => "red"}
             %strong= contract.formated_contract_end_at
@@ -43,7 +43,7 @@
     - @contract_expireds.each do |contract|
       %tr
         %td= contract.contract_no
-        %td= contract.formated_contract_start_at
+        %td= contract.contract_start_at.to_date.try :strftime, INOCRM_CONFIG["short_date_format"]
         %td
           %font{:color => "red"}
             %strong= contract.formated_contract_end_at
