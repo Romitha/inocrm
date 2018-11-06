@@ -108,8 +108,8 @@
             - due_amount1 = contract.contract_payment_installments.sum{|i| (i.installment_start_date.to_date <= given_date and i.installment_end_date.to_date >= given_date and i.contract_id.to_s == contract.id ) ? i.total_amount.to_f : 0 }
           - total_to_be_colected1 = total_to_be_colected1 + (due_amount1.to_f - contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f})
           %td= contract.organization.try(:name)
-          %td= contract.formated_contract_start_at
-          %td= contract.formated_contract_end_at
+          %td= contract.contract_start_at.to_date.try :strftime, INOCRM_CONFIG["short_date_format"]
+          %td= contract.contract_end_at.to_date.try :strftime, INOCRM_CONFIG["short_date_format"]
           %td= contract.contract_no
           %td= standard_currency_format(due_amount1.to_f - contract.contract_payment_receiveds.to_a.sum{|e| e.try(:amount).to_f})
           %td= contract.organization.account.get_account_manager

@@ -59,7 +59,7 @@
       %tr
         %td
           = (index+1)
-        %td= warranty.try(:start_at).to_date.strftime(INOCRM_CONFIG['short_date_format'])
+        %td= warranty.try(:start_at).to_datetime.strftime("#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}")
         %td
           %font{:color => "red"}
             %strong= warranty.try(:end_at).to_date.strftime(INOCRM_CONFIG['short_date_format'])

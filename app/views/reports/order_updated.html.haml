@@ -29,7 +29,7 @@
       - else
         - num= num+1
         = (num)
-    .col-md-2= ticket_manufacture.updated_at.to_date.try :strftime, "#{INOCRM_CONFIG['short_date_format']} #{INOCRM_CONFIG['time_format']}"
+    .col-md-2= ticket_manufacture.updated_at.to_date.try :strftime, "#{INOCRM_CONFIG['short_date_format']}"
     .col-md-1= ticket_manufacture.ticket_spare_part.ticket.support_ticket_no
     .col-md-2= ticket_manufacture.ticket_spare_part.engineer_name
     .col-md-1= ticket_manufacture.event_no
