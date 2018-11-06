@@ -1,23 +1,23 @@
 default: &default
   adapter: mysql2
   pool: 5
-  username: root
-  password: mysql
+  username: <%= ENV.fetch("INOCRM_MYSQL_USER") {'root'} %>
+  password: <%= ENV.fetch("INOCRM_MYSQL_PASSWORD") {'mysql'} %>
   timeout: 5000
 
 development:
   <<: *default
-  database: inocrm_dev
+  database: <%= ENV.fetch("INOCRM_MYSQL_DATABASE") {'inocrm_dev'} %>
 test:
   <<: *default
-  database: inocrm_testzz
+  database: <%= ENV.fetch("INOCRM_MYSQL_DATABASE") {'inocrm_testzz'} %>
 bobbin:
   <<: *default
-  database: inova_crm_bobbin
+  database: <%= ENV.fetch("INOCRM_MYSQL_DATABASE") {'inova_crm_bobbin'} %>
   timeout: 30000
   pool: 20
 staging:
   <<: *default
-  database: inova_crm_pro
+  database: <%= ENV.fetch("INOCRM_MYSQL_DATABASE") {'inova_crm_pro'} %>
   timeout: 30000
   pool: 20
