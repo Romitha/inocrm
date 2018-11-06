@@ -11,6 +11,17 @@ GIT
       rake
       rest-client (~> 1.6)
 
+GIT
+  remote: https://github.com/randym/axlsx.git
+  revision: c8ac844572b25fda358cc01d2104720c4c42f450
+  ref: c8ac844
+  specs:
+    axlsx (2.1.0.pre)
+      htmlentities (~> 4.3.4)
+      mimemagic (~> 0.3)
+      nokogiri (>= 1.6.6)
+      rubyzip (>= 1.2.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -51,18 +62,13 @@ GEM
       tzinfo (~> 1.1)
     addressable (2.5.2)
       public_suffix (>= 2.0.2, < 4.0)
-    airbrussh (1.3.0)
+    airbrussh (1.3.1)
       sshkit (>= 1.6.1, != 1.7.0)
     ansi (1.5.0)
     arel (6.0.4)
-    axlsx (3.0.0.pre)
-      htmlentities (~> 4.3, >= 4.3.4)
-      mimemagic (~> 0.3)
-      nokogiri (~> 1.8, >= 1.8.2)
-      rubyzip (~> 1.2, >= 1.2.1)
-    axlsx_rails (0.5.2)
-      actionpack (>= 3.1)
-      axlsx (>= 2.0.1)
+    axlsx_rails (0.1.5)
+      axlsx
+      rails (>= 3.1)
     backburner (1.5.0)
       beaneater (~> 1.0)
       concurrent-ruby (~> 1.0, >= 1.0.1)
@@ -100,7 +106,7 @@ GEM
     capistrano-rvm (0.1.2)
       capistrano (~> 3.0)
       sshkit (~> 1.2)
-    capybara (3.10.0)
+    capybara (3.10.1)
       addressable
       mini_mime (>= 0.1.3)
       nokogiri (~> 1.8)
@@ -144,7 +150,7 @@ GEM
       sass (~> 3.2.19)
     compass-rails (2.0.0)
       compass (>= 0.12.2)
-    concurrent-ruby (1.0.5)
+    concurrent-ruby (1.1.1)
     crass (1.0.4)
     cucumber (3.1.2)
       builder (>= 2.1.2)
@@ -230,7 +236,7 @@ GEM
       socksify
     i18n (0.9.5)
       concurrent-ruby (~> 1.0)
-    jbuilder (2.7.0)
+    jbuilder (2.8.0)
       activesupport (>= 4.2.0)
       multi_json (>= 1.2)
     jcrop-rails-v2 (0.9.12.3)
@@ -264,7 +270,7 @@ GEM
       sprockets (> 2, < 4)
       tilt
     libv8 (3.16.14.19)
-    loofah (2.2.2)
+    loofah (2.2.3)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     mail (2.7.1)
@@ -294,7 +300,7 @@ GEM
       mini_portile2 (~> 2.3.0)
     orm_adapter (0.5.0)
     public_suffix (3.0.3)
-    rack (1.6.10)
+    rack (1.6.11)
     rack-mini-profiler (1.0.0)
       rack (>= 1.2.0)
     rack-test (0.6.3)
@@ -331,7 +337,7 @@ GEM
     rake (12.3.1)
     rdoc (4.3.0)
     redcarpet (3.4.0)
-    redis (4.0.2)
+    redis (4.0.3)
     redis-objects (1.4.3)
       redis (~> 4.0)
     ref (2.0.0)
@@ -458,7 +464,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  axlsx (~> 3.0.0.pre)
+  axlsx!
   axlsx_rails
   backburner
   bootstrap-datepicker-rails
@@ -508,7 +514,7 @@ DEPENDENCIES
   rolify
   roo
   rspec-rails
-  rubyzip
+  rubyzip (>= 1.2.1)
   sass-rails (~> 4.0.3)
   sdoc (~> 0.4.0)
   selenium-webdriver (~> 3.0.0.beta3)
