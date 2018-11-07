@@ -85,7 +85,7 @@ bpm:
   bpm_deployment_id: "lk.inova:INOCRM:1.0.3.0"
 
 upload:
-  sftp_server: 'localhost'
+  sftp_server: '192.168.100.155'
   user: 'root'
   password: 'VsIs@987'
   sftp_folder: '/var/www/inovacrm_assets/'
