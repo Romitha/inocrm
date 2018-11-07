@@ -4631,7 +4631,7 @@ class TicketsController < ApplicationController
 
       if (spt_ticket_spare_part.status_action_id != SparePartStatusAction.find_by_code("CLS").id) and spt_ticket_spare_part.update(ticket_spare_part_params(spt_ticket_spare_part))
 
-        spt_ticket_spare_part.update_attributes status_action_id: SparePartStatusAction.find_by_code("CLS").id
+        spt_ticket_spare_part.update_attributes part_terminated: true, status_action_id: SparePartStatusAction.find_by_code("CLS").id
 
         spt_ticket_spare_part.ticket_spare_part_status_actions.create(status_id: spt_ticket_spare_part.status_action_id, done_by: current_user.id, done_at: DateTime.now)
 

@@ -648,6 +648,9 @@ class ReturnPartsBundle < ActiveRecord::Base
     indexes :ticket_spare_parts, type: "nested", include_in_parent: true do
       indexes :spare_part_no, analyzer: "snowball"
       indexes :spare_part_event_no, analyzer: "snowball"
+      indexes :return_part_serial_no, analyzer: "snowball"
+      indexes :return_part_ct_no, analyzer: "snowball"
+
     end
     indexes :ticket_spare_part_manufactures, type: "nested", include_in_parent: true
     indexes :ticket_spare_part_manufactures, type: "nested", include_in_parent: true
@@ -673,10 +676,10 @@ class ReturnPartsBundle < ActiveRecord::Base
   def to_indexed_json
     to_json(
       only: [:id, :bundle_no, :product_brand_id, :po_no, :created_by, :created_at, :so_no, :note, :amount, :currency_id, :delivered_at],
-      methods: [:po_no_format, :currency_type, :brand_of_product_name, :formated_created_at, :delivered_by_name, :created_by_name,:brand_name],
+      methods: [:po_no_format, :currency_type, :brand_of_product_name, :formated_created_at, :delivered_by_name, :created_by_name, :brand_name],
       include: {
         ticket_spare_parts: {
-          only: [:id, :spare_part_no ,:return_part_serial_no, :return_part_ct_no, :spare_part_no, :spare_part_description],
+          only: [:id, :spare_part_no ,:return_part_serial_no, :return_part_ct_no, :spare_part_description],
           methods: [:spare_part_event_no, :ticket_serial_no, :ticket_use_status, :engineer_name],
           include: {
             ticket_spare_part_status_actions: {
