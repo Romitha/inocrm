@@ -80,12 +80,12 @@ spt_quotation_no_annual_reset: true
 contract_product_required: false
 
 bpm:
-  bpm_url: "http://192.168.100.157:8080/jbpm-console/rest"
+  bpm_url: <%= "http://"+ENV.fetch("INOCRM_BPM_URL") { '192.168.100.157' }+":8080/jbpm-console/rest" %>
 
   bpm_deployment_id: "lk.inova:INOCRM:1.0.3.0"
 
 upload:
-  sftp_server: '192.168.100.155'
+  sftp_server: <%= ENV.fetch("SFTP_SERVER") { 'localhost' } %>
   user: <%= ENV.fetch("SFTP_USER") { 'root' } %>
   password: <%= ENV.fetch("SFTP_PASSWORD") { 'VsIs@987' } %>
   sftp_folder: '/var/www/inovacrm_assets/'
