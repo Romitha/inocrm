@@ -85,7 +85,7 @@ bpm:
   bpm_deployment_id: "lk.inova:INOCRM:1.0.3.0"
 
 upload:
-  sftp_server: '<%= ENV.fetch("SFTP_SERVER") { 'localhost' } %>'
+  sftp_server: <%= ENV.fetch("SFTP_SERVER") { 'localhost' } %>
   user: <%= ENV.fetch("SFTP_USER") { 'root' } %>
   password: <%= ENV.fetch("SFTP_PASSWORD") { 'centos' } %>
   sftp_folder: '/var/www/inovacrm-assets/'
