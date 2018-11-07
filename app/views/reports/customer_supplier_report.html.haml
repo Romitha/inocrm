@@ -12,7 +12,6 @@
             .col-md-3
               = label_tag "VAT No:"
               = text_field_tag "search_customer_supplier[account.vat_number]",params.dig('search_customer_supplier', 'account.vat_number'), class: "form-control",placeholder: "Vat No"
-              
             .col-md-3
               = label_tag "SVAT No:"
               = text_field_tag "search_customer_supplier[account.svat_no]",params.dig('search_customer_supplier', 'account.svat_no'), class: "form-control",placeholder: "Svat No"
@@ -27,10 +26,10 @@
               = select_tag "search_customer_supplier[id]", options_from_collection_for_select(Organization.customers_and_suppliers, :id, :name), class: "form-control parent_class chosen-select", include_blank: true
             .col-md-3
               = label_tag "Account Manager"
-              = select_tag "search_customer_supplier[account_manager_id]", options_from_collection_for_select(@account_managers, :id, :email, params[:account_manager_id]), class: "form-control parent_class chosen-select", include_blank: true
+              = select_tag "search_customer_supplier[account.account_manager_id]", options_from_collection_for_select(@account_managers, :id, :email, params.dig('search_customer_supplier', 'account.account_manager_id')), class: "form-control parent_class chosen-select", include_blank: true
             .col-md-3
               = label_tag "Industry Type "
-              = select_tag "search_customer_supplier[industry_types_id]", options_from_collection_for_select(IndustryType.where(active: true), :id, :name, params[:industry_types_id]), class: "form-control parent_class chosen-select ", include_blank: true
+              = select_tag "search_customer_supplier[account.industry_types_id]", options_from_collection_for_select(IndustryType.where(active: true), :id, :name,params.dig('search_customer_supplier', 'account.industry_types_id')), class: "form-control parent_class chosen-select ", include_blank: true
             .col-md-3
               = label_tag "Organization Types"
               = select_tag "search_customer_supplier[type_id]", options_from_collection_for_select(OrganizationType.where(active: true), :id, :name, params[:type_id]), class: "form-control parent_class chosen-select ", include_blank: true
@@ -54,8 +53,7 @@
           .row
             .col-md-3
               = label_tag "Customer Code :"
-              = text_field_tag "search_customer_supplier[organization.code]", params[:code], class: "form-control"
-
+              = text_field_tag "search_customer_supplier[code]", params.dig('search_customer_supplier', 'code'), class: "form-control", placeholder: "Customer Code "
 
 
           .row.small_scale_margin-top1

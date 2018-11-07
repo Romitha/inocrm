@@ -16,6 +16,10 @@
         .col-md-10
           = text_field_tag "type_no", params[:type_no], placeholder: "No", class: "form-control"
       .form-group
+        = label_tag "SO No", "SO No", class: "col-md-2 control-label"
+        .col-md-10
+          = text_field_tag "so_no", params[:so_no], placeholder: "SO No", class: "form-control"
+      .form-group
         = label_tag "Date From", "Date From", class: "col-md-2 control-label"
         .col-md-10
           = text_field_tag "from_date", params[:from_date], placeholder: "Date From", class: "form-control datepicker"

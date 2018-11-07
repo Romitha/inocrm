@@ -3,13 +3,13 @@
 .row
   .col-md-4
     %strong Bundle No:
-    #{delivered_bundle.brand_name}
+    #{delivered_bundle.bundle_no}
   .col-md-4
     %strong Brand:
-    #{delivered_bundle.created_at.to_datetime.strftime(INOCRM_CONFIG['long_date_format'])}
+    #{delivered_bundle.brand_name}
   .col-md-4
     %strong Created At:
-    #{delivered_bundle.created_at.to_datetime.strftime(INOCRM_CONFIG['long_date_format'])}
+    #{delivered_bundle.created_at.try(:to_datetime).try(:strftime, INOCRM_CONFIG['long_date_format'])}
 
 .row
   .col-md-4
@@ -43,9 +43,9 @@
         %th
           Event No
         %th
-          Return Part Serial No
-        %th
           Return Part CT No
+        %th
+          Return Part Serial No
         %th
           Used Status
         %th

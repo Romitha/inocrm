@@ -174,7 +174,7 @@ module Admins
           grns
 
         when "prn"
-          query = { formated_prn_no: params[:type_no] }.map { |k, v| "#{k}:#{v}" if v.present? }.compact
+          query = { formated_prn_no: params[:type_no], so_no: params[:so_no] }.map { |k, v| "#{k}:#{v}" if v.present? }.compact
 
           params[:range_from] = params[:from_date]
           params[:range_to] = params[:to_date]
