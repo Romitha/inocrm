@@ -557,6 +557,10 @@ Rails.application.routes.draw do
         end
       end      
     end
+
+    resources :stock_takings do
+    end  
+
   end
 
   # resources :roles do
